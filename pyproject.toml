@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "customer-analysis-service"
+version = "0.1.0"
+description = ""
+authors = ["Egorov Mikhail <m-5321e@yandex.com>"]
+license = "GNU General Public License v3.0"
+readme = "README.md"
+packages = [{include = "customer_analysis_service"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+scrapy = "^2.9.0"
+fastapi = {extras = ["all"], version = "^0.98.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
