@@ -11,6 +11,8 @@ packages = [{include = "customer_analysis_service"}]
 python = "^3.11"
 scrapy = "^2.9.0"
 fastapi = {extras = ["all"], version = "^0.98.0"}
+fake-useragent = "^1.1.3"
+sqlmodel = "^0.0.8"
 
 
 [build-system]
