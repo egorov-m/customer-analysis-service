@@ -15,4 +15,4 @@ class Customer(SQLModel, table=True):
     en_city: str = Field(nullable=False, max_length=100)
     reg_date: date = Field(sa_column=sa.Column(sa.Date(), nullable=False))
     count_subscribers: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
-    last_activity_datetime: datetime = Field(sa_column=sa.Column(sa.DateTime(), nullable=False))
+    # last_activity_datetime: datetime = Field(sa_column=sa.Column(sa.DateTime(), nullable=False))

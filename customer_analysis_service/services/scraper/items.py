@@ -1,6 +1,11 @@
 from scrapy.item import Item, Field
 
 
+class InfoToFindAllCustomers(Item):
+    customer_name_id = Field()
+    review_id = Field()
+
+
 class Review(Item):
     """
     Information from the full review page
@@ -65,4 +70,4 @@ class Customer(Item):
     city = Field()
     reg_date = Field()
     count_subscribers = Field()
-    last_activity_date = Field()
+    # last_activity_date = Field()
