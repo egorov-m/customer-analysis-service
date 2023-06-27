@@ -100,4 +100,4 @@ class AllUserReviewsForProductSpider(Spider):
         if next_page is not None:
             parsed_response_url = urlparse(response.url)
             next_page_url = f'{parsed_response_url.scheme}://{parsed_response_url.netloc}{next_page}'
-            yield response.follow(next_page_url, callback=self.parse)
+            yield response.follow(next_page_url, callback=self.parse, cookies=response.headers.get('cookie'))

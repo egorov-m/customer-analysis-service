@@ -1,5 +1,7 @@
+import logging
 import re
 from datetime import datetime
+from urllib.parse import urlparse
 
 from scrapy import Spider, Request
 from scrapy.http import Response
@@ -49,3 +51,34 @@ class ReviewSpider(Spider):
         review['recommend_friends'] = response.css('table.product-props tr')[3].css('td.recommend-ratio ::text').get() == 'ДА'
 
         yield review
+
+
+class AllIdReviewForCustomerSpider(Spider):
+    name = 'all_id_review_for_customer'
+
+    def __init__(self, customer_name_id: str, name=None, **kwargs):
+        super().__init__(name, **kwargs)
+        self.start_urls = [f'https://otzovik.com/?search_text={customer_name_id}&us=1']
+        self.customer_name_id = customer_name_id
+
+    def start_requests(self):
+        url = self.start_urls[0]
+        yield Request(url, callback=self.parse)
+
+    def parse(self, response: Response, **kwargs):
+        self.log(response.url)
+        reviews_path = response.css('div.review-list-chunk div.item div.item-right div.review-bar a.review-read-link ::attr(href)')
+        for review_path in reviews_path:
+            href = review_path.get()
+            match = re.search(r'\d+', href)
+            if match:
+                review_id: int = int(match.group())
+                yield {"review_id": review_id}
+            else:
+                self.log('Error format review_id!', level=logging.ERROR)
+
+        next_page = response.css('div.pager a.next ::attr(href)').get()
+        if next_page is not None:
+            parsed_response_url = urlparse(response.url)
+            next_page_url = f'{parsed_response_url.scheme}://{parsed_response_url.netloc}{next_page}'
+            yield response.follow(next_page_url, callback=self.parse, cookies=response.headers.get('cookie'))
