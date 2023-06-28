@@ -19,10 +19,10 @@ class Review(Item):
     ru_category_3 = Field()
     ru_category_4 = Field()
 
-    en_category_1 = Field()
-    en_category_2 = Field()
-    en_category_3 = Field()
-    en_category_4 = Field()
+    href_category_1 = Field()
+    href_category_2 = Field()
+    href_category_3 = Field()
+    href_category_4 = Field()
 
     evaluated_product_name_id = Field()
 
@@ -57,6 +57,7 @@ class Product(Item):
     """
     name_id = Field()  # at the address line
     fullname = Field()
+    image_url = Field()
     description = Field()
 
 
@@ -68,6 +69,7 @@ class Customer(Item):
     reputation = Field()
     country = Field()
     city = Field()
+    profession = Field()
     reg_date = Field()
     count_subscribers = Field()
     # last_activity_date = Field()

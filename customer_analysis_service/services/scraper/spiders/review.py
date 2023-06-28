@@ -33,7 +33,7 @@ class ReviewSpider(Spider):
         review['id'] = r_id
         for i in range(1, count_category):
             review[f'ru_category_{i}'] = ru_categories_str[i].css('::text').get()
-            review[f'en_category_{i}'] = ru_categories_str[i].css('::attr(href)').get().split('/')[i]
+            review[f'href_category_{i}'] = ru_categories_str[i].css('::attr(href)').get()
 
         review['evaluated_product_name_id'] = response.css('a.product-name ::attr(href)').get().split('/')[2]
         review['customer_name_id'] = response.css('a.user-login span ::text').get().replace(' ', '+')

@@ -6,4 +6,5 @@ class Product(SQLModel, table=True):
 
     name_id: str = Field(nullable=False, primary_key=True, max_length=150)  # at the address line
     fullname: str = Field(nullable=False, max_length=200)
-    description: str = Field(nullable=False, max_length=2000)
+    image_url: str = Field(nullable=True, max_length=150)
+    description: str = Field(nullable=True, max_length=3000)

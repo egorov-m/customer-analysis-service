@@ -26,7 +26,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 RANDOMIZE_DOWNLOAD_DELAY = True
-DOWNLOAD_DELAY = 0.5
+DOWNLOAD_DELAY = 10
 #DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
@@ -46,17 +46,24 @@ DOWNLOAD_DELAY = 0.5
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    "scraper.middlewares.ScraperSpiderMiddleware": 543,
-#}
+SPIDER_MIDDLEWARES = {
+   "scrapy.spidermiddlewares.httperror.HttpErrorMiddleware": 100
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware": None,
-    "customer_analysis_service.services.scraper.middlewares.BaseFakeHttpHeadersMiddleware": 400
-   # "scraper.middlewares.ScraperDownloaderMiddleware": 543,
+    "customer_analysis_service.services.scraper.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
+
+    # "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
+    # "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
+    "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 700,  # 700
 }
+
+ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
+# ROTATING_PROXY_PAGE_RETRY_TIMES =
+# ROTATING_PROXY_CLOSE_SPIDER = True
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -85,11 +92,11 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
-#HTTPCACHE_DIR = "httpcache"
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
+HTTPCACHE_ENABLED = True
+# HTTPCACHE_EXPIRATION_SECS = 0
+# HTTPCACHE_DIR = "httpcache"
+HTTPCACHE_IGNORE_HTTP_CODES = [301, 302, 429, 507]
+HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.DbmCacheStorage"  # "scrapy.extensions.httpcache.FilesystemCacheStorage"
 
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"

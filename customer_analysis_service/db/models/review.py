@@ -15,10 +15,10 @@ class Review(SQLModel, table=True):
     ru_category_3: str = Field(nullable=True, max_length=100)
     ru_category_4: str = Field(nullable=True, max_length=100)
 
-    en_category_1: str = Field(nullable=False, max_length=100)
-    en_category_2: str = Field(nullable=False, max_length=100)
-    en_category_3: str = Field(nullable=True, max_length=100)
-    en_category_4: str = Field(nullable=True, max_length=100)
+    href_category_1: str = Field(nullable=False, max_length=100)
+    href_category_2: str = Field(nullable=False, max_length=100)
+    href_category_3: str = Field(nullable=True, max_length=100)
+    href_category_4: str = Field(nullable=True, max_length=100)
 
     evaluated_product_name_id: str = Field(nullable=False, max_length=150, foreign_key="product.name_id")
     customer_name_id: str = Field(nullable=False, max_length=100, foreign_key="customer.name_id")
