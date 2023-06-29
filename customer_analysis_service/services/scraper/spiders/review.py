@@ -1,12 +1,12 @@
 import logging
 import re
 from datetime import datetime
-from urllib.parse import urlparse
 
 from scrapy import Spider, Request
 from scrapy.http import Response
 
 from customer_analysis_service.services.scraper.items import Review
+from customer_analysis_service.services.scraper.spiders.utils.pagination import spider_pagination
 
 
 class ReviewSpider(Spider):
@@ -77,8 +77,5 @@ class AllIdReviewForCustomerSpider(Spider):
             else:
                 self.log('Error format review_id!', level=logging.ERROR)
 
-        next_page = response.css('div.pager a.next ::attr(href)').get()
-        if next_page is not None:
-            parsed_response_url = urlparse(response.url)
-            next_page_url = f'{parsed_response_url.scheme}://{parsed_response_url.netloc}{next_page}'
-            yield response.follow(next_page_url, callback=self.parse, cookies=response.headers.get('cookie'))
+        for item in spider_pagination(self, response):
+            yield item

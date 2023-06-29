@@ -1,12 +1,12 @@
 import re
 import logging
 from datetime import datetime
-from urllib.parse import urlparse
 
 from scrapy import Spider, Request
 from scrapy.http import Response
 
 from customer_analysis_service.services.scraper.items import Customer, InfoToFindAllCustomers
+from customer_analysis_service.services.scraper.spiders.utils.pagination import spider_pagination
 
 
 class CustomerSpider(Spider):
@@ -37,8 +37,10 @@ class CustomerSpider(Spider):
         table_1_dict = self._table_to_dict(table_1)
         table_2_dict = self._table_to_dict(table_2)
 
-        country = table_1_dict.get('Страна:')
-        city = table_1_dict.get('Город:')
+        country_str = table_1_dict.get('Страна:')
+        country = country_str if country_str is not None and country_str != '<Нет>' else None
+        city_str = table_1_dict.get('Город:')
+        city = city_str if city_str is not None and city_str != '<Нет>' else None
         profession = table_1_dict.get('Профессия:')
 
         reg_date_str: str = table_1_dict.get('Регистрация:')
@@ -62,8 +64,8 @@ class CustomerSpider(Spider):
         yield customer
 
 
-class AllUserReviewsForProductSpider(Spider):
-    name = 'all_user_reviews_for_product'
+class AllCustomersReviewsForProductSpider(Spider):
+    name = 'all_customers_reviews_for_product'
 
     def __init__(self, product_title_id: str, name=None, **kwargs):
         super().__init__(name, **kwargs)
@@ -98,8 +100,35 @@ class AllUserReviewsForProductSpider(Spider):
             else:
                 self.log('Error parse customer_name_id!', level=logging.ERROR)
 
-        next_page = response.css('div.pager a.next ::attr(href)').get()
-        if next_page is not None:
-            parsed_response_url = urlparse(response.url)
-            next_page_url = f'{parsed_response_url.scheme}://{parsed_response_url.netloc}{next_page}'
-            yield response.follow(next_page_url, callback=self.parse)
+        for item in spider_pagination(self, response):
+            yield item
+
+
+class CustomerIdCommentingOnReviewSpider(Spider):
+    name = 'customer_commenting_on_review'
+
+    def __init__(self, review_id: int, name=None, **kwargs):
+        super().__init__(name, **kwargs)
+        self.start_urls = [f'https://otzovik.com/review_{review_id}.html']
+
+    def start_requests(self):
+        url = self.start_urls[0]
+        yield Request(url, callback=self.parse)
+
+    def parse(self, response: Response, **kwargs):
+        self.log(response.url)
+
+        comment_treads = response.css('#comments-container div.comment-thread')
+        set_without_repetitions = set()
+        for comment_item in self.recursively_bypass_comments(comment_treads):
+            # customers can give multiple comments, only customers without repetition are needed
+            if comment_item not in set_without_repetitions:
+                set_without_repetitions.add(comment_item)
+                yield {'customer_name_id': comment_item}
+
+    def recursively_bypass_comments(self, comment_treads: list):
+        for comment_tread in comment_treads:
+            comment = comment_tread.css('div.comment')[0].css('div.comment-right')
+            yield comment.css('a ::text').get().replace(' ', '+')
+            comment_treads_child = comment_tread.css('div.comment-thread')
+            self.recursively_bypass_comments(comment_treads_child)
