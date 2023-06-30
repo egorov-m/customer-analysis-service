@@ -1,3 +1,4 @@
+import sqlalchemy as sa
 from sqlmodel import SQLModel, Field
 
 
@@ -8,3 +9,7 @@ class Product(SQLModel, table=True):
     fullname: str = Field(nullable=False, max_length=200)
     image_url: str = Field(nullable=True, max_length=150)
     description: str = Field(nullable=True, max_length=3000)
+
+    is_all_customers_information_available_for_product: bool = Field(sa_column=sa.Column(sa.Boolean,
+                                                                                         nullable=False,
+                                                                                         default=False))

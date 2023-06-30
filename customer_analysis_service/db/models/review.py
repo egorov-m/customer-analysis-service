@@ -31,3 +31,5 @@ class Review(SQLModel, table=True):
     general_impression: str = Field(nullable=True, max_length=200)
     star_rating: float = Field(sa_column=sa.Column(sa.Float, nullable=False))
     recommend_friends: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False))
+
+    is_all_commenting_customers_available: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False, default=False))

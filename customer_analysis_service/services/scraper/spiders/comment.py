@@ -4,7 +4,7 @@ from datetime import datetime
 from scrapy import Spider, Request
 from scrapy.http import Response
 
-from customer_analysis_service.services.scraper.items import Comment
+from customer_analysis_service.services.scraper.items import CommentItem
 from customer_analysis_service.services.scraper.spiders.utils.pagination import spider_pagination
 
 
@@ -26,7 +26,7 @@ class CommentsCustomerSpider(Spider):
         customer_comments = response.css('div.author-comments')
         r_links = customer_comments.css('div.rlink')
         comment_treads = customer_comments.css('div.comment-thread')
-        comment = Comment()
+        comment = CommentItem()
         comment['customer_name_id'] = self.customer_name_id
 
         for r_link, comment_tread in zip(r_links, comment_treads):

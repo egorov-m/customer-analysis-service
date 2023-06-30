@@ -5,7 +5,7 @@ from datetime import datetime
 from scrapy import Spider, Request
 from scrapy.http import Response
 
-from customer_analysis_service.services.scraper.items import Customer, InfoToFindAllCustomers
+from customer_analysis_service.services.scraper.items import CustomerItem, InfoToFindAllCustomers
 from customer_analysis_service.services.scraper.spiders.utils.pagination import spider_pagination
 
 
@@ -51,7 +51,7 @@ class CustomerSpider(Spider):
         reg_date = datetime.strptime(reg_date_str, '%d %m %Y').date()
         count_subscribers = int(table_2_dict.get('Подписчиков:'))
 
-        customer = Customer()
+        customer = CustomerItem()
         customer['name_id'] = name_id
         customer['reputation'] = reputation
         customer['country'] = country
@@ -96,9 +96,9 @@ class AllCustomersReviewsForProductSpider(Spider):
                     else:
                         self.log('Error format review_id!', level=logging.ERROR)
                 else:
-                    self.log('Error parse review_id!', level=logging.ERROR)
+                    self.log('Error parse_products review_id!', level=logging.ERROR)
             else:
-                self.log('Error parse customer_name_id!', level=logging.ERROR)
+                self.log('Error parse_products customer_name_id!', level=logging.ERROR)
 
         for item in spider_pagination(self, response):
             yield item

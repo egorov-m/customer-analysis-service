@@ -42,7 +42,7 @@ DEFAULT_REQUEST_COOKIES = {
 }
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
@@ -92,9 +92,10 @@ ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    "scraper.pipelines.ScraperPipeline": 300,
-# }
+ITEM_PIPELINES = {
+    "customer_analysis_service.services.scraper.pipelines.clean.CleanTextPipeline": 300,
+    "customer_analysis_service.services.scraper.pipelines.db.DbPostgresProductPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -114,7 +115,14 @@ ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
 HTTPCACHE_ENABLED = True
 # HTTPCACHE_EXPIRATION_SECS = 0
 # HTTPCACHE_DIR = "httpcache"
-HTTPCACHE_IGNORE_HTTP_CODES = [301, 302, 429, 507]
+HTTPCACHE_IGNORE_HTTP_CODES = [100, 101, 102, 103, 201, 202, 203, 204, 205, 206,
+                               207, 208, 226, 300, 301, 302, 303, 304, 305, 306,
+                               307, 308, 400, 401, 402, 403, 404, 405, 406, 407,
+                               408, 409, 410, 411, 412, 413, 414, 415, 416, 417,
+                               418, 421, 422, 423, 424, 426, 428, 429, 431, 451,
+                               499, 500, 501, 502, 503, 504, 505, 506, 507, 508,
+                               510, 511]
+# [301, 302, 429, 499, 507]
 HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.DbmCacheStorage"  # "scrapy.extensions.httpcache.FilesystemCacheStorage"
 
 # Set settings whose default value is deprecated to a future-proof value

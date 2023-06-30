@@ -40,7 +40,7 @@ class Review(Item):
     recommend_friends = Field()
 
 
-class Comment(Item):
+class CommentItem(Item):
     """
     The information is supposed to be taken from the page with all comments user
     example url: https://otzovik.com/?author_comments={user}
@@ -51,7 +51,7 @@ class Comment(Item):
     text_comment = Field()
 
 
-class Product(Item):
+class ProductItem(Item):
     """
     example url: https://otzovik.com/reviews/{title_id}/info/
     """
@@ -61,7 +61,7 @@ class Product(Item):
     description = Field()
 
 
-class Customer(Item):
+class CustomerItem(Item):
     """
     example url: https://otzovik.com/profile/{name_id}
     """

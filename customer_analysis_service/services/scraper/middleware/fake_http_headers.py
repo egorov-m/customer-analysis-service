@@ -1,11 +1,8 @@
 from random import randint
 
-from scrapy import signals
 from scrapy.http.headers import Headers
 from fake_useragent import FakeUserAgent
 
-# useful for handling different item types with a single interface
-# from itemadapter import is_item, ItemAdapter
 
 fake_user_agent: FakeUserAgent = FakeUserAgent(browsers=["chrome", "edge", "firefox", "safari", "opera"])
 fake_accept_header = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
