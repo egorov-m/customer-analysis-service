@@ -5,7 +5,7 @@ from customer_analysis_service.services.scraper.items import ProductItem
 
 class ProductParser:
     @staticmethod
-    def extract_product_info(selector: Selector):
+    def extract_product_info(selector: Selector) -> ProductItem:
         fullname = selector.css('a.product-name span ::text').get()
         image_url = f'https:{selector.css("div.product-photo img ::attr(src)").get()}'
         product_info = selector.css('div.product-info')
@@ -26,4 +26,4 @@ class ProductParser:
         product['image_url'] = image_url
         product['description'] = description
 
-        yield product
+        return product

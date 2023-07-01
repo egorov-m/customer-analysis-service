@@ -1,11 +1,6 @@
 from scrapy.item import Item, Field
 
 
-class InfoToFindAllCustomers(Item):
-    customer_name_id = Field()
-    review_id = Field()
-
-
 class Review(Item):
     """
     Information from the full review page

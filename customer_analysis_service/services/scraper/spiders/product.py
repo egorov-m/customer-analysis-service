@@ -6,8 +6,7 @@ from customer_analysis_service.services.scraper.spiders.utils.pagination import 
 
 
 def parse_product(response: Response):
-    for item in ProductParser.extract_product_info(Selector(response)):
-        yield item
+    return ProductParser.extract_product_info(Selector(response))
 
 
 class ProductSpider(Spider):
@@ -42,9 +41,9 @@ class ProductSpider(Spider):
             yield Request(url, callback=self.parse_categories)
         else:
             # other categories - list of products
-            yield Request(url, callback=self.parse_products)
+            yield Request(url, callback=self.parse)
 
-    def parse_products(self, response: Response):
+    def parse(self, response: Response, **kwargs):
         self.log(response.url)
         product_list = response.css('div.product-list table tr.item td div.product-photo a ::attr(href)')
         for product in product_list:
@@ -57,4 +56,4 @@ class ProductSpider(Spider):
         self.log(response.url)
         categories = response.css('div.sitemap ul li.section ul li h3 a')
         for category in categories:
-            yield Request(f'https://otzovik.com{category.css("::attr(href)").get()}', callback=self.parse_products)
+            yield Request(f'https://otzovik.com{category.css("::attr(href)").get()}', callback=self.parse)
