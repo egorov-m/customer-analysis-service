@@ -7,7 +7,7 @@ class Product(SQLModel, table=True):
 
     name_id: str = Field(nullable=False, primary_key=True, max_length=150)  # at the address line
     fullname: str = Field(nullable=False, max_length=200)
-    image_url: str = Field(nullable=True, max_length=150)
+    image_url: str = Field(nullable=True, max_length=200)
     description: str = Field(nullable=True, max_length=3000)
 
     is_all_customers_information_available_for_product: bool = Field(sa_column=sa.Column(sa.Boolean,

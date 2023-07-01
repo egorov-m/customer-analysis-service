@@ -1,7 +1,7 @@
 from scrapy.item import Item, Field
 
 
-class Review(Item):
+class ReviewItem(Item):
     """
     Information from the full review page
     example url: https://otzovik.com/review_{id}.html
@@ -29,7 +29,6 @@ class Review(Item):
     advantages = Field()
     disadvantages = Field()
     text_review = Field()
-    year_service = Field()
     general_impression = Field()
     star_rating = Field()
     recommend_friends = Field()

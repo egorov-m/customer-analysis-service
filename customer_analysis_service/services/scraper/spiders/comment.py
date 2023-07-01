@@ -9,10 +9,10 @@ from customer_analysis_service.services.scraper.spiders.utils.pagination import 
 
 
 class CommentsCustomerSpider(Spider):
-    name = 'comments_customer'
+    name = 'comments_customer_spider'
 
-    def __init__(self, customer_name_id: int, name=None, **kwargs):
-        super().__init__(name, **kwargs)
+    def __init__(self, customer_name_id: int, **kwargs):
+        super().__init__(**kwargs)
         self.start_urls = [f'https://otzovik.com/?author_comments={customer_name_id}']
         self.customer_name_id = customer_name_id
 
