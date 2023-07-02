@@ -14,7 +14,12 @@ class ReviewRepository:
         self.session.commit()
 
     def get_review(self, review_id: int) -> Review:
-        return self.session.execute(select(Review).where(Review.id == review_id))
+        return self.session.exec(select(Review).where(Review.id == review_id))
 
     def get_all_reviews(self) -> list[Review]:
-        return self.session.execute(select(Review))
+        return self.session.exec(select(Review))
+
+    def update_state_all_commenting_customers_available(self, review: Review, new_state: bool):
+        review.is_all_commenting_customers_available = new_state
+        self.session.add(review)
+        self.session.commit()

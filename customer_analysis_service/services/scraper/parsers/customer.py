@@ -41,8 +41,8 @@ class CustomerParser:
         customer = CustomerItem()
         customer['name_id'] = name_id
         customer['reputation'] = reputation
-        customer['country'] = country
-        customer['city'] = city
+        customer['country_ru'] = country
+        customer['city_ru'] = city
         customer['profession'] = profession
         customer['reg_date'] = reg_date
         customer['count_subscribers'] = count_subscribers

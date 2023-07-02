@@ -44,7 +44,6 @@ class ProductSpider(Spider):
             yield Request(url, callback=self.parse)
 
     def parse(self, response: Response, **kwargs):
-        self.log(response.url)
         product_list = response.css('div.product-list table tr.item td div.product-photo a ::attr(href)')
         for product in product_list:
             yield Request(f'https://otzovik.com/reviews/{product.get().split("/")[2]}/info/', callback=parse_product)

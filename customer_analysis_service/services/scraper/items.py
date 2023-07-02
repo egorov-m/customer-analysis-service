@@ -61,8 +61,10 @@ class CustomerItem(Item):
     """
     name_id = Field()
     reputation = Field()
-    country = Field()
-    city = Field()
+    country_ru = Field()
+    country_en = Field()
+    city_ru = Field()
+    city_en = Field()
     profession = Field()
     reg_date = Field()
     count_subscribers = Field()

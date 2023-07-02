@@ -15,17 +15,16 @@ def parse_review(response: Response):
 class ReviewsCustomerSpider(Spider):
     name = 'reviews_customer_spider'
 
-    def __init__(self, customer_name_id: str, **kwargs):
+    def __init__(self, customer_name_ids: list[str], **kwargs):
         super().__init__(**kwargs)
-        self.start_urls = [f'https://otzovik.com/?search_text={customer_name_id}&us=1']
-        self.customer_name_id = customer_name_id
+        self.start_urls = [f'https://otzovik.com/?search_text={customer_name_id}&us=1' for customer_name_id in customer_name_ids]
+        customer_name_ids.clear()
 
     def start_requests(self):
-        url = self.start_urls[0]
-        yield Request(url, callback=self.parse)
+        for url in self.start_urls:
+            yield Request(url, callback=self.parse)
 
     def parse(self, response: Response, **kwargs):
-        self.log(response.url)
         reviews_path = response.css(
             'div.review-list-chunk div.item div.item-right div.review-bar a.review-read-link ::attr(href)')
         for review_path in reviews_path:

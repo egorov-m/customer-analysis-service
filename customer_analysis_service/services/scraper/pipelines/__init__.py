@@ -1,1 +1,3 @@
-from .db import DbPostgresProductPipeline
+from .clean import CleanTextPipeline
+from .db import DbPostgresPipeline
+from .translate import TranslateCustomerGeoLocationPipeline

@@ -26,3 +26,6 @@ venv.bak/
 *.db
 
 .scrapy/
+
+cas_db_data/
+cas_db_log/

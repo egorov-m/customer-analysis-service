@@ -11,23 +11,21 @@ from customer_analysis_service.services.scraper.spiders.utils.pagination import 
 class CommentsCustomerSpider(Spider):
     name = 'comments_customer_spider'
 
-    def __init__(self, customer_name_id: int, **kwargs):
+    def __init__(self, customer_name_ids: list[int], **kwargs):
         super().__init__(**kwargs)
-        self.start_urls = [f'https://otzovik.com/?author_comments={customer_name_id}']
-        self.customer_name_id = customer_name_id
+        self.start_urls = [f'https://otzovik.com/?author_comments={customer_name_id}' for customer_name_id in customer_name_ids]
+        customer_name_ids.clear()
 
     def start_requests(self):
-        url = self.start_urls[0]
-        yield Request(url, callback=self.parse)
+        for url in self.start_urls:
+            yield Request(url, callback=self.parse)
 
     def parse(self, response: Response, **kwargs):
-        self.log(response.url)
-
         customer_comments = response.css('div.author-comments')
         r_links = customer_comments.css('div.rlink')
         comment_treads = customer_comments.css('div.comment-thread')
         comment = CommentItem()
-        comment['customer_name_id'] = self.customer_name_id
+        comment['customer_name_id'] = comment_treads.css('div.comment div.comment-right a.user-login ::text').get()
 
         for r_link, comment_tread in zip(r_links, comment_treads):
             review_id_href: str = r_link.css('a ::attr(href)').get()

@@ -23,6 +23,7 @@ class Review(SQLModel, table=True):
     evaluated_product_name_id: str = Field(nullable=False, max_length=200, foreign_key="product.name_id")
     customer_name_id: str = Field(nullable=False, max_length=100, foreign_key="customer.name_id")
     count_user_recommend_review: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
+    count_comments_review: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
     date_review: date = Field(sa_column=sa.Column(sa.Date(), nullable=False))
     advantages: str = Field(nullable=True, max_length=200)
     disadvantages: str = Field(nullable=True, max_length=200)

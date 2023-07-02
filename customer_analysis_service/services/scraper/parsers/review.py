@@ -37,7 +37,7 @@ class ReviewParser:
         t_body = selector.css('table.product-props tbody')[1].css('tr')
         params_dict = {item.css('td ::text')[0].get(): item.css('td')[1] for item in t_body}
 
-        review['general_impression'] = params_dict.get('Общее впечатление:').css('i ::text')
+        review['general_impression'] = params_dict.get('Общее впечатление:').css('i ::text').get()
         review['star_rating'] = float(params_dict.get('Моя оценка:')
                                       .css('div.product-rating ::attr(title)').get().split(': ')[1])
         review['recommend_friends'] = params_dict.get('Рекомендую друзьям:').css('::text').get() == 'ДА'

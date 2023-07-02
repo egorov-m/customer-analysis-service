@@ -66,7 +66,8 @@ DOWNLOAD_DELAY = 10
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-   "scrapy.spidermiddlewares.httperror.HttpErrorMiddleware": 100
+    "scrapy.spidermiddlewares.httperror.HttpErrorMiddleware": 100,
+    "scrapy.spidermiddlewares.referer.RefererMiddleware": True
 }
 
 # Enable or disable downloader middlewares
@@ -75,8 +76,8 @@ DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware": None,
     # "customer_analysis_service.services.scraper.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
 
-    # "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
-    # "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
+    "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
+    "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
     "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 700,  # 700
 }
 
@@ -93,8 +94,10 @@ ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
+    "customer_analysis_service.services.scraper.main.ItemCollectorPipeline": 300,
     "customer_analysis_service.services.scraper.pipelines.clean.CleanTextPipeline": 300,
-    "customer_analysis_service.services.scraper.pipelines.db.DbPostgresProductPipeline": 300,
+    "customer_analysis_service.services.scraper.pipelines.translate.TranslateCustomerGeoLocationPipeline": 300,
+    "customer_analysis_service.services.scraper.pipelines.db.DbPostgresPipeline": 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

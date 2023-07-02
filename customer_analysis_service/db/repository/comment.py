@@ -16,7 +16,7 @@ class CommentRepository:
         self.session.commit()
 
     def get_comment_by_id(self, comment_id: str) -> Comment:
-        return self.session.execute(select(Comment).where(Comment.id == comment_id))
+        return self.session.exec(select(Comment).where(Comment.id == comment_id))
 
     def get_comment(self, customer_name_id: str, review_id: int, reg_datetime: datetime) -> Comment:
         """
@@ -28,9 +28,9 @@ class CommentRepository:
         :param reg_datetime:
         :return:
         """
-        return self.session.execute(select(Comment).where(Comment.customer_name_id == customer_name_id)
-                                    .where(Comment.review_id == review_id)
-                                    .where(Comment.reg_datetime == reg_datetime))
+        return self.session.exec(select(Comment).where(Comment.customer_name_id == customer_name_id)
+                                 .where(Comment.review_id == review_id)
+                                 .where(Comment.reg_datetime == reg_datetime))
 
     def get_all_comments(self) -> list[Comment]:
-        return self.session.execute(select(Comment))
+        return self.session.exec(select(Comment))
