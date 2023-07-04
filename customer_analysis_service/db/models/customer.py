@@ -9,7 +9,7 @@ from sqlmodel import SQLModel, Field
 class Customer(SQLModel, table=True):
     __tablename__ = "customer"
 
-    name_id: str = Field(nullable=False, primary_key=True, max_length=100)
+    name_id: str = Field(nullable=False, primary_key=True, max_length=150)
     reputation: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
     country_ru: str = Field(nullable=True, max_length=100)
     country_en: str = Field(nullable=True, max_length=100)

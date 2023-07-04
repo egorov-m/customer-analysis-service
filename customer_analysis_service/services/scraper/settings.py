@@ -41,20 +41,22 @@ DEFAULT_REQUEST_COOKIES = {
    'csid': '...'  # optional
 }
 
+# LOG_LEVEL = 'INFO'
+
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 5
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 RANDOMIZE_DOWNLOAD_DELAY = True
-DOWNLOAD_DELAY = 10
+DOWNLOAD_DELAY = 6
 # DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
-# CONCURRENT_REQUESTS_PER_DOMAIN = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 4
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
@@ -95,9 +97,10 @@ ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "customer_analysis_service.services.scraper.main.ItemCollectorPipeline": 300,
-    "customer_analysis_service.services.scraper.pipelines.clean.CleanTextPipeline": 300,
-    "customer_analysis_service.services.scraper.pipelines.translate.TranslateCustomerGeoLocationPipeline": 300,
-    "customer_analysis_service.services.scraper.pipelines.db.DbPostgresPipeline": 300,
+    "customer_analysis_service.services.scraper.pipelines.clean.CleanTextPipeline": 301,
+    "customer_analysis_service.services.scraper.pipelines.truncate.TruncateTextPipeline": 302,
+    "customer_analysis_service.services.scraper.pipelines.translate.TranslateCustomerGeoLocationPipeline": 303,
+    "customer_analysis_service.services.scraper.pipelines.db.DbPostgresPipeline": 304,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

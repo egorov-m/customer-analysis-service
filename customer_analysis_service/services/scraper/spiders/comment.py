@@ -5,6 +5,7 @@ from scrapy import Spider, Request
 from scrapy.http import Response
 
 from customer_analysis_service.services.scraper.items import CommentItem
+from customer_analysis_service.services.scraper.spiders.review import parse_review
 from customer_analysis_service.services.scraper.spiders.utils.pagination import spider_pagination
 
 
@@ -14,7 +15,6 @@ class CommentsCustomerSpider(Spider):
     def __init__(self, customer_name_ids: list[int], **kwargs):
         super().__init__(**kwargs)
         self.start_urls = [f'https://otzovik.com/?author_comments={customer_name_id}' for customer_name_id in customer_name_ids]
-        customer_name_ids.clear()
 
     def start_requests(self):
         for url in self.start_urls:
@@ -32,7 +32,11 @@ class CommentsCustomerSpider(Spider):
             if review_id_href is None:
                 # Review is temporarily unavailable on the site, do not take it into account
                 break
-            comment['review_id'] = re.search(r'review_(\d+)', review_id_href).group(1)
+            review_id = re.search(r'review_(\d+)', review_id_href).group(1)
+            yield Request(f'https://otzovik.com/review_{review_id}.html', callback=parse_review)
+            # all customer comments may contain reviews that are not yet in the database
+
+            comment['review_id'] = review_id
             comment_block = comment_tread.css('div.comment')[0].css('div.comment-right')
             comment['reg_datetime'] = datetime.strptime(comment_block.css('div.comment-postdate ::text').get(), '%d.%m.%Y %H:%M:%S')
             comment['text_comment'] = comment_block.css('div.comment-body ::text').getall()

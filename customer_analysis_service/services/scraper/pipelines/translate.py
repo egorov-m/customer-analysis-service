@@ -8,15 +8,23 @@ from customer_analysis_service.services.scraper.items import CustomerItem
 
 class TranslateCustomerGeoLocationPipeline(object):
     @staticmethod
-    @lru_cache()
     def process_item(item: Item, spider: Spider):
         if isinstance(item, CustomerItem):
             item: CustomerItem
             country = item['country_ru']
             if country is not None:
-                item['country_en'] = translate_text(country, to_language='en')
+                item['country_en'] = TranslateCustomerGeoLocationPipeline.translate_item_field(country)
+            else:
+                item['country_en'] = None
             city = item['city_ru']
             if city is not None:
-                item['city_en'] = translate_text(city, to_language='en')
+                item['city_en'] = TranslateCustomerGeoLocationPipeline.translate_item_field(city)
+            else:
+                item['city_en'] = None
 
         return item
+
+    @staticmethod
+    @lru_cache()
+    def translate_item_field(text: str):
+        return translate_text(text, to_language='en')

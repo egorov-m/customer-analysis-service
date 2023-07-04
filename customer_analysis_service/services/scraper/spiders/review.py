@@ -9,7 +9,8 @@ from customer_analysis_service.services.scraper.spiders.utils.pagination import 
 
 
 def parse_review(response: Response):
-    return ReviewParser.extract_review_content_data(Selector(response))
+    for item in ReviewParser.extract_review_content_data(Selector(response)):
+        yield item
 
 
 class ReviewsCustomerSpider(Spider):
@@ -18,7 +19,6 @@ class ReviewsCustomerSpider(Spider):
     def __init__(self, customer_name_ids: list[str], **kwargs):
         super().__init__(**kwargs)
         self.start_urls = [f'https://otzovik.com/?search_text={customer_name_id}&us=1' for customer_name_id in customer_name_ids]
-        customer_name_ids.clear()
 
     def start_requests(self):
         for url in self.start_urls:

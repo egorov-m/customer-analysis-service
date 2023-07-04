@@ -17,7 +17,7 @@ class ProductRepository:
         return self.session.exec(select(Product).where(Product.name_id == name_id)).first()
 
     def get_all_products(self) -> list[Product]:
-        return self.session.exec(select(Product))
+        return self.session.exec(select(Product)).all()
 
     def update_state_all_customers_information_available_for_product(self, product: Product, new_state: bool):
         product.is_all_customers_information_available_for_product = new_state

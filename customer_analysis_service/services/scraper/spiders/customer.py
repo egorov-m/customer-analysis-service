@@ -23,7 +23,6 @@ class CustomerSpider(Spider):
     def __init__(self, product_name_ids: list[str], **kwargs):
         super().__init__(**kwargs)
         self.start_urls = [f'https://otzovik.com/reviews/{product_name_id}/' for product_name_id in product_name_ids]
-        product_name_ids.clear()
 
     def start_requests(self):
         for url in self.start_urls:

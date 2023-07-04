@@ -2,14 +2,16 @@ import re
 from datetime import datetime
 from urllib.parse import unquote
 
-from scrapy import Selector
+from scrapy import Selector, Request
 
 from customer_analysis_service.services.scraper.items import ReviewItem
+from customer_analysis_service.services.scraper.spiders.customer import parse_customer
+from customer_analysis_service.services.scraper.spiders.product import parse_product
 
 
 class ReviewParser:
     @staticmethod
-    def extract_review_content_data(selector: Selector) -> ReviewItem:
+    def extract_review_content_data(selector: Selector):
         r_href: str = selector.css('a.review-comments ::attr(href)').get()
         match = re.search(r'\d+', r_href)
         r_id: int = int(match.group())
@@ -22,9 +24,22 @@ class ReviewParser:
         for i in range(1, count_category):
             review[f'ru_category_{i}'] = ru_categories_str[i].css('::text').get()
             review[f'href_category_{i}'] = unquote(ru_categories_str[i].css('::attr(href)').get())
+        if count_category < 5:
+            review[f'ru_category_{4}'] = None
+            review[f'href_category_{4}'] = None
 
-        review['evaluated_product_name_id'] = selector.css('a.product-name ::attr(href)').get().split('/')[2]
-        review['customer_name_id'] = selector.css('a.user-login span ::text').get().replace(' ', '+')
+        evaluated_product_name_id = selector.css('a.product-name ::attr(href)').get().split('/')[2]
+        yield Request(f'https://otzovik.com/reviews/{evaluated_product_name_id}/info/', callback=parse_product)
+        # all customer reviews may contain products that are not yet in the database
+
+        review['evaluated_product_name_id'] = evaluated_product_name_id
+
+        customer_name_id = selector.css('a.user-login span ::text').get().replace(' ', '+')
+        yield Request(f'https://otzovik.com/profile/{customer_name_id}', callback=parse_customer)
+        # the review may be a customer that has not yet been added to the database
+
+        review['customer_name_id'] = customer_name_id
+
         review['count_user_recommend_review'] = int(
             selector.xpath('//span[@class="review-btn review-yes"]/text()').get())
         review['count_comments_review'] = int(selector.css('a.review-comments ::text').get())
@@ -32,7 +47,8 @@ class ReviewParser:
                                                   '%d.%m.%Y').date()
         review['advantages'] = selector.css('div.review-plus ::text').get()
         review['disadvantages'] = selector.css('div.review-minus ::text').get()
-        review['text_review'] = re.sub(r'<.*?>', '', selector.css('div.review-body').get())
+        review['text_review'] = re.sub(r'<.*?>', '', selector.css('div.review-body').get())\
+            .replace('(adsbygoogle = window.adsbygoogle || []).push({});', '')
 
         t_body = selector.css('table.product-props tbody')[1].css('tr')
         params_dict = {item.css('td ::text')[0].get(): item.css('td')[1] for item in t_body}
@@ -42,4 +58,4 @@ class ReviewParser:
                                       .css('div.product-rating ::attr(title)').get().split(': ')[1])
         review['recommend_friends'] = params_dict.get('Рекомендую друзьям:').css('::text').get() == 'ДА'
 
-        return review
+        yield review

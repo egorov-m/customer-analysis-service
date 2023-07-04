@@ -14,10 +14,10 @@ class CustomerRepository:
         self.session.commit()
 
     def get_customer(self, name_id: str) -> Customer:
-        return self.session.exec(select(Customer).where(Customer.name_id == name_id))
+        return self.session.exec(select(Customer).where(Customer.name_id == name_id)).first()
 
     def get_all_customers(self) -> list[Customer]:
-        return self.session.exec(select(Customer))
+        return self.session.exec(select(Customer)).all()
 
     def update_state_all_comments_available(self, customer: Customer, new_state: bool):
         customer.is_all_comments_available = new_state
