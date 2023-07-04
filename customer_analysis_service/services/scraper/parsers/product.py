@@ -1,11 +1,18 @@
+from scrapy.http import Response
 from scrapy.selector import Selector
 
 from customer_analysis_service.services.scraper.items import ProductItem
+from customer_analysis_service.services.scraper.spiders.utils.error import handle_http_errors
 
 
 class ProductParser:
-    @staticmethod
-    def extract_product_info(selector: Selector) -> ProductItem:
+    @classmethod
+    @handle_http_errors
+    def parse_product(cls, response: Response, **kwargs):
+        return ProductParser.extract_product_info(Selector(response))
+
+    @classmethod
+    def extract_product_info(cls, selector: Selector) -> ProductItem:
         fullname = selector.css('a.product-name span ::text').get()
         image_url = f'https:{selector.css("div.product-photo img ::attr(src)").get()}'
         product_info = selector.css('div.product-info')

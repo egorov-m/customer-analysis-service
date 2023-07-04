@@ -1,12 +1,9 @@
-from scrapy import Spider, Request, Selector
+from scrapy import Spider, Request
 from scrapy.http import Response
 
-from customer_analysis_service.services.scraper.parsers.product import ProductParser
+from customer_analysis_service.services.scraper.parsers import ProductParser
+from customer_analysis_service.services.scraper.spiders.utils.error import handle_http_errors
 from customer_analysis_service.services.scraper.spiders.utils.pagination import spider_pagination
-
-
-def parse_product(response: Response):
-    return ProductParser.extract_product_info(Selector(response))
 
 
 class ProductSpider(Spider):
@@ -32,6 +29,7 @@ class ProductSpider(Spider):
         super().__init__(**kwargs)
         self.start_urls = [f'https://otzovik.com{href_product_path}']
         self.href_category = href_product_path
+        self.handle_httpstatus_list = [507]
 
     def start_requests(self):
         url = self.start_urls[0]
@@ -43,15 +41,17 @@ class ProductSpider(Spider):
             # other categories - list of products
             yield Request(url, callback=self.parse)
 
+    @handle_http_errors
     def parse(self, response: Response, **kwargs):
         product_list = response.css('div.product-list table tr.item td div.product-photo a ::attr(href)')
         for product in product_list:
-            yield Request(f'https://otzovik.com/reviews/{product.get().split("/")[2]}/info/', callback=parse_product)
+            yield Request(f'https://otzovik.com/reviews/{product.get().split("/")[2]}/info/', callback=ProductParser.parse_product)
 
         for item in spider_pagination(self, response):
             yield item
 
-    def parse_categories(self, response: Response):
+    @handle_http_errors
+    def parse_categories(self, response: Response, **kwargs):
         self.log(response.url)
         categories = response.css('div.sitemap ul li.section ul li h3 a')
         for category in categories:

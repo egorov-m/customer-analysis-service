@@ -5,7 +5,8 @@ from scrapy import Spider, Request
 from scrapy.http import Response
 
 from customer_analysis_service.services.scraper.items import CommentItem
-from customer_analysis_service.services.scraper.spiders.review import parse_review
+from customer_analysis_service.services.scraper.parsers import ReviewParser
+from customer_analysis_service.services.scraper.spiders.utils.error import handle_http_errors
 from customer_analysis_service.services.scraper.spiders.utils.pagination import spider_pagination
 
 
@@ -15,11 +16,13 @@ class CommentsCustomerSpider(Spider):
     def __init__(self, customer_name_ids: list[int], **kwargs):
         super().__init__(**kwargs)
         self.start_urls = [f'https://otzovik.com/?author_comments={customer_name_id}' for customer_name_id in customer_name_ids]
+        self.handle_httpstatus_list = [507]
 
     def start_requests(self):
         for url in self.start_urls:
             yield Request(url, callback=self.parse)
 
+    @handle_http_errors
     def parse(self, response: Response, **kwargs):
         customer_comments = response.css('div.author-comments')
         r_links = customer_comments.css('div.rlink')
@@ -33,7 +36,7 @@ class CommentsCustomerSpider(Spider):
                 # Review is temporarily unavailable on the site, do not take it into account
                 break
             review_id = re.search(r'review_(\d+)', review_id_href).group(1)
-            yield Request(f'https://otzovik.com/review_{review_id}.html', callback=parse_review)
+            yield Request(f'https://otzovik.com/review_{review_id}.html', callback=ReviewParser.parse_review)
             # all customer comments may contain reviews that are not yet in the database
 
             comment['review_id'] = review_id

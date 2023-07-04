@@ -3,15 +3,22 @@ from datetime import datetime
 from urllib.parse import unquote
 
 from scrapy import Selector, Request
+from scrapy.http import Response
 
 from customer_analysis_service.services.scraper.items import ReviewItem
-from customer_analysis_service.services.scraper.spiders.customer import parse_customer
-from customer_analysis_service.services.scraper.spiders.product import parse_product
+from customer_analysis_service.services.scraper.parsers import ProductParser, CustomerParser
+from customer_analysis_service.services.scraper.spiders.utils.error import handle_http_errors
 
 
 class ReviewParser:
-    @staticmethod
-    def extract_review_content_data(selector: Selector):
+    @classmethod
+    @handle_http_errors
+    def parse_review(cls, response: Response, **kwargs):
+        for item in ReviewParser.extract_review_content_data(Selector(response)):
+            yield item
+
+    @classmethod
+    def extract_review_content_data(cls, selector: Selector):
         r_href: str = selector.css('a.review-comments ::attr(href)').get()
         match = re.search(r'\d+', r_href)
         r_id: int = int(match.group())
@@ -29,13 +36,13 @@ class ReviewParser:
             review[f'href_category_{4}'] = None
 
         evaluated_product_name_id = selector.css('a.product-name ::attr(href)').get().split('/')[2]
-        yield Request(f'https://otzovik.com/reviews/{evaluated_product_name_id}/info/', callback=parse_product)
+        yield Request(f'https://otzovik.com/reviews/{evaluated_product_name_id}/info/', callback=ProductParser.parse_product)
         # all customer reviews may contain products that are not yet in the database
 
         review['evaluated_product_name_id'] = evaluated_product_name_id
 
         customer_name_id = selector.css('a.user-login span ::text').get().replace(' ', '+')
-        yield Request(f'https://otzovik.com/profile/{customer_name_id}', callback=parse_customer)
+        yield Request(f'https://otzovik.com/profile/{customer_name_id}', callback=CustomerParser.parse_customer)
         # the review may be a customer that has not yet been added to the database
 
         review['customer_name_id'] = customer_name_id

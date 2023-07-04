@@ -1,12 +1,13 @@
 from random import randint
 
+from scrapy import Request
 from scrapy.http.headers import Headers
 from fake_useragent import FakeUserAgent
 
 
 fake_user_agent: FakeUserAgent = FakeUserAgent(browsers=["chrome", "edge", "firefox", "safari", "opera"])
 fake_accept_header = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
-fake_accept_language = "ru-RU,ru;q=0.5"
+fake_accept_language = "en-US;q=0.5"
 fake_accept_encoding = "gzip, deflate, bz"
 fake_upgrade_insecure_requests = "1"
 fake_cache_control = "no-cache"
@@ -44,7 +45,8 @@ class BaseFakeHttpHeadersMiddleware:
     def _get_headers_list(self, http_header_referer: str, size: int = 10):
         self.headers_list = [_get_headers(http_header_referer) for _ in range(size)]
 
-    def process_request(self, request, spider):
+    def process_request(self, request: Request, spider):
         random_index = randint(0, len(self.headers_list) - 1)
         random_browser_header = self.headers_list[random_index]
+        random_browser_header['Referer'] = request.headers.get('Referer')
         request.headers = random_browser_header

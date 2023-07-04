@@ -1,17 +1,24 @@
 from datetime import datetime
 
+from scrapy.http import Response
 from scrapy.selector import Selector
 
 from customer_analysis_service.services.scraper.items import CustomerItem
+from customer_analysis_service.services.scraper.spiders.utils.error import handle_http_errors
 
 
 class CustomerParser:
-    @staticmethod
-    def _table_to_dict(table):
+    @classmethod
+    @handle_http_errors
+    def parse_customer(cls, response: Response, **kwargs):
+        return CustomerParser.extract_customer_profile_data(Selector(response))
+
+    @classmethod
+    def _table_to_dict(cls,table):
         return {item.css('td')[0].css('::text').get(): item.css('td')[1].css('::text').get() for item in table}
 
-    @staticmethod
-    def extract_customer_profile_data(selector: Selector) -> CustomerItem:
+    @classmethod
+    def extract_customer_profile_data(cls, selector: Selector) -> CustomerItem:
         name_id = selector.css('div.content-left h1.login ::text').get().replace(' ', '+')
         reputation = int(
             selector.css('div.content div.content-left div.glory-box div.karma div[class^="karma"] ::text').get())
@@ -19,8 +26,8 @@ class CustomerParser:
 
         table_1 = selector.css(f'{table_selectors} table.table_1 tr')
         table_2 = selector.css(f'{table_selectors} table.table_2 tr')
-        table_1_dict = CustomerParser._table_to_dict(table_1)
-        table_2_dict = CustomerParser._table_to_dict(table_2)
+        table_1_dict = cls._table_to_dict(table_1)
+        table_2_dict = cls._table_to_dict(table_2)
 
         country_str = table_1_dict.get('Страна:')
         country = country_str if country_str is not None and country_str != '<Нет>' else None

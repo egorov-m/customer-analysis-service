@@ -2,15 +2,11 @@ import re
 import logging
 
 from scrapy import Spider, Request
-from scrapy.selector import Selector
 from scrapy.http import Response
 
-from customer_analysis_service.services.scraper.parsers.customer import CustomerParser
+from customer_analysis_service.services.scraper.parsers import CustomerParser
+from customer_analysis_service.services.scraper.spiders.utils.error import handle_http_errors
 from customer_analysis_service.services.scraper.spiders.utils.pagination import spider_pagination
-
-
-def parse_customer(response: Response):
-    return CustomerParser.extract_customer_profile_data(Selector(response))
 
 
 class CustomerSpider(Spider):
@@ -23,11 +19,13 @@ class CustomerSpider(Spider):
     def __init__(self, product_name_ids: list[str], **kwargs):
         super().__init__(**kwargs)
         self.start_urls = [f'https://otzovik.com/reviews/{product_name_id}/' for product_name_id in product_name_ids]
+        self.handle_httpstatus_list = [507]
 
     def start_requests(self):
         for url in self.start_urls:
             yield Request(url, callback=self.parse)
 
+    @handle_http_errors
     def parse(self, response: Response, **kwargs):
         reviews = response.css('div.review-list-chunk div.item')
         set_reviewing_customer_without_repetitions = set()
@@ -39,7 +37,7 @@ class CustomerSpider(Spider):
             if customer_name_id is not None and customer_name_id is not set_reviewing_customer_without_repetitions:
                 set_reviewing_customer_without_repetitions.add(customer_name_id)
                 customer_name_id = customer_name_id.replace(' ', '+')
-                yield Request(f'https://otzovik.com/profile/{customer_name_id}', callback=parse_customer)
+                yield Request(f'https://otzovik.com/profile/{customer_name_id}', callback=CustomerParser.parse_customer)
 
                 if review_path is not None:
                     match = re.search(r'\d+', review_path)
@@ -56,14 +54,15 @@ class CustomerSpider(Spider):
         for item in spider_pagination(self, response):
             yield item
 
-    def parse_commenting_customers(self, response: Response):
+    @handle_http_errors
+    def parse_commenting_customers(self, response: Response, **kwargs):
         comment_treads = response.css('#comments-container div.comment-thread')
         set_without_repetitions = set()
         for customer_name_id in self.recursively_bypass_comments(comment_treads):
             # customers can give multiple comments, only customers without repetition are needed
             if customer_name_id not in set_without_repetitions:
                 set_without_repetitions.add(customer_name_id)
-                yield Request(f'https://otzovik.com/profile/{customer_name_id}', callback=parse_customer)
+                yield Request(f'https://otzovik.com/profile/{customer_name_id}', callback=CustomerParser.parse_customer)
 
     def recursively_bypass_comments(self, comment_treads: list):
         for comment_tread in comment_treads:

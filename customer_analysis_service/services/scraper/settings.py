@@ -13,7 +13,7 @@ SPIDER_MODULES = ["customer_analysis_service.services.scraper.spiders"]
 NEWSPIDER_MODULE = "customer_analysis_service.services.scraper.spiders"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
@@ -53,10 +53,9 @@ CONCURRENT_REQUESTS = 5
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 RANDOMIZE_DOWNLOAD_DELAY = True
-DOWNLOAD_DELAY = 6
-# DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
-CONCURRENT_REQUESTS_PER_DOMAIN = 4
+CONCURRENT_REQUESTS_PER_DOMAIN = 5
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
@@ -76,7 +75,7 @@ SPIDER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware": None,
-    # "customer_analysis_service.services.scraper.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
+    "customer_analysis_service.services.scraper.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
 
     "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
     "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
