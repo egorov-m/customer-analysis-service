@@ -20,6 +20,11 @@ translators = "^5.7.8"
 alembic = "^1.11.1"
 
 
+[tool.poetry.group.dev.dependencies]
+notebook = "^6.5.4"
+plotly = "^5.15.0"
+pandas = "^2.0.3"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

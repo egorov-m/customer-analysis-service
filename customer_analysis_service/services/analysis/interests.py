@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.sql.functions import count
 
-from customer_analysis_service.db.models import Review, Comment
+from customer_analysis_service.db.models import Review, Comment, Product
 from customer_analysis_service.services.analysis.base import BaseServices
 from customer_analysis_service.services.analysis.enums import ProductCategory
 
@@ -89,7 +89,7 @@ class InterestAnalysisServices(BaseServices):
         p = [field_ru_1, field_href_1,
              field_ru_2, field_href_2,
              field_ru_3, field_href_3,
-             field_ru_4, field_href_4]
+             field_ru_4, field_href_4, Product.fullname]
 
         with self.database.session as session:
             subquery = select(Review.customer_name_id).distinct().where(
@@ -100,6 +100,7 @@ class InterestAnalysisServices(BaseServices):
                     *p,
                     count(Review.customer_name_id)
                 )
+                .join(Product, Review.evaluated_product_name_id == Product.name_id)
                 .where(
                     field_ru_3.isnot(None), field_href_3.isnot(None),
                     field_ru_4.isnot(None), field_href_4.isnot(None),
@@ -137,6 +138,7 @@ class InterestAnalysisServices(BaseServices):
                     field_href,
                     count(Comment.customer_name_id)
                 )
+                .join(Review, Comment.review_id == Review.id)
                 .where(
                     *where_r
                 )
@@ -157,21 +159,23 @@ class InterestAnalysisServices(BaseServices):
         p = [field_ru_1, field_href_1,
              field_ru_2, field_href_2,
              field_ru_3, field_href_3,
-             field_ru_4, field_href_4]
+             field_ru_4, field_href_4, Product.fullname]
 
         with self.database.session as session:
-            subquery = select(Comment.customer_name_id).distinct().distinct().join(Review, Comment.review_id == Review.id)\
+            subquery = select(Comment.customer_name_id).distinct().join(Review, Comment.review_id == Review.id)\
                 .where(Review.evaluated_product_name_id == product_name_id)
 
             query = (
                 select(
                     *p,
-                    count(Review.customer_name_id)
+                    count(Comment.customer_name_id)
                 )
+                .join(Review, Comment.review_id == Review.id)
+                .join(Product, Review.evaluated_product_name_id == Product.name_id)
                 .where(
                     field_ru_3.isnot(None), field_href_3.isnot(None),
                     field_ru_4.isnot(None), field_href_4.isnot(None),
-                    Review.customer_name_id.in_(subquery),
+                    Comment.customer_name_id.in_(subquery),
                 )
                 .group_by(*p)
             )

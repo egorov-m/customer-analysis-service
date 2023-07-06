@@ -43,7 +43,7 @@ class DbPostgresPipeline(DbPostgresBasePipline):
 
     @staticmethod
     def item_to_model(item: Item, model_obj: SQLModel) -> SQLModel:
-        for field in item.fields:
+        for field in {key for key, value in item.items() if value is not None}:
             model_obj.__setattr__(field, item[field])
 
     def process_item(self, item: Item, spider: Spider):
