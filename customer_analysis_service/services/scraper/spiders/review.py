@@ -12,9 +12,9 @@ from customer_analysis_service.services.scraper.spiders.utils.pagination import 
 class ReviewsCustomerSpider(Spider):
     name = 'reviews_customer_spider'
 
-    def __init__(self, customer_name_ids: list[str], **kwargs):
+    def __init__(self, customer_name_ids: str, **kwargs):
         super().__init__(**kwargs)
-        self.start_urls = [f'https://otzovik.com/?search_text={customer_name_id}&us=1' for customer_name_id in customer_name_ids]
+        self.start_urls = [f'https://otzovik.com/?search_text={customer_name_id}&us=1' for customer_name_id in customer_name_ids.split(' ')]
         self.handle_httpstatus_list = [507]
 
     def start_requests(self):

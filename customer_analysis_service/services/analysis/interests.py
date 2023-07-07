@@ -2,12 +2,12 @@ from sqlalchemy import select
 from sqlalchemy.sql.functions import count
 
 from customer_analysis_service.db.models import Review, Comment, Product
-from customer_analysis_service.services.analysis.base import BaseServices
+from customer_analysis_service.services.analysis.base import BaseService
 from customer_analysis_service.services.analysis.enums import ProductCategory
 
 
-class InterestAnalysisServices(BaseServices):
-    def get_group_customers_interest_for_one_category_on_reviews(self, product_name_id: str,
+class InterestAnalysisService(BaseService):
+    def get_group_customers_interest_for_one_category_by_reviews(self, product_name_id: str,
                                                                  category_number: ProductCategory | int,
                                                                  is_category_above_same_product: bool = False) -> list:
         """
@@ -24,8 +24,8 @@ class InterestAnalysisServices(BaseServices):
         :param is_category_above_same_product: whether the category above (the digit less (1 to 4)) will be the same as that of the specified product
         :return:
         """
-        field_ru = InterestAnalysisServices._get_field_category_ru(category_number)
-        field_href = InterestAnalysisServices._get_field_category_href(category_number)
+        field_ru = InterestAnalysisService._get_field_category_ru(category_number)
+        field_href = InterestAnalysisService._get_field_category_href(category_number)
 
         with self.database.session as session:
             subquery = select(Review.customer_name_id).distinct().where(
@@ -39,7 +39,7 @@ class InterestAnalysisServices(BaseServices):
             if is_category_above_same_product and 1 < category_number < 5:
                 # the level above category must match
                 # for example: category 4 - teapots of a particular company, category above 3 - teapots
-                above_category = InterestAnalysisServices._get_field_category_href(category_number - 1)
+                above_category = InterestAnalysisService._get_field_category_href(category_number - 1)
                 subquery_reviews_on_product = select(above_category).where(Review.evaluated_product_name_id == product_name_id)
                 where_r.append(above_category.in_(subquery_reviews_on_product))
 
@@ -57,7 +57,7 @@ class InterestAnalysisServices(BaseServices):
 
             return session.exec(query).all()
 
-    def get_group_customers_interest_for_all_categories_on_reviews(self, product_name_id: str) -> list:
+    def get_group_customers_interest_for_all_categories_by_reviews(self, product_name_id: str) -> list:
         """
         SELECT ru_category_1, href_category_1,
                ru_category_2, href_category_2,
@@ -78,14 +78,14 @@ class InterestAnalysisServices(BaseServices):
         :return:
         """
 
-        field_ru_1 = InterestAnalysisServices._get_field_category_ru(1)
-        field_href_1 = InterestAnalysisServices._get_field_category_href(1)
-        field_ru_2 = InterestAnalysisServices._get_field_category_ru(2)
-        field_href_2 = InterestAnalysisServices._get_field_category_href(2)
-        field_ru_3 = InterestAnalysisServices._get_field_category_ru(3)
-        field_href_3 = InterestAnalysisServices._get_field_category_href(3)
-        field_ru_4 = InterestAnalysisServices._get_field_category_ru(4)
-        field_href_4 = InterestAnalysisServices._get_field_category_href(4)
+        field_ru_1 = InterestAnalysisService._get_field_category_ru(1)
+        field_href_1 = InterestAnalysisService._get_field_category_href(1)
+        field_ru_2 = InterestAnalysisService._get_field_category_ru(2)
+        field_href_2 = InterestAnalysisService._get_field_category_href(2)
+        field_ru_3 = InterestAnalysisService._get_field_category_ru(3)
+        field_href_3 = InterestAnalysisService._get_field_category_href(3)
+        field_ru_4 = InterestAnalysisService._get_field_category_ru(4)
+        field_href_4 = InterestAnalysisService._get_field_category_href(4)
         p = [field_ru_1, field_href_1,
              field_ru_2, field_href_2,
              field_ru_3, field_href_3,
@@ -111,11 +111,11 @@ class InterestAnalysisServices(BaseServices):
 
             return session.exec(query).all()
 
-    def get_group_customers_interest_for_one_category_on_comments(self, product_name_id: str,
+    def get_group_customers_interest_for_one_category_by_comments(self, product_name_id: str,
                                                                   category_number: ProductCategory | int,
                                                                   is_category_above_same_product: bool = False) -> list:
-        field_ru = InterestAnalysisServices._get_field_category_ru(category_number)
-        field_href = InterestAnalysisServices._get_field_category_href(category_number)
+        field_ru = InterestAnalysisService._get_field_category_ru(category_number)
+        field_href = InterestAnalysisService._get_field_category_href(category_number)
         with self.database.session as session:
             subquery = select(Comment.customer_name_id).distinct().join(Review, Comment.review_id == Review.id)\
                 .where(Review.evaluated_product_name_id == product_name_id)
@@ -127,7 +127,7 @@ class InterestAnalysisServices(BaseServices):
             if is_category_above_same_product and 1 < category_number < 5:
                 # the level above category must match
                 # for example: category 4 - teapots of a particular company, category above 3 - teapots
-                above_category = InterestAnalysisServices._get_field_category_href(category_number - 1)
+                above_category = InterestAnalysisService._get_field_category_href(category_number - 1)
                 subquery_reviews_on_product = select(above_category).where(
                     Review.evaluated_product_name_id == product_name_id)
                 where_r.append(above_category.in_(subquery_reviews_on_product))
@@ -147,15 +147,15 @@ class InterestAnalysisServices(BaseServices):
 
             return session.exec(query).all()
 
-    def get_group_customers_interest_for_all_categories_on_comments(self, product_name_id: str) -> list:
-        field_ru_1 = InterestAnalysisServices._get_field_category_ru(1)
-        field_href_1 = InterestAnalysisServices._get_field_category_href(1)
-        field_ru_2 = InterestAnalysisServices._get_field_category_ru(2)
-        field_href_2 = InterestAnalysisServices._get_field_category_href(2)
-        field_ru_3 = InterestAnalysisServices._get_field_category_ru(3)
-        field_href_3 = InterestAnalysisServices._get_field_category_href(3)
-        field_ru_4 = InterestAnalysisServices._get_field_category_ru(4)
-        field_href_4 = InterestAnalysisServices._get_field_category_href(4)
+    def get_group_customers_interest_for_all_categories_by_comments(self, product_name_id: str) -> list:
+        field_ru_1 = InterestAnalysisService._get_field_category_ru(1)
+        field_href_1 = InterestAnalysisService._get_field_category_href(1)
+        field_ru_2 = InterestAnalysisService._get_field_category_ru(2)
+        field_href_2 = InterestAnalysisService._get_field_category_href(2)
+        field_ru_3 = InterestAnalysisService._get_field_category_ru(3)
+        field_href_3 = InterestAnalysisService._get_field_category_href(3)
+        field_ru_4 = InterestAnalysisService._get_field_category_ru(4)
+        field_href_4 = InterestAnalysisService._get_field_category_href(4)
         p = [field_ru_1, field_href_1,
              field_ru_2, field_href_2,
              field_ru_3, field_href_3,

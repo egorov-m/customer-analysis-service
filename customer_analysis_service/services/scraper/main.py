@@ -1,99 +1,99 @@
+import json
 import logging as log
+import subprocess
 
 from scrapy import Spider, Item
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-from twisted.internet.defer import Deferred
+from typing import Type
 
-from customer_analysis_service.db.database import Database
-from customer_analysis_service.services.scraper.items import ProductItem
+from customer_analysis_service.services.scraper.items import ProductItem, CustomerItem
 from customer_analysis_service.services.scraper.spiders.product import ProductSpider
 from customer_analysis_service.services.scraper.spiders.customer import CustomerSpider
 from customer_analysis_service.services.scraper.spiders.review import ReviewsCustomerSpider
 from customer_analysis_service.services.scraper.spiders.comment import CommentsCustomerSpider
 
 
-items = []
+BUFFER_FILE_PATH: str = './.scrapy/buffer.json'
 
 
-class ItemCollectorPipeline(object):
-    def __init__(self):
-        self.seen = set()
+def _start_sub_process_spider(spider_cls: Type[Spider], **kwargs):
+    cmd = ["scrapy", "crawl", spider_cls.name]
+    for key, value in kwargs.items():
+        if isinstance(value, list):
+            cmd.append("-a")
+            cmd.append(f"{key}={' '.join(str(x) for x in value)}")
+        else:
+            cmd.append("-a")
+            cmd.append(f"{key}='{value}'")
+    cmd.append("-o")
+    cmd.append(BUFFER_FILE_PATH)
 
-    @staticmethod
-    def process_item(item: Item, spider: Spider):
-        items.append(item)
-        return item
+    subprocess.run(cmd)
+
+
+def _extract_from_buffer() -> list[Item]:
+    with open(BUFFER_FILE_PATH, 'r+', encoding='utf-8') as json_file:
+        data = json_file.read()
+        data = json.loads(data)
+        json_file.truncate(0)
+
+    return data
 
 
 class ScraperService:
     logger = log.getLogger('scraper_service_logger')
 
-    def __init__(self, database: Database, crawler_process: CrawlerProcess | None = None):
-        self.crawler_process: CrawlerProcess = crawler_process or CrawlerProcess(get_project_settings())
-        self.database = database
-
-    def get_products_from_search_page(self, search_input: str) -> list[ProductItem]:
+    @classmethod
+    def get_products_from_search_page(cls, search_input: str, max_count_items: int = 5) -> list[ProductItem]:
         href_search_path: str = f'/?search_text={search_input}'
-        self.logger.info('The search for products by search query begins!')
-        deferred: Deferred = self.crawler_process.crawl(ProductSpider, href_product_path=href_search_path)
-        found_items = []
-        deferred.addCallback(lambda _: self.move_items(found_items))
-        self.crawler_process.start()
-        self.logger.info('Products found!')
-        items.clear()
-        return found_items
+        cls.logger.info('The search for products by search query begins!')
+
+        _start_sub_process_spider(ProductSpider,
+                                  href_product_path=href_search_path,
+                                  max_count_items=max_count_items)
+
+        cls.logger.info('Products found!')
+
+        return _extract_from_buffer()
 
     @classmethod
-    def move_items(cls, found_items: list[Item]):
-        for item in items:
-            found_items.append(item)
-        items.clear()
+    def start_scraping_for_product(cls, product_name_id: str):
+        cls.logger.info(f'The parsing of the product has started: {product_name_id}!')
 
-        return found_items
+        _start_sub_process_spider(CustomerSpider, product_name_ids=[product_name_id])
 
-    def start_scraping_for_product(self, product_name_id: str):
-        self.logger.info(f'The parsing of the product has started: {product_name_id}!')
-        deferred_customers: Deferred = self.crawler_process.crawl(CustomerSpider, product_name_ids=[product_name_id])
-        found_items = []
-        deferred_reviews: Deferred = deferred_customers.addCallback(
-            lambda _: self.crawler_process.crawl(ReviewsCustomerSpider, customer_name_ids={item['name_id'] for item in self.move_items(found_items)}))
+        customers: list[CustomerItem] = _extract_from_buffer()
 
-        deferred_comments: Deferred = deferred_reviews.addCallback(
-            lambda _: self.crawler_process.crawl(CommentsCustomerSpider, customer_name_ids={item['name_id'] for item in found_items}))
+        _start_sub_process_spider(ReviewsCustomerSpider, customer_name_ids=[item['name_id'] for item in customers])
 
-        deferred_comments.addCallback(lambda _: self._set_state_data_readiness())
+        _start_sub_process_spider(CommentsCustomerSpider, customer_name_ids=[item['name_id'] for item in customers])
 
-        self.crawler_process.start()
-        self.logger.info(f'Product parsing: {product_name_id} completed!')
-        items.clear()
+        cls.logger.info(f'Product parsing: {product_name_id} completed!')
 
-    def start_scraping_for_category(self, href_product_path: str):
-        self.logger.info(f'Starting scraping for a category: {href_product_path}')
-        deferred_products: Deferred = self.crawler_process.crawl(ProductSpider, href_product_path=href_product_path)
-        found_items = []
-        deferred_customers: Deferred = deferred_products.addCallback(
-            lambda _: self.crawler_process.crawl(CustomerSpider, product_name_ids={item['name_id'] for item in self.move_items(found_items)}))
+    @classmethod
+    def start_scraping_for_category(cls, href_product_path: str):
+        cls.logger.info(f'Starting scraping for a category: {href_product_path}')
 
-        deferred_reviews: Deferred = deferred_customers.addCallback(
-            lambda _: self.crawler_process.crawl(ReviewsCustomerSpider, customer_name_ids={item['name_id'] for item in self.move_items(found_items)}))
+        _start_sub_process_spider(ProductSpider, href_product_path=href_product_path)
 
-        deferred_comments: Deferred = deferred_reviews.addCallback(
-            lambda _: self.crawler_process.crawl(CommentsCustomerSpider, customer_name_ids={item['name_id'] for item in found_items}))
+        products: list[ProductItem] = _extract_from_buffer()
 
-        deferred_comments.addCallback(lambda _: self._set_state_data_readiness())
+        _start_sub_process_spider(CustomerSpider, product_name_ids=[item['name_id'] for item in products])
 
-        self.crawler_process.start()
-        self.logger.info(f'Category parsing: {href_product_path} completed!')
-        items.clear()
+        customers: list[CustomerItem] = _extract_from_buffer()
 
-    def _set_state_data_readiness(self):
-        self.logger.info('Starting check state data!')
-        for customer in self.database.customer.get_all_customers():
-            self.database.customer.update_state_all_comments_available(customer, True)
-            self.database.customer.update_state_all_reviews_available(customer, True)
-        for product in self.database.product.get_all_products():
-            self.database.product.update_state_all_customers_information_available_for_product(product, True)
-        for review in self.database.review.get_all_reviews():
-            self.database.review.update_state_all_commenting_customers_available(review, True)
-        self.logger.info('Scraping check state data completed!')
+        _start_sub_process_spider(ReviewsCustomerSpider, customer_name_ids=[item['name_id'] for item in customers])
+
+        _start_sub_process_spider(CommentsCustomerSpider, customer_name_ids=[item['name_id'] for item in customers])
+
+        cls.logger.info(f'Category parsing: {href_product_path} completed!')
+
+    # def _set_state_data_readiness(self):
+    #     self.logger.info('Starting check state data!')
+    #     for customer in self.database.customer.get_all_customers():
+    #         self.database.customer.update_state_all_comments_available(customer, True)
+    #         self.database.customer.update_state_all_reviews_available(customer, True)
+    #     for product in self.database.product.get_all_products():
+    #         self.database.product.update_state_all_customers_information_available_for_product(product, True)
+    #     for review in self.database.review.get_all_reviews():
+    #         self.database.review.update_state_all_commenting_customers_available(review, True)
+    #     self.logger.info('Scraping check state data completed!')

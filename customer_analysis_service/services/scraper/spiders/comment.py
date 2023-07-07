@@ -13,9 +13,9 @@ from customer_analysis_service.services.scraper.spiders.utils.pagination import 
 class CommentsCustomerSpider(Spider):
     name = 'comments_customer_spider'
 
-    def __init__(self, customer_name_ids: list[int], **kwargs):
+    def __init__(self, customer_name_ids: str, **kwargs):
         super().__init__(**kwargs)
-        self.start_urls = [f'https://otzovik.com/?author_comments={customer_name_id}' for customer_name_id in customer_name_ids]
+        self.start_urls = [f'https://otzovik.com/?author_comments={customer_name_id}' for customer_name_id in customer_name_ids.split(' ')]
         self.handle_httpstatus_list = [507]
 
     def start_requests(self):

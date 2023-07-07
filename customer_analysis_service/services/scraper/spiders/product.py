@@ -13,7 +13,7 @@ class ProductSpider(Spider):
     """
     name = 'product_spider'
 
-    def __init__(self, href_product_path: str, **kwargs):
+    def __init__(self, href_product_path: str, max_count_items: int = 5, **kwargs):
         """
         :param href_product_path:
                format example:
@@ -30,6 +30,8 @@ class ProductSpider(Spider):
         self.start_urls = [f'https://otzovik.com{href_product_path}']
         self.href_category = href_product_path
         self.handle_httpstatus_list = [507]
+        self.max_count_items = max_count_items
+        self.count_items = 0
 
     def start_requests(self):
         url = self.start_urls[0]
@@ -45,7 +47,10 @@ class ProductSpider(Spider):
     def parse(self, response: Response, **kwargs):
         product_list = response.css('div.product-list table tr.item td div.product-photo a ::attr(href)')
         for product in product_list:
+            if self.max_count_items is not None and self.count_items >= self.max_count_items:
+                return
             yield Request(f'https://otzovik.com/reviews/{product.get().split("/")[2]}/info/', callback=ProductParser.parse_product)
+            self.count_items += 1
 
         for item in spider_pagination(self, response):
             yield item

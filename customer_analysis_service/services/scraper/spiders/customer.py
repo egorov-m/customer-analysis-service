@@ -16,9 +16,9 @@ class CustomerSpider(Spider):
     """
     name = 'customer_spider'
 
-    def __init__(self, product_name_ids: list[str], **kwargs):
+    def __init__(self, product_name_ids: str, **kwargs):
         super().__init__(**kwargs)
-        self.start_urls = [f'https://otzovik.com/reviews/{product_name_id}/' for product_name_id in product_name_ids]
+        self.start_urls = [f'https://otzovik.com/reviews/{product_name_id}/' for product_name_id in product_name_ids.split(' ')]
         self.handle_httpstatus_list = [507]
 
     def start_requests(self):
