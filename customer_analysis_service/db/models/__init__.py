@@ -1,4 +1,4 @@
-from .comment import Comment
-from .customer import Customer, CustomerGeneralAnalysis
+from .comment import Comment, CommentSentimentAnalysis
+from .customer import Customer, CustomerGeneralAnalysis, RegionalLocation
 from .product import Product
-from .review import Review
+from .review import Review, ReviewSentimentAnalysis

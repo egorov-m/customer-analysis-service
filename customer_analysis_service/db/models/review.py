@@ -1,6 +1,8 @@
-from datetime import date
+from datetime import datetime, date
+from uuid import UUID, uuid4
 
 import sqlalchemy as sa
+import sqlalchemy.dialects.postgresql as pg
 from sqlmodel import SQLModel, Field
 
 
@@ -33,3 +35,21 @@ class Review(SQLModel, table=True):
     recommend_friends: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False))
 
     is_all_commenting_customers_available: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False, default=False))
+
+
+class ReviewSentimentAnalysis(SQLModel, table=True):
+    __tablename__ = "review_sentiment_analysis"
+
+    id: UUID = Field(
+        sa_column=sa.Column(
+            pg.UUID(as_uuid=True), primary_key=True, default=uuid4, server_default=sa.text("gen_random_uuid()")
+        )
+    )
+    version_mark: str = Field(nullable=False, max_length=5)
+    datetime_formation: datetime = Field(
+        sa_column=sa.Column(
+            sa.DateTime(), nullable=False, server_default=sa.func.current_timestamp()
+        )
+    )
+    review_id: str = Field(sa_column=sa.Column(sa.Integer, nullable=False), foreign_key="review.id")
+    sentiment_value: float = Field(sa_column=sa.Column(sa.Float, nullable=False))

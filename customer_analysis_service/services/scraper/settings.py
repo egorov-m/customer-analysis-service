@@ -53,7 +53,7 @@ CONCURRENT_REQUESTS = 5
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 RANDOMIZE_DOWNLOAD_DELAY = True
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 7
 # The download delay setting will honor only one of:
 CONCURRENT_REQUESTS_PER_DOMAIN = 5
 # CONCURRENT_REQUESTS_PER_IP = 16
@@ -77,8 +77,8 @@ DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware": None,
     "customer_analysis_service.services.scraper.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
 
-    "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
-    "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
+    # "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
+    # "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
     "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 700,  # 700
 }
 
@@ -95,7 +95,6 @@ ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "customer_analysis_service.services.scraper.main.ItemCollectorPipeline": 300,
     "customer_analysis_service.services.scraper.pipelines.clean.CleanTextPipeline": 301,
     "customer_analysis_service.services.scraper.pipelines.truncate.TruncateTextPipeline": 302,
     "customer_analysis_service.services.scraper.pipelines.translate.TranslateCustomerGeoLocationPipeline": 303,

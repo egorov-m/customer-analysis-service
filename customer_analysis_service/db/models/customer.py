@@ -25,6 +25,18 @@ class Customer(SQLModel, table=True):
     is_all_reviews_available: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False, default=False))
 
 
+class RegionalLocation(SQLModel, table=True):
+    __tablename__ = "regional_location"
+
+    id: int = Field(sa_column=sa.Column(sa.Integer, primary_key=True, autoincrement=True))
+    country_ru: str = Field(nullable=True, max_length=100)
+    country_en: str = Field(nullable=True, max_length=100)
+    city_ru: str = Field(nullable=True, max_length=100)
+    city_en: str = Field(nullable=True, max_length=100)
+    latitude: float = Field(sa_column=sa.Column(sa.Float, nullable=False))
+    longitude: float = Field(sa_column=sa.Column(sa.Float, nullable=False))
+
+
 class CustomerGeneralAnalysis(SQLModel, table=True):
     __tablename__ = "customer_general_analysis"
 

@@ -31,10 +31,13 @@ def _start_sub_process_spider(spider_cls: Type[Spider], **kwargs):
 
 
 def _extract_from_buffer() -> list[Item]:
-    with open(BUFFER_FILE_PATH, 'r+', encoding='utf-8') as json_file:
-        data = json_file.read()
-        data = json.loads(data)
-        json_file.truncate(0)
+    try:
+        with open(BUFFER_FILE_PATH, 'r+', encoding='utf-8') as json_file:
+            data = json_file.read()
+            data = json.loads(data)
+            json_file.truncate(0)
+    except Exception:
+        pass
 
     return data
 
