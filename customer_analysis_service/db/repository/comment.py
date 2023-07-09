@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlmodel import select, Session
 
+from customer_analysis_service.db.models import Review
 from customer_analysis_service.db.models.comment import Comment, CommentSentimentAnalysis
 
 
@@ -21,6 +22,9 @@ class CommentRepository:
 
     def get_comment_by_id(self, comment_id: str) -> Comment:
         return self.session.exec(select(Comment).where(Comment.id == comment_id)).first()
+
+    def get_all_comments_for_customer(self, customer_name_id: str) -> list[Comment]:
+        return self.session.exec(select(Comment).where(Comment.customer_name_id == customer_name_id)).all()
 
     def get_comment(self, customer_name_id: str, review_id: int, reg_datetime: datetime) -> Comment:
         """
@@ -42,6 +46,10 @@ class CommentRepository:
             query.where(CommentSentimentAnalysis.version_mark == version_mark)
 
         return self.session.exec(query).all()
+
+    def get_all_comments_for_product(self, product_name_id: str) -> list[Comment]:
+        return self.session.exec(select(Comment).join(Review, Comment.review_id == Review.id)
+                                 .where(Review.evaluated_product_name_id == product_name_id))
 
     def get_comments_sentiment_analysis_by_version_mark(self, version_mark: str) -> list[CommentSentimentAnalysis]:
         return self.session.exec(select(CommentSentimentAnalysis)

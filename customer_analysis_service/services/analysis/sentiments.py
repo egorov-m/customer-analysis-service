@@ -22,24 +22,6 @@ class SentimentAnalysisService(BaseService):
         self.model = AutoModelForSequenceClassification.from_pretrained("blanchefort/rubert-base-cased-sentiment", return_dict=True)
         self.logger.info('SentimentAnalysisService initialized.')
 
-    def get_all_reviews_each_customer_product(self, product_name_id: str):
-        with self.database.session as session:
-            customers = session.exec(select(Review.customer_name_id).distinct()
-                                     .where(Review.evaluated_product_name_id == product_name_id)).all()
-
-            for customer in customers:
-                review_texts = session.exec(select(Review.text_review).where(Review.customer_name_id == customer)).all()
-                yield {customer: review_texts}
-
-    def get_all_comments_each_customer_product(self, product_name_id: str):
-        with self.database.session as session:
-            customers = session.exec(select(Comment.customer_name_id).distinct().join(Review, Comment.review_id == Review.id)
-                                     .where(Review.evaluated_product_name_id == product_name_id)).all()
-
-            for customer in customers:
-                comment_texts = session.exec(select(Comment.text_comment).where(Comment.customer_name_id == customer)).all()
-                yield {customer: comment_texts}
-
     @torch.no_grad()
     def _get_sentiment_analysis_texts(self, text: str) -> float:
         """
@@ -104,10 +86,10 @@ class SentimentAnalysisService(BaseService):
 
         for comment in comments:
             comments_sentiment_analysis: list[CommentSentimentAnalysis] = self.database.comment.get_comments_sentiment_analysis_by_comment_id(comment.id, version_mark)
-            sentiment_value: float = self._get_sentiment_analysis_texts(comment.text_comment)
             if len(comments_sentiment_analysis) > 0:
                 comment_sentiment_analysis: CommentSentimentAnalysis = comments_sentiment_analysis[0]
                 if is_override:
+                    sentiment_value: float = self._get_sentiment_analysis_texts(comment.text_comment)
                     self.database.comment.update_sentiment_value_review_sentiment_analysis(comment_sentiment_analysis, sentiment_value)
                     self.logger.info(f'[{count}] Comment {comment.id} updated: {sentiment_value}')
                 else:
@@ -115,12 +97,13 @@ class SentimentAnalysisService(BaseService):
 
                 count += 1
             else:
+                sentiment_value: float = self._get_sentiment_analysis_texts(comment.text_comment)
                 comment_sentiment_analysis: CommentSentimentAnalysis = CommentSentimentAnalysis()
                 comment_sentiment_analysis.comment_id = comment.id
                 comment_sentiment_analysis.version_mark = version_mark
                 comment_sentiment_analysis.sentiment_value = sentiment_value
                 self.database.comment.add_comment_sentiment_analysis(comment_sentiment_analysis)
-                self.logger.info(f'[{count}] Sentiment analysis added: {comment.id}: {sentiment_value}.')
+                self.logger.info(f'[{count}] Sentiment analysis added comment: {comment.id}: {sentiment_value}.')
                 count += 1
 
         self.logger.info('Sentiment analysis of all comments is complete.')

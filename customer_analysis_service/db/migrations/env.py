@@ -20,9 +20,9 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Model / Schema imports
-from customer_analysis_service.db.models.customer import Customer, CustomerGeneralAnalysis, RegionalLocation
+from customer_analysis_service.db.models.customer import Customer, CustomerSimilarityAnalysis, RegionalLocation
 from customer_analysis_service.db.models.review import Review, ReviewSentimentAnalysis
-from customer_analysis_service.db.models.product import Product
+from customer_analysis_service.db.models.product import Product, ProductSimilarityAnalysis
 from customer_analysis_service.db.models.comment import Comment, CommentSentimentAnalysis
 
 target_metadata = SQLModel.metadata

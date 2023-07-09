@@ -41,6 +41,12 @@ class ReviewRepository:
     def get_all_reviews(self) -> list[Review]:
         return self.session.exec(select(Review)).all()
 
+    def get_all_reviews_for_product(self, product_name_id: str) -> list[Review]:
+        return self.session.exec(select(Review).where(Review.evaluated_product_name_id == product_name_id)).all()
+
+    def get_all_reviews_for_customer(self, customer_name_id: str) -> list[Review]:
+        return self.session.exec(select(Review).where(Review.customer_name_id == customer_name_id)).all()
+
     def update_state_all_commenting_customers_available(self, review: Review, new_state: bool):
         review.is_all_commenting_customers_available = new_state
         self.session.add(review)

@@ -37,8 +37,8 @@ class RegionalLocation(SQLModel, table=True):
     longitude: float = Field(sa_column=sa.Column(sa.Float, nullable=False))
 
 
-class CustomerGeneralAnalysis(SQLModel, table=True):
-    __tablename__ = "customer_general_analysis"
+class CustomerSimilarityAnalysis(SQLModel, table=True):
+    __tablename__ = "customer_similarity_analysis"
 
     id: UUID = Field(
         sa_column=sa.Column(
@@ -47,25 +47,10 @@ class CustomerGeneralAnalysis(SQLModel, table=True):
     )
     customer_name_id: str = Field(nullable=False, max_length=100, foreign_key="customer.name_id")
     version_mark: str = Field(nullable=False, max_length=5)
+    similarity_reviews_value: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
+    similarity_comments_value: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
     datetime_formation: datetime = Field(
         sa_column=sa.Column(
             sa.DateTime(), nullable=False, server_default=sa.func.current_timestamp()
         )
     )
-    count_all_comments: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
-    count_all_reviews: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
-
-    sentiment_all_comments_analysis_positive: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    sentiment_all_comments_analysis_negative: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    sentiment_all_comments_analysis_neutral: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    sentiment_all_comments_analysis_skip: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    sentiment_all_comments_analysis_speech: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-
-    sentiment_all_reviews_analysis_positive: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    sentiment_all_reviews_analysis_negative: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    sentiment_all_reviews_analysis_neutral: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    sentiment_all_reviews_analysis_skip: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    sentiment_all_reviews_analysis_speech: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-
-    similarity_analysis_all_comments: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
-    similarity_analysis_all_reviews: float = Field(sa_column=sa.Column(sa.Float, nullable=True))
