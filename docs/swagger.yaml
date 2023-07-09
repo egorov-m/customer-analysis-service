@@ -1,0 +1,265 @@
+components:
+  schemas:
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+info:
+  title: CAS API
+  version: 1.0.0
+openapi: 3.0.2
+paths:
+  /analysis_interests/comments:
+    get:
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0433\u0440\u0443\
+        \u043F\u043F\u0438\u0440\u043E\u0432\u043A \u043F\u043E \u0432\u0441\u0435\
+        \u043C \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C (\u0438\
+        \u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C \u043F\u043E \u043A\u043E\
+        \u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u044F\u043C) \u043F\u043E\
+        \ \u043A\u043B\u0438\u0435\u043D\u0442\u0430\u043C \u043D\u0430\u0448\u0435\
+        \u0433\u043E \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430\n\n:param product_name_id:\n\
+        :param database:\n:return:"
+      operationId: customer_interest_comments_analysis_interests_comments_get
+      parameters:
+      - in: query
+        name: product_name_id
+        required: true
+        schema:
+          title: Product Name Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Customer Interest Comments
+      tags:
+      - analysis_interests
+  /analysis_interests/reviews:
+    get:
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0433\u0440\u0443\
+        \u043F\u043F\u0438\u0440\u043E\u0432\u043A \u043F\u043E \u0432\u0441\u0435\
+        \u043C \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C (\u0438\
+        \u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C \u043F\u043E \u043E\u0442\
+        \u0437\u044B\u0432\u0430\u043C) \u043F\u043E \u043A\u043B\u0438\u0435\u043D\
+        \u0442\u0430\u043C \u043D\u0430\u0448\u0435\u0433\u043E \u043F\u0440\u043E\
+        \u0434\u0443\u043A\u0442\u0430\n\n:param product_name_id:\n:param database:\n\
+        :return:"
+      operationId: customer_interests_reviews_analysis_interests_reviews_get
+      parameters:
+      - in: query
+        name: product_name_id
+        required: true
+        schema:
+          title: Product Name Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Customer Interests Reviews
+      tags:
+      - analysis_interests
+  /analysis_sentiments/comments/category:
+    get:
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
+        \u0438\u0442\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
+        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u0435\u0432\
+        \ \u043A\u043B\u0438\u0435\u043D\u0442\u043E\u0432 \u0443\u043A\u0430\u0437\
+        \u0430\u043D\u043D\u043E\u0433\u043E \u043F\u0440\u043E\u0434\u0443\u043A\u0442\
+        \u0430 \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\
+        \u043D\u044B\u0439 \u043F\u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\
+        \u0438\u044F\u043C\n\n\u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\
+        \u0446\u0438\u044F: https://plotly.com/python/treemaps/ \u0438\u043B\u0438\
+        \ https://plotly.com/python/sunburst-charts/\n\n:param product_name_id:\n\
+        :param database:\n:return:"
+      operationId: customer_sentiment_comments_category_analysis_sentiments_comments_category_get
+      parameters:
+      - in: query
+        name: product_name_id
+        required: true
+        schema:
+          title: Product Name Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Customer Sentiment Comments Category
+      tags:
+      - analysis_sentiments
+  /analysis_sentiments/comments/region:
+    get:
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
+        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
+        \ \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\
+        \u043D\u044B\u0439 \u043F\u043E \u0440\u0443\u0433\u0438\u043E\u043D\u0430\
+        \u043C \u0434\u043B\u044F \u0432\u0441\u0435\u0445 \u043A\u043E\u043C\u043C\
+        \u0435\u043D\u0442\u0430\u0440\u0438\u0435\u0432 \u043A\u043B\u0438\u0435\u043D\
+        \u0442\u043E\u0432 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E\
+        \ \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430\n\n:\u0432\u0438\u0437\u0443\
+        \u0430\u043B\u0438\u0437\u0430\u0446\u0438\u044F \u041A\u0430\u0440\u0442\u0430\
+        : https://plotly.com/python/scattermapbox/#basic-example-with-plotly-express\n\
+        \ (\u0446\u0432\u0435\u0442\u043E\u043C \u043F\u043E\u043A\u0430\u0437\u044B\
+        \u0432\u0430\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F\
+        \ \u043F\u043E\u0437\u0438\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438\
+        \ \u043D\u0435\u0433\u0430\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438\
+        \ \u043E\u0442 -1 \u0434\u043E 1)\n\n:param product_name_id:\n:param database:\n\
+        :return:"
+      operationId: customer_sentiment_comments_region_analysis_sentiments_comments_region_get
+      parameters:
+      - in: query
+        name: product_name_id
+        required: true
+        schema:
+          title: Product Name Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Customer Sentiment Comments Region
+      tags:
+      - analysis_sentiments
+  /analysis_sentiments/reviews/category:
+    get:
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
+        \u0438\u0442\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
+        \ \u043E\u0442\u0437\u044B\u0432\u043E\u0432 \u043A\u043B\u0438\u0435\u043D\
+        \u0442\u043E\u0432 \u0443\u043A\u0430\u0437\u0430\u043D\u043D\u043E\u0433\u043E\
+        \ \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\u0443\
+        \u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\u043E\
+        \ \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C\n\n\u0432\u0438\
+        \u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0446\u0438\u044F: https://plotly.com/python/treemaps/\
+        \ \u0438\u043B\u0438 https://plotly.com/python/sunburst-charts/\n\n:param\
+        \ product_name_id:\n:param database:\n:return:"
+      operationId: customer_sentiment_reviews_category_analysis_sentiments_reviews_category_get
+      parameters:
+      - in: query
+        name: product_name_id
+        required: true
+        schema:
+          title: Product Name Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Customer Sentiment Reviews Category
+      tags:
+      - analysis_sentiments
+  /analysis_sentiments/reviews/region:
+    get:
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
+        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
+        \ \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\
+        \u043D\u044B\u0439 \u043F\u043E \u0440\u0443\u0433\u0438\u043E\u043D\u0430\
+        \u043C \u0434\u043B\u044F \u0432\u0441\u0435\u0445 \u043E\u0442\u0437\u044B\
+        \u0432\u043E\u0432 \u043A\u043B\u0438\u0435\u043D\u0442\u043E\u0432 \u0432\
+        \u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u043F\u0440\u043E\u0434\
+        \u0443\u043A\u0442\u0430\n\n:\u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\
+        \u0430\u0446\u0438\u044F \u041A\u0430\u0440\u0442\u0430: https://plotly.com/python/scattermapbox/#basic-example-with-plotly-express\n\
+        \ (\u0446\u0432\u0435\u0442\u043E\u043C \u043F\u043E\u043A\u0430\u0437\u044B\
+        \u0432\u0430\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F\
+        \ \u043F\u043E\u0437\u0438\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438\
+        \ \u043D\u0435\u0433\u0430\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438\
+        \ \u043E\u0442 -1 \u0434\u043E 1)\n\n:param product_name_id:\n:param database:\n\
+        :return:"
+      operationId: customer_sentiment_reviews_region_analysis_sentiments_reviews_region_get
+      parameters:
+      - in: query
+        name: product_name_id
+        required: true
+        schema:
+          title: Product Name Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Customer Sentiment Reviews Region
+      tags:
+      - analysis_sentiments
+  /swagger.yaml:
+    get:
+      operationId: get_swagger_swagger_yaml_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Get Swagger
