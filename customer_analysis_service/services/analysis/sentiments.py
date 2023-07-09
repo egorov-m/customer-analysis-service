@@ -16,11 +16,19 @@ from customer_analysis_service.services.analysis.base import BaseService
 class SentimentAnalysisService(BaseService):
     logger = log.getLogger('sentiment_analysis_service_logger')
 
-    def __init__(self, database: Database):
+    def __init__(self, database: Database, is_init_model: bool = False):
         super().__init__(database)
-        self.tokenizer = AutoTokenizer.from_pretrained("blanchefort/rubert-base-cased-sentiment")
-        self.model = AutoModelForSequenceClassification.from_pretrained("blanchefort/rubert-base-cased-sentiment", return_dict=True)
+        if is_init_model:
+            self._init_model()
+        else:
+            self.tokenizer = None
+            self.model = None
         self.logger.info('SentimentAnalysisService initialized.')
+
+    def _init_model(self):
+        self.tokenizer = AutoTokenizer.from_pretrained("blanchefort/rubert-base-cased-sentiment")
+        self.model = AutoModelForSequenceClassification.from_pretrained("blanchefort/rubert-base-cased-sentiment",
+                                                                        return_dict=True)
 
     @torch.no_grad()
     def _get_sentiment_analysis_texts(self, text: str) -> float:
@@ -31,6 +39,9 @@ class SentimentAnalysisService(BaseService):
         :param text:
         :return:
         """
+        if self.tokenizer is None or self.model is None:
+            self._init_model()
+
         max_length = 512
         chunks = textwrap.wrap(text, max_length)
         res: float = 0
@@ -178,7 +189,7 @@ class SentimentAnalysisService(BaseService):
 
     def get_sentiment_analysis_group_regionally_all_customer_reviews_product(self, product_name_id: str):
         """
-        Получить сентимент анализ сгруппированный по ругионам для всех отзывов клиентов нашего продукта
+        Получить сентимент анализ сгруппированный по ругионам для всех отзывов клиентов выбранного продукта
 
         SELECT rl.country_ru, rl.country_en, rl.city_ru, rl.city_en, rl.latitude, rl.longitude, count(c.name_id), avg(rsa.sentiment_value) FROM customer c
                    JOIN regional_location rl on c.country_ru = rl.country_ru AND c.city_ru = rl.city_ru
@@ -224,7 +235,7 @@ class SentimentAnalysisService(BaseService):
 
     def get_sentiment_analysis_group_regionally_all_customer_comments_product(self, product_name_id: str):
         """
-        Получить сентимент анализ сгруппированный по ругионам для всех омментариев клиентов нашего продукта
+        Получить сентимент анализ сгруппированный по ругионам для всех комментариев клиентов выбранного продукта
 
         SELECT rl.country_ru, rl.country_en, rl.city_ru, rl.city_en, rl.latitude, rl.longitude, count(c.name_id), avg(csa.sentiment_value) FROM customer c
                    JOIN regional_location rl on c.country_ru = rl.country_ru AND c.city_ru = rl.city_ru
