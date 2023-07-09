@@ -3,6 +3,7 @@ import logging as log
 import faiss
 import numpy as np
 import torch
+from sqlmodel import select
 from transformers import AutoTokenizer, AutoModel
 
 from customer_analysis_service.db import Database
@@ -14,12 +15,19 @@ from customer_analysis_service.services.analysis.base import BaseService
 class SimilarityAnalysisService(BaseService):
     logger = log.getLogger('similarity_analysis_service_logger')
 
-    def __init__(self, database: Database):
+    def __init__(self, database: Database, is_init_model: bool = False):
         super().__init__(database)
+        if is_init_model:
+            self._init_model()
+        else:
+            self.tokenizer = None
+            self.model = None
+        self.logger.info('SimilarityAnalysisService initialized.')
+
+    def _init_model(self):
         # Load model from HuggingFace Hub
         self.tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
         self.model = AutoModel.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
-        self.logger.info('SimilarityAnalysisService initialized.')
 
     @staticmethod
     def _mean_pooling(model_output, attention_mask):
@@ -50,7 +58,7 @@ class SimilarityAnalysisService(BaseService):
         :param sentences:
         :return:
         """
-        encoded_input = self.tokenizer(sentences, max_length=128,  padding=True, truncation=True, return_tensors='pt')
+        encoded_input = self.tokenizer(sentences,  padding=True, truncation=True, return_tensors='pt')
         with torch.no_grad():
             self.logger.info('Begin model.')
             model_output = self.model(**encoded_input)
@@ -192,3 +200,60 @@ class SimilarityAnalysisService(BaseService):
         reviews: list[Review] = self.database.review.get_all_reviews_for_customer(customer.name_id)
         comments: list[Comment] = self.database.comment.get_all_comments_for_customer(customer.name_id)
         return reviews, comments
+
+    def _get_customer_similarity_analysis_product(self, product_name_id: str, reviews_or_comments):
+        """
+        SELECT c.country_ru,
+               c.country_en,
+               c.city_ru,
+               c.city_en,
+               csa.similarity_reviews_value,
+               csa.similarity_comments_value FROM customer_similarity_analysis csa
+                                             JOIN customer c on csa.customer_name_id = c.name_id
+        WHERE c.city_ru IS NOT NULL AND csa.customer_name_id IN (SELECT DISTINCT r.customer_name_id
+                                                                 FROM review r
+                                                                 WHERE r.evaluated_product_name_id = 'product_name_id')
+
+        :param product_name_id:
+        :return:
+        """
+        with self.database.session as session:
+            query = select(Customer.country_ru, Customer.country_en, Customer.city_ru, Customer.city_en, reviews_or_comments) \
+                .join(CustomerSimilarityAnalysis, CustomerSimilarityAnalysis.customer_name_id == Customer.name_id) \
+                .where(Customer.city_ru.isnot(None)) \
+                .where(CustomerSimilarityAnalysis.customer_name_id.in_(select(Review.customer_name_id)
+                                                                       .distinct()
+                                                                       .where(Review.evaluated_product_name_id == product_name_id)))\
+                .where(reviews_or_comments.isnot(None))
+
+            return session.exec(query).all()
+
+    def get_customer_similarity_analysis_product_by_reviews(self, product_name_id: str):
+        """
+        Получить значения сходства по всем отзывам каждого клиента (писал отзыв) продукта
+
+        :визуализация https://plotly.com/python/histograms/#several-histograms-for-the-different-values-of-one-column
+        по оси x - все клиенты
+        по оси y - значения схежести по всем отзывам для каждого клиента
+        урокни гистограммы - группировка по городам (city_ru или сity_en)
+
+        :param product_name_id:
+        :return:
+        """
+        return self._get_customer_similarity_analysis_product(product_name_id, getattr(CustomerSimilarityAnalysis,
+                                                                                       'similarity_reviews_value'))
+
+    def get_customer_similarity_analysis_product_by_comments(self, product_name_id: str):
+        """
+        Получить значения сходства по всем отзывам каждого клиента (писал комментарий) продукта
+
+        :визуализация https://plotly.com/python/histograms/#several-histograms-for-the-different-values-of-one-column
+        по оси x - все клиенты
+        по оси y - значения схежести по всем отзывам для каждого клиента
+        урокни гистограммы - группировка по городам (city_ru или сity_en)
+
+        :param product_name_id:
+        :return:
+        """
+        return self._get_customer_similarity_analysis_product(product_name_id, getattr(CustomerSimilarityAnalysis,
+                                                                                       'similarity_comments_value'))
