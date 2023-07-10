@@ -14,10 +14,6 @@ class Product(SQLModel, table=True):
     image_url: str = Field(nullable=True, max_length=200)
     description: str = Field(nullable=True, max_length=5000)
 
-    is_all_customers_information_available_for_product: bool = Field(sa_column=sa.Column(sa.Boolean,
-                                                                                         nullable=False,
-                                                                                         default=False))
-
 
 class ProductSimilarityAnalysis(SQLModel, table=True):
     __tablename__ = "product_similarity_analysis"

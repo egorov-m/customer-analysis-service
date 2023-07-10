@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  cas_db:
+    image: postgres:15.3-alpine
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./cas_db_data:/var/lib/postgresql/data
+      - ./cas_db_log:/var/log/postgresql
+    ports:
+      - "5432:5432"
+  cas:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"

@@ -1,6 +1,5 @@
 import logging as log
 
-import uvicorn
 import yaml
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
@@ -20,5 +19,3 @@ async def get_swagger():
     with open("./docs/swagger.yaml", "w") as file:
         yaml.dump(openapi_schema, file)
     return openapi_schema
-
-uvicorn.run(app)

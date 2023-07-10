@@ -24,8 +24,6 @@ class Review(SQLModel, table=True):
 
     evaluated_product_name_id: str = Field(nullable=False, max_length=250)
     customer_name_id: str = Field(nullable=False, max_length=150)
-    count_user_recommend_review: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
-    count_comments_review: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
     date_review: date = Field(sa_column=sa.Column(sa.Date(), nullable=False))
     advantages: str = Field(nullable=True, max_length=300)
     disadvantages: str = Field(nullable=True, max_length=300)
@@ -33,8 +31,6 @@ class Review(SQLModel, table=True):
     general_impression: str = Field(nullable=True, max_length=300)
     star_rating: float = Field(sa_column=sa.Column(sa.Float, nullable=False))
     recommend_friends: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False))
-
-    is_all_commenting_customers_available: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False, default=False))
 
 
 class ReviewSentimentAnalysis(SQLModel, table=True):

@@ -18,11 +18,6 @@ class Customer(SQLModel, table=True):
     profession: str = Field(nullable=True, max_length=100)
     reg_date: date = Field(sa_column=sa.Column(sa.Date(), nullable=False))
     count_subscribers: int = Field(sa_column=sa.Column(sa.Integer, nullable=False))
-    # last_activity_datetime: datetime = Field(sa_column=sa.Column(sa.DateTime(), nullable=False))
-
-    # are needed to quickly determine that the rest of the data is loaded into the database
-    is_all_comments_available: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False, default=False))
-    is_all_reviews_available: bool = Field(sa_column=sa.Column(sa.Boolean, nullable=False, default=False))
 
 
 class RegionalLocation(SQLModel, table=True):
