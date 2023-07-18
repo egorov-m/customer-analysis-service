@@ -1,6 +1,7 @@
 from sqlmodel import select, Session
 
 from customer_analysis_service.db.models.customer import Customer, CustomerSimilarityAnalysis
+from customer_analysis_service.utils.database import menage_db_method, CommitMode
 
 
 class CustomerRepository:
@@ -9,13 +10,13 @@ class CustomerRepository:
     def __init__(self, session: Session):
         self.session = session
 
+    @menage_db_method(CommitMode.FLUSH)
     def add_customer(self, customer: Customer):
         self.session.add(customer)
-        self.session.commit()
 
+    @menage_db_method(CommitMode.FLUSH)
     def add_product_sentiment_analysis(self, customer_sentiment_analysis: CustomerSimilarityAnalysis):
         self.session.add(customer_sentiment_analysis)
-        self.session.commit()
 
     def get_customer(self, name_id: str) -> Customer:
         return self.session.exec(select(Customer).where(Customer.name_id == name_id)).first()
@@ -30,20 +31,20 @@ class CustomerRepository:
 
         return self.session.exec(query).all()
 
+    @menage_db_method(CommitMode.FLUSH)
     def update_state_all_comments_available(self, customer: Customer, new_state: bool):
         customer.is_all_comments_available = new_state
         self.session.add(customer)
-        self.session.commit()
 
+    @menage_db_method(CommitMode.FLUSH)
     def update_similarity_values_customer_similarity_analysis(self, customer_similarity_analysis: CustomerSimilarityAnalysis,
                                                               similarity_value_reviews: float,
                                                               similarity_value_comments: float):
         customer_similarity_analysis.similarity_reviews_value = similarity_value_reviews
         customer_similarity_analysis.similarity_comments_value = similarity_value_comments
         self.session.add(customer_similarity_analysis)
-        self.session.commit()
 
+    @menage_db_method(CommitMode.FLUSH)
     def update_state_all_reviews_available(self, customer: Customer, new_state: bool):
         customer.is_all_reviews_available = new_state
         self.session.add(customer)
-        self.session.commit()

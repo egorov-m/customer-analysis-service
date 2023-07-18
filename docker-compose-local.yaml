@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  cas_db:
+    container_name: "cas_db"
+    image: postgres:15.3-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=postgres
+      - POSTGRES_HOST=127.0.0.1
+      - POSTGRES_PORT=5432
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+    volumes:
+      - ./cas_db_data:/var/lib/postgresql/data
+      - ./cas_db_log:/var/log/postgresql
+    ports:
+      - "5432:5432"
+    networks:
+      - cas
+
+networks:
+  cas:
+    driver: bridge

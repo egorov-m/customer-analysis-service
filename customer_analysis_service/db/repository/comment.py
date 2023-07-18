@@ -4,6 +4,7 @@ from sqlmodel import select, Session
 
 from customer_analysis_service.db.models import Review
 from customer_analysis_service.db.models.comment import Comment, CommentSentimentAnalysis
+from customer_analysis_service.utils.database import menage_db_method, CommitMode
 
 
 class CommentRepository:
@@ -12,13 +13,13 @@ class CommentRepository:
     def __init__(self, session: Session):
         self.session = session
 
+    @menage_db_method(CommitMode.FLUSH)
     def add_comment(self, comment: Comment):
         self.session.add(comment)
-        self.session.commit()
 
+    @menage_db_method(CommitMode.FLUSH)
     def add_comment_sentiment_analysis(self, comment_sentiment_analysis: CommentSentimentAnalysis):
         self.session.add(comment_sentiment_analysis)
-        self.session.commit()
 
     def get_comment_by_id(self, comment_id: str) -> Comment:
         return self.session.exec(select(Comment).where(Comment.id == comment_id)).first()
@@ -55,12 +56,12 @@ class CommentRepository:
         return self.session.exec(select(CommentSentimentAnalysis)
                                  .where(CommentSentimentAnalysis.version_mark == version_mark)).all()
 
+    @menage_db_method(CommitMode.FLUSH)
     def update_sentiment_value_review_sentiment_analysis(self,
                                                          review_sentiment_analysis: CommentSentimentAnalysis,
                                                          sentiment_value: float):
         review_sentiment_analysis.sentiment_value = sentiment_value
         self.session.add(review_sentiment_analysis)
-        self.session.commit()
 
     def get_all_comments(self) -> list[Comment]:
         return self.session.exec(select(Comment)).all()

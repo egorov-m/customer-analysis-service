@@ -4,20 +4,22 @@ import textwrap
 import torch
 import numpy as np
 from sqlalchemy import and_, join, func
-from sqlmodel import select
+from sqlmodel import select, Session
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-from customer_analysis_service.db import Database
+from customer_analysis_service.api.v1.schemas.analysis import GroupRegionallyAllCustomerAnalysis, data_to_schema, \
+    CustomersForAllCategoriesAnalysis
 from customer_analysis_service.db.models import Review, Comment, ReviewSentimentAnalysis, CommentSentimentAnalysis, \
     RegionalLocation, Customer, Product
+from customer_analysis_service.db.repository import ReviewRepository, CommentRepository
 from customer_analysis_service.services.analysis.base import BaseService
 
 
 class SentimentAnalysisService(BaseService):
     logger = log.getLogger('sentiment_analysis_service_logger')
 
-    def __init__(self, database: Database, is_init_model: bool = False):
-        super().__init__(database)
+    def __init__(self, session: Session, is_init_model: bool = False):
+        super().__init__(session)
         if is_init_model:
             self._init_model()
         else:
@@ -60,18 +62,19 @@ class SentimentAnalysisService(BaseService):
     def execute_sentiment_analysis_all_reviews(self, version_mark: str, is_override: bool = False):
         self.logger.info('Sentiment analysis process launched for all reviews.')
 
-        reviews: list[Review] = self.database.review.get_all_reviews()
+        review_repo: ReviewRepository = ReviewRepository(self.session)
+        reviews: list[Review] = review_repo.get_all_reviews()
         count: int = 1
         self.logger.info(f'{len(reviews)} reviews found.')
 
         for review in reviews:
-            reviews_sentiment_analysis: list[ReviewSentimentAnalysis] = self.database.review.get_reviews_sentiment_analysis_by_review_id(review.id, version_mark)
+            reviews_sentiment_analysis: list[ReviewSentimentAnalysis] = review_repo.get_reviews_sentiment_analysis_by_review_id(review.id, version_mark)
             sentiment_value: float = self._get_sentiment_analysis_texts(review.text_review)
             if len(reviews_sentiment_analysis) > 0:
                 review_sentiment_analysis: ReviewSentimentAnalysis = reviews_sentiment_analysis[0]
                 if is_override:
 
-                    self.database.review.update_sentiment_value_review_sentiment_analysis(review_sentiment_analysis, sentiment_value)
+                    review_repo.update_sentiment_value_review_sentiment_analysis(review_sentiment_analysis, sentiment_value)
                     self.logger.info(f'[{count}] Review {review.id} updated: {sentiment_value}')
                 else:
                     self.logger.info(f'[{count}] Review {review.id} skipped.')
@@ -82,7 +85,7 @@ class SentimentAnalysisService(BaseService):
                 review_sentiment_analysis.review_id = review.id
                 review_sentiment_analysis.version_mark = version_mark
                 review_sentiment_analysis.sentiment_value = sentiment_value
-                self.database.review.add_review_sentiment_analysis(review_sentiment_analysis)
+                review_repo.add_review_sentiment_analysis(review_sentiment_analysis)
                 self.logger.info(f'[{count}] Sentiment analysis added: {review.id}: {sentiment_value}.')
                 count += 1
 
@@ -91,17 +94,18 @@ class SentimentAnalysisService(BaseService):
     def execute_sentiment_analysis_all_comments(self, version_mark: str, is_override: bool = False):
         self.logger.info('Sentiment analysis process launched for all comments.')
 
-        comments: list[Comment] = self.database.comment.get_all_comments()
+        comment_repo: CommentRepository = CommentRepository(self.session)
+        comments: list[Comment] = comment_repo.get_all_comments()
         count: int = 1
         self.logger.info(f'{len(comments)} comments found.')
 
         for comment in comments:
-            comments_sentiment_analysis: list[CommentSentimentAnalysis] = self.database.comment.get_comments_sentiment_analysis_by_comment_id(comment.id, version_mark)
+            comments_sentiment_analysis: list[CommentSentimentAnalysis] = comment_repo.get_comments_sentiment_analysis_by_comment_id(comment.id, version_mark)
             if len(comments_sentiment_analysis) > 0:
                 comment_sentiment_analysis: CommentSentimentAnalysis = comments_sentiment_analysis[0]
                 if is_override:
                     sentiment_value: float = self._get_sentiment_analysis_texts(comment.text_comment)
-                    self.database.comment.update_sentiment_value_review_sentiment_analysis(comment_sentiment_analysis, sentiment_value)
+                    comment_repo.update_sentiment_value_review_sentiment_analysis(comment_sentiment_analysis, sentiment_value)
                     self.logger.info(f'[{count}] Comment {comment.id} updated: {sentiment_value}')
                 else:
                     self.logger.info(f'[{count}] Comment {comment.id} skipped.')
@@ -113,7 +117,7 @@ class SentimentAnalysisService(BaseService):
                 comment_sentiment_analysis.comment_id = comment.id
                 comment_sentiment_analysis.version_mark = version_mark
                 comment_sentiment_analysis.sentiment_value = sentiment_value
-                self.database.comment.add_comment_sentiment_analysis(comment_sentiment_analysis)
+                comment_repo.add_comment_sentiment_analysis(comment_sentiment_analysis)
                 self.logger.info(f'[{count}] Sentiment analysis added comment: {comment.id}: {sentiment_value}.')
                 count += 1
 
@@ -132,7 +136,7 @@ class SentimentAnalysisService(BaseService):
         :param product_name_id:
         :return:
         """
-        with self.database.session as session:
+        with self.session as session:
             join_condition = join(Review, Customer, Customer.name_id == Review.customer_name_id)\
                 .join(RegionalLocation, and_(Customer.country_ru == RegionalLocation.country_ru,
                                              Customer.city_ru == RegionalLocation.city_ru))\
@@ -150,7 +154,7 @@ class SentimentAnalysisService(BaseService):
                 Review.evaluated_product_name_id == product_name_id
             )
 
-            return session.exec(stmt).all()
+            return session.execute(stmt).all()
 
     def get_sentiment_analysis_regionally_all_products_comments(self, product_name_id: str):
         """
@@ -166,7 +170,7 @@ class SentimentAnalysisService(BaseService):
         :param product_name_id:
         :return:
         """
-        with self.database.session as session:
+        with self.session as session:
             stmt = (
                 select(
                     RegionalLocation.country_ru,
@@ -185,7 +189,7 @@ class SentimentAnalysisService(BaseService):
                 .where(Review.evaluated_product_name_id == product_name_id)
             )
 
-            return session.exec(stmt).all()
+            return session.execute(stmt).all()
 
     def get_sentiment_analysis_group_regionally_all_customer_reviews_product(self, product_name_id: str):
         """
@@ -202,7 +206,7 @@ class SentimentAnalysisService(BaseService):
         :param product_name_id:
         :return:
         """
-        with self.database.session as session:
+        with self.session as session:
             stmt = (
                 select(
                     RegionalLocation.country_ru,
@@ -231,7 +235,9 @@ class SentimentAnalysisService(BaseService):
                 )
             )
 
-            return session.exec(stmt).all()
+            result = session.execute(stmt).all()
+
+            return data_to_schema(result, GroupRegionallyAllCustomerAnalysis)
 
     def get_sentiment_analysis_group_regionally_all_customer_comments_product(self, product_name_id: str):
         """
@@ -249,7 +255,7 @@ class SentimentAnalysisService(BaseService):
         :param product_name_id:
         :return:
         """
-        with self.database.session as session:
+        with self.session as session:
             subquery = (
                 select(Comment.customer_name_id).distinct()
                 .join(Customer, Customer.name_id == Comment.customer_name_id)
@@ -283,7 +289,9 @@ class SentimentAnalysisService(BaseService):
                 )
             )
 
-            return session.exec(stmt).all()
+            result = session.execute(stmt).all()
+
+            return data_to_schema(result, GroupRegionallyAllCustomerAnalysis)
 
     def get_sentiment_analysis_customer_reviews_product_grouped_by_category(self, product_name_id: str):
         """
@@ -304,7 +312,7 @@ class SentimentAnalysisService(BaseService):
         :param product_name_id:
         :return:
         """
-        with self.database.session as session:
+        with self.session as session:
             subquery = (
                 select(Customer.name_id)
                 .join(Review, Customer.name_id == Review.customer_name_id)
@@ -342,7 +350,9 @@ class SentimentAnalysisService(BaseService):
                 )
             )
 
-            return session.exec(query).all()
+            result = session.execute(query).all()
+
+            return data_to_schema(result, CustomersForAllCategoriesAnalysis)
 
     def get_sentiment_analysis_customer_comments_product_grouped_by_category(self, product_name_id: str):
         """
@@ -367,7 +377,7 @@ class SentimentAnalysisService(BaseService):
         :param product_name_id:
         :return:
         """
-        with self.database.session as session:
+        with self.session as session:
             cas_subquery = (
                 select(Customer.name_id)
                 .join(Comment, Customer.name_id == Comment.customer_name_id)
@@ -386,11 +396,13 @@ class SentimentAnalysisService(BaseService):
                     Review.href_category_3,
                     Review.ru_category_4,
                     Review.href_category_4,
+                    Product.fullname,
                     func.count(Customer.name_id),
                     func.avg(CommentSentimentAnalysis.sentiment_value),
                 )
                 .join(Comment, Customer.name_id == Comment.customer_name_id)
                 .join(Review, Comment.review_id == Review.id)
+                .join(Product, Review.evaluated_product_name_id == Product.name_id)
                 .join(CommentSentimentAnalysis, Comment.id == CommentSentimentAnalysis.comment_id)
                 .where(Customer.name_id.in_(cas_subquery))
                 .group_by(
@@ -402,7 +414,10 @@ class SentimentAnalysisService(BaseService):
                     Review.href_category_3,
                     Review.ru_category_4,
                     Review.href_category_4,
+                    Product.fullname
                 )
             )
 
-            return session.exec(stmt).all()
+            result = session.execute(stmt).all()
+
+            return data_to_schema(result, CustomersForAllCategoriesAnalysis)

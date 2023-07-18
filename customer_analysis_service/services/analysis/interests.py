@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.sql.functions import count
 
+from customer_analysis_service.api.v1.schemas.analysis import CustomersForAllCategoriesBaseAnalysis, data_to_schema
 from customer_analysis_service.db.models import Review, Comment, Product
 from customer_analysis_service.services.analysis.base import BaseService
 from customer_analysis_service.services.analysis.enums import ProductCategory
@@ -27,7 +28,7 @@ class InterestAnalysisService(BaseService):
         field_ru = InterestAnalysisService._get_field_category_ru(category_number)
         field_href = InterestAnalysisService._get_field_category_href(category_number)
 
-        with self.database.session as session:
+        with self.session as session:
             subquery = select(Review.customer_name_id).distinct().where(
                 Review.evaluated_product_name_id == product_name_id
             )
@@ -91,7 +92,7 @@ class InterestAnalysisService(BaseService):
              field_ru_3, field_href_3,
              field_ru_4, field_href_4, Product.fullname]
 
-        with self.database.session as session:
+        with self.session as session:
             subquery = select(Review.customer_name_id).distinct().where(
                 Review.evaluated_product_name_id == product_name_id
             )
@@ -109,14 +110,16 @@ class InterestAnalysisService(BaseService):
                 .group_by(*p)
             )
 
-            return session.exec(query).all()
+            result = session.execute(query).all()
+
+            return data_to_schema(result, CustomersForAllCategoriesBaseAnalysis)
 
     def get_group_customers_interest_for_one_category_by_comments(self, product_name_id: str,
                                                                   category_number: ProductCategory | int,
                                                                   is_category_above_same_product: bool = False) -> list:
         field_ru = InterestAnalysisService._get_field_category_ru(category_number)
         field_href = InterestAnalysisService._get_field_category_href(category_number)
-        with self.database.session as session:
+        with self.session as session:
             subquery = select(Comment.customer_name_id).distinct().join(Review, Comment.review_id == Review.id)\
                 .where(Review.evaluated_product_name_id == product_name_id)
 
@@ -145,7 +148,7 @@ class InterestAnalysisService(BaseService):
                 .group_by(field_ru, field_href)
             )
 
-            return session.exec(query).all()
+            return session.execute(query).all()
 
     def get_group_customers_interest_for_all_categories_by_comments(self, product_name_id: str) -> list:
         field_ru_1 = InterestAnalysisService._get_field_category_ru(1)
@@ -161,7 +164,7 @@ class InterestAnalysisService(BaseService):
              field_ru_3, field_href_3,
              field_ru_4, field_href_4, Product.fullname]
 
-        with self.database.session as session:
+        with self.session as session:
             subquery = select(Comment.customer_name_id).distinct().join(Review, Comment.review_id == Review.id)\
                 .where(Review.evaluated_product_name_id == product_name_id)
 
@@ -180,7 +183,8 @@ class InterestAnalysisService(BaseService):
                 .group_by(*p)
             )
 
-            return session.exec(query).all()
+            result = session.execute(query).all()
+            return data_to_schema(result, CustomersForAllCategoriesBaseAnalysis)
 
     @staticmethod
     def _get_field_category_ru(category_number: ProductCategory | int):

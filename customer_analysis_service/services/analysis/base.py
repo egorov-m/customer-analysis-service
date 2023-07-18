@@ -7,15 +7,14 @@ from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 from sqlalchemy import not_, or_
 from sqlmodel import select, Session
 
-from customer_analysis_service.db import Database
 from customer_analysis_service.db.models import Customer, RegionalLocation
 
 
 class BaseService:
     logger = log.getLogger('analysis_service_logger')
 
-    def __init__(self, database: Database):
-        self.database = database
+    def __init__(self, session: Session):
+        self.session = session
         self.user_agent = 'user_me_{}'.format(randint(10000, 99999))
         self.geolocator = Nominatim(user_agent=self.user_agent)
 
@@ -36,7 +35,7 @@ class BaseService:
 
     def fill_table_regional_locations(self):
         self.logger.info('Start fill table regional locations')
-        with self.database.session as session:
+        with self.session as session:
             current_set_customer_regions = session.exec(select(Customer.country_ru,
                                                                Customer.country_en,
                                                                Customer.city_ru,

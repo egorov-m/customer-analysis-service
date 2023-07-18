@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends
+from sqlmodel import Session
 
-from customer_analysis_service.api.v1.dependencies.database import get_db
-from customer_analysis_service.db import Database
+from customer_analysis_service.api.deps import get_db
 from customer_analysis_service.services.analysis.similarity import SimilarityAnalysisService
 
 router = APIRouter()
 
 
 @router.get("/comments")
-def get_customer_similarity_analysis_product_by_comments(product_name_id: str, database: Database = Depends(get_db)):
+def get_customer_similarity_analysis_product_by_comments(product_name_id: str, db: Session = Depends(get_db)):
     """
     Получить значения сходства по всем отзывам каждого клиента (писал комментарий) продукта
 
@@ -18,18 +18,15 @@ def get_customer_similarity_analysis_product_by_comments(product_name_id: str, d
     урокни гистограммы - группировка по городам (city_ru или сity_en)
 
     :param product_name_id:
-    :param database:
+    :param db:
     :return:
     """
-    service: SimilarityAnalysisService = SimilarityAnalysisService(database)
-    return {
-        'version': 'v1',
-        'data': service.get_customer_similarity_analysis_product_by_comments(product_name_id)
-    }
+    service: SimilarityAnalysisService = SimilarityAnalysisService(db)
+    return service.get_customer_similarity_analysis_product_by_comments(product_name_id)
 
 
 @router.get("/reviews")
-def get_customer_similarity_analysis_product_by_reviews(product_name_id: str, database: Database = Depends(get_db)):
+def get_customer_similarity_analysis_product_by_reviews(product_name_id: str, db: Session = Depends(get_db)):
     """
     Получить значения сходства по всем отзывам каждого клиента (писал отзыв) продукта
 
@@ -39,11 +36,8 @@ def get_customer_similarity_analysis_product_by_reviews(product_name_id: str, da
     урокни гистограммы - группировка по городам (city_ru или сity_en)
 
     :param product_name_id:
-    :param database:
+    :param db:
     :return:
     """
-    service: SimilarityAnalysisService = SimilarityAnalysisService(database)
-    return {
-        'version': 'v1',
-        'data': service.get_customer_similarity_analysis_product_by_reviews(product_name_id)
-    }
+    service: SimilarityAnalysisService = SimilarityAnalysisService(db)
+    return service.get_customer_similarity_analysis_product_by_reviews(product_name_id)

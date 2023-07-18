@@ -3,20 +3,21 @@ import logging as log
 import faiss
 import numpy as np
 import torch
-from sqlmodel import select
+from sqlmodel import select, Session
 from transformers import AutoTokenizer, AutoModel
 
-from customer_analysis_service.db import Database
 from customer_analysis_service.db.models import Review, Comment, Product, ProductSimilarityAnalysis, Customer, \
     CustomerSimilarityAnalysis
+from customer_analysis_service.db.repository import ProductRepository, CustomerRepository, ReviewRepository, \
+    CommentRepository
 from customer_analysis_service.services.analysis.base import BaseService
 
 
 class SimilarityAnalysisService(BaseService):
     logger = log.getLogger('similarity_analysis_service_logger')
 
-    def __init__(self, database: Database, is_init_model: bool = False):
-        super().__init__(database)
+    def __init__(self, session: Session, is_init_model: bool = False):
+        super().__init__(session)
         if is_init_model:
             self._init_model()
         else:
@@ -89,12 +90,13 @@ class SimilarityAnalysisService(BaseService):
     def execute_similarity_analysis_products(self, version_mark: str, is_override: bool = False):
         self.logger.info('Similarity analysis process launched for all products.')
 
-        products: list[Product] = self.database.product.get_all_products()
+        product_repo: ProductRepository = ProductRepository(self.session)
+        products: list[Product] = product_repo.get_all_products()
         count: int = 1
         self.logger.info(f'{len(products)} products found.')
 
         for product in products:
-            products_similarity_analysis: list[ProductSimilarityAnalysis] = self.database.product.get_products_similarity_analysis(product.name_id, version_mark)
+            products_similarity_analysis: list[ProductSimilarityAnalysis] = product_repo.get_products_similarity_analysis(product.name_id, version_mark)
             if len(products_similarity_analysis) > 0:
                 product_similarity_analysis: ProductSimilarityAnalysis = products_similarity_analysis[0]
                 if is_override:
@@ -107,9 +109,9 @@ class SimilarityAnalysisService(BaseService):
                         self.logger.info(f'[{count}] Product {product.name_id} skipped (no valid amount reviews and comments).')
                         count += 1
                         continue
-                    self.database.product.update_similarity_values_product_similarity_analysis(product_similarity_analysis,
-                                                                                               similarity_value_reviews,
-                                                                                               similarity_value_comments)
+                    product_repo.update_similarity_values_product_similarity_analysis(product_similarity_analysis,
+                                                                                      similarity_value_reviews,
+                                                                                      similarity_value_comments)
                     self.logger.info(f'[{count}] Product {product.name_id} updated: r - {similarity_value_reviews}, c - {similarity_value_comments}.')
                 else:
                     self.logger.info(f'[{count}] Product {product.name_id} skipped.')
@@ -131,7 +133,7 @@ class SimilarityAnalysisService(BaseService):
                 product_similarity_analysis.version_mark = version_mark
                 product_similarity_analysis.similarity_reviews_value = similarity_value_reviews
                 product_similarity_analysis.similarity_comments_value = similarity_value_comments
-                self.database.product.add_product_sentiment_analysis(product_similarity_analysis)
+                product_repo.add_product_sentiment_analysis(product_similarity_analysis)
                 self.logger.info(f'[{count}] Similarity analysis added product: {product.name_id}: r - {similarity_value_reviews}, c - {similarity_value_comments}.')
                 count += 1
 
@@ -139,12 +141,13 @@ class SimilarityAnalysisService(BaseService):
 
     def execute_similarity_analysis_customers(self, version_mark: str, is_override: bool = False):
         self.logger.info('Similarity analysis process launched for all customers.')
-        customers: list[Customer] = self.database.customer.get_all_customers()
+        customer_repo: CustomerRepository = CustomerRepository(self.session)
+        customers: list[Customer] = customer_repo.get_all_customers()
         count: int = 1
         self.logger.info(f'{len(customers)} customers found.')
 
         for customer in customers:
-            customers_similarity_analysis: list[CustomerSimilarityAnalysis] = self.database.customer.get_customers_similarity_analysis(customer.name_id, version_mark)
+            customers_similarity_analysis: list[CustomerSimilarityAnalysis] = customer_repo.get_customers_similarity_analysis(customer.name_id, version_mark)
             if len(customers_similarity_analysis) > 0:
                 customer_similarity_analysis: CustomerSimilarityAnalysis = customers_similarity_analysis[0]
                 if is_override:
@@ -158,9 +161,9 @@ class SimilarityAnalysisService(BaseService):
                         self.logger.info(f'[{count}] Customer {customer.name_id} skipped (no valid amount reviews and comments).')
                         count += 1
                         continue
-                    self.database.customer.update_similarity_values_customer_similarity_analysis(customer_similarity_analysis,
-                                                                                                 similarity_value_reviews,
-                                                                                                 similarity_value_comments)
+                    customer_repo.update_similarity_values_customer_similarity_analysis(customer_similarity_analysis,
+                                                                                        similarity_value_reviews,
+                                                                                        similarity_value_comments)
                     self.logger.info(
                         f'[{count}] Customer {customer.name_id} updated: r - {similarity_value_reviews}, c - {similarity_value_comments}.')
                 else:
@@ -184,7 +187,7 @@ class SimilarityAnalysisService(BaseService):
                 customer_similarity_analysis.version_mark = version_mark
                 customer_similarity_analysis.similarity_reviews_value = similarity_value_reviews
                 customer_similarity_analysis.similarity_comments_value = similarity_value_comments
-                self.database.customer.add_product_sentiment_analysis(customer_similarity_analysis)
+                customer_repo.add_product_sentiment_analysis(customer_similarity_analysis)
                 self.logger.info(
                     f'[{count}] Similarity analysis added customer: {customer.name_id}: r - {similarity_value_reviews}, c - {similarity_value_comments}.')
                 count += 1
@@ -192,13 +195,17 @@ class SimilarityAnalysisService(BaseService):
         self.logger.info('Similarity analysis of all customers is complete.')
 
     def _init_reviews_comments_for_product(self, product: Product):
-        reviews: list[Review] = self.database.review.get_all_reviews_for_product(product.name_id)
-        comments: list[Comment] = self.database.comment.get_all_comments_for_product(product.name_id)
+        review_repo: ReviewRepository = ReviewRepository(self.session)
+        comment_repo: CommentRepository = CommentRepository(self.session)
+        reviews: list[Review] = review_repo.get_all_reviews_for_product(product.name_id)
+        comments: list[Comment] = comment_repo.get_all_comments_for_product(product.name_id)
         return reviews, comments
 
     def _init_reviews_comments_for_customer(self, customer: Customer):
-        reviews: list[Review] = self.database.review.get_all_reviews_for_customer(customer.name_id)
-        comments: list[Comment] = self.database.comment.get_all_comments_for_customer(customer.name_id)
+        review_repo: ReviewRepository = ReviewRepository(self.session)
+        comment_repo: CommentRepository = CommentRepository(self.session)
+        reviews: list[Review] = review_repo.get_all_reviews_for_customer(customer.name_id)
+        comments: list[Comment] = comment_repo.get_all_comments_for_customer(customer.name_id)
         return reviews, comments
 
     def _get_customer_similarity_analysis_product(self, product_name_id: str, reviews_or_comments):
@@ -217,7 +224,7 @@ class SimilarityAnalysisService(BaseService):
         :param product_name_id:
         :return:
         """
-        with self.database.session as session:
+        with self.session as session:
             query = select(Customer.country_ru, Customer.country_en, Customer.city_ru, Customer.city_en, reviews_or_comments) \
                 .join(CustomerSimilarityAnalysis, CustomerSimilarityAnalysis.customer_name_id == Customer.name_id) \
                 .where(Customer.city_ru.isnot(None)) \
@@ -226,7 +233,7 @@ class SimilarityAnalysisService(BaseService):
                                                                        .where(Review.evaluated_product_name_id == product_name_id)))\
                 .where(reviews_or_comments.isnot(None))
 
-            return session.exec(query).all()
+            return session.execute(query).all()
 
     def get_customer_similarity_analysis_product_by_reviews(self, product_name_id: str):
         """

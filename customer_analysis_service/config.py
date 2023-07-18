@@ -1,38 +1,33 @@
-from dataclasses import dataclass
+from functools import lru_cache
 
-from environs import Env
-
-
-@dataclass
-class DbPostgresConfig:
-    """Postgres database connection variables"""
-
-    db_name: str
-    db_host: str
-    db_port: str
-    db_user: str
-    db_password: str
-
-    driver: str = "psycopg2"
-    database_system: str = "postgresql"
-
-    def get_url(self) -> str:
-        return f"{self.database_system}+{self.driver}://{self.db_user}:{self.db_password}@{self.db_host}/{self.db_name}"
+from pydantic import BaseSettings
 
 
-@dataclass
-class Config:
-    """All in one configuration's class"""
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "Customer Analysis Service"
+    API_V1_STR: str = "/api/v1"
 
-    dbPostgres: DbPostgresConfig
+    POSTGRES_HOST: str = "localhost"
+    POSTGRES_PORT: str = "5432"
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "secret"
+    POSTGRES_DB: str = "postgres"
 
-    @classmethod
-    def load_config(cls, path: str | None = None):
-        env: Env = Env()
-        env.read_env(path)
+    DATABASE_POOL_SIZE = 75
+    DATABASE_MAX_OVERFLOW = 20
 
-        return Config(dbPostgres=DbPostgresConfig(db_name=env('POSTGRES_DB'),
-                                                  db_host=env('POSTGRES_HOST'),
-                                                  db_port=env('POSTGRES_PORT'),
-                                                  db_user=env('POSTGRES_USER'),
-                                                  db_password=env('POSTGRES_PASSWORD')))
+    def get_database_url(self):
+        return f'postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}/{self.POSTGRES_DB}'
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+        case_sensitive = False
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
+
+
+settings: Settings = get_settings()
