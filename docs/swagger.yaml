@@ -1,39 +1,66 @@
 components:
   schemas:
+    CustomerReputationAnalysisValue:
+      properties:
+        analysis_value:
+          description: Customer analysis value
+          title: Analysis Value
+          type: number
+        reputation:
+          description: Customer reputation value
+          title: Reputation
+          type: integer
+      required:
+      - reputation
+      - analysis_value
+      title: Value of customer analysis mapped to customer reputation
+      type: object
     CustomersForAllCategoriesAnalysis:
       properties:
         analysis_value_avg:
+          description: Average value of the analysis for the customer across all reviews
+            / comments
           title: Analysis Value Avg
           type: number
         customers_count:
+          description: Count of customers of the product
           minimum: 0.0
           title: Customers Count
           type: integer
         href_category_1:
+          description: Href to the first level category
           title: Href Category 1
           type: string
         href_category_2:
+          description: Href to the second level category
           title: Href Category 2
           type: string
         href_category_3:
+          description: Href to the third level category
           title: Href Category 3
           type: string
         href_category_4:
+          description: Href to the fourth level category
           title: Href Category 4
           type: string
         product_fullname:
+          description: The full name of the analysis product
           title: Product Fullname
           type: string
         ru_category_1:
+          description: Title of the first level category in russian
           title: Ru Category 1
           type: string
         ru_category_2:
+          description: Title of the second level category in russian
           title: Ru Category 2
           type: string
         ru_category_3:
+          description: Title of the third level category in russian
           title: Ru Category 3
           type: string
         ru_category_4:
+          description: Title of the fourth level category in russian
           title: Ru Category 4
           type: string
       required:
@@ -41,42 +68,56 @@ components:
       - href_category_1
       - ru_category_2
       - href_category_2
+      - ru_category_3
+      - href_category_3
+      - ru_category_4
+      - href_category_4
       - product_fullname
       - customers_count
       - analysis_value_avg
-      title: CustomersForAllCategoriesAnalysis
+      title: Analysis value customers across all categories
       type: object
     CustomersForAllCategoriesBaseAnalysis:
       properties:
         customers_count:
+          description: Count of customers of the product
           minimum: 0.0
           title: Customers Count
           type: integer
         href_category_1:
+          description: Href to the first level category
           title: Href Category 1
           type: string
         href_category_2:
+          description: Href to the second level category
           title: Href Category 2
           type: string
         href_category_3:
+          description: Href to the third level category
           title: Href Category 3
           type: string
         href_category_4:
+          description: Href to the fourth level category
           title: Href Category 4
           type: string
         product_fullname:
+          description: The full name of the analysis product
           title: Product Fullname
           type: string
         ru_category_1:
+          description: Title of the first level category in russian
           title: Ru Category 1
           type: string
         ru_category_2:
+          description: Title of the second level category in russian
           title: Ru Category 2
           type: string
         ru_category_3:
+          description: Title of the third level category in russian
           title: Ru Category 3
           type: string
         ru_category_4:
+          description: Title of the fourth level category in russian
           title: Ru Category 4
           type: string
       required:
@@ -84,43 +125,60 @@ components:
       - href_category_1
       - ru_category_2
       - href_category_2
+      - ru_category_3
+      - href_category_3
+      - ru_category_4
+      - href_category_4
       - product_fullname
       - customers_count
-      title: CustomersForAllCategoriesBaseAnalysis
+      title: Analysis customers across all categories
       type: object
     GroupRegionallyAllCustomerAnalysis:
       properties:
         analysis_value_avg:
+          description: Average value of the analysis for the customer across all reviews
+            / comments
           title: Analysis Value Avg
           type: number
         city_en:
+          description: Customer city in english
           title: City En
           type: string
         city_ru:
+          description: Customer city in russian
           title: City Ru
           type: string
         country_en:
+          description: Customer country in english
           title: Country En
           type: string
         country_ru:
+          description: Customer country in russian
           title: Country Ru
           type: string
         latitude:
+          description: Latitude of the customer region
           title: Latitude
           type: number
         longitude:
+          description: Longitude of the customer region
           title: Longitude
           type: number
         object_count:
+          description: Count of reviews / comments on the analysis by region
           minimum: 0.0
           title: Object Count
           type: integer
       required:
+      - country_ru
+      - country_en
+      - city_ru
+      - city_en
       - latitude
       - longitude
       - object_count
       - analysis_value_avg
-      title: GroupRegionallyAllCustomerAnalysis
+      title: Customer analysis values by region
       type: object
     HTTPValidationError:
       properties:
@@ -160,13 +218,10 @@ paths:
   /api/v1/analysis_interests/comments:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0433\u0440\u0443\
-        \u043F\u043F\u0438\u0440\u043E\u0432\u043A \u043F\u043E \u0432\u0441\u0435\
-        \u043C \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C (\u0438\
-        \u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C \u043F\u043E \u043A\u043E\
-        \u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u044F\u043C) \u043F\u043E\
-        \ \u043A\u043B\u0438\u0435\u043D\u0442\u0430\u043C \u043D\u0430\u0448\u0435\
-        \u0433\u043E \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430\n\n:param product_name_id:\n\
-        :param db:\n:return:"
+        \u043F\u043F\u0438\u0440\u043E\u0432\u043A\u0443 \u043F\u043E \u0432\u0441\
+        \u0435\u043C \u0438\u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C \u043A\
+        \u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\u0432 \u043F\
+        \u0440\u043E\u0434\u0443\u043A\u0442\u0430."
       operationId: customer_interest_comments_api_v1_analysis_interests_comments_get
       parameters:
       - in: query
@@ -192,18 +247,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Customer Interest Comments
+      summary: Commentators interests
       tags:
       - analysis_interests
   /api/v1/analysis_interests/reviews:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0433\u0440\u0443\
-        \u043F\u043F\u0438\u0440\u043E\u0432\u043A \u043F\u043E \u0432\u0441\u0435\
-        \u043C \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C (\u0438\
-        \u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C \u043F\u043E \u043E\u0442\
-        \u0437\u044B\u0432\u0430\u043C) \u043F\u043E \u043A\u043B\u0438\u0435\u043D\
-        \u0442\u0430\u043C \u043D\u0430\u0448\u0435\u0433\u043E \u043F\u0440\u043E\
-        \u0434\u0443\u043A\u0442\u0430\n\n:param product_name_id:\n:param db:\n:return:"
+        \u043F\u043F\u0438\u0440\u043E\u0432\u043A\u0443 \u043F\u043E \u0432\u0441\
+        \u0435\u043C \u0438\u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C \u0440\
+        \u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432 \u043F\u0440\u043E\u0434\u0443\
+        \u043A\u0442\u0430."
       operationId: customer_interests_reviews_api_v1_analysis_interests_reviews_get
       parameters:
       - in: query
@@ -229,22 +282,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Customer Interests Reviews
+      summary: Reviewers interests
       tags:
       - analysis_interests
   /api/v1/analysis_sentiments/comments/category:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
-        \u0438\u0442\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
-        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u0435\u0432\
-        \ \u043A\u043B\u0438\u0435\u043D\u0442\u043E\u0432 \u0443\u043A\u0430\u0437\
-        \u0430\u043D\u043D\u043E\u0433\u043E \u043F\u0440\u043E\u0434\u0443\u043A\u0442\
-        \u0430 \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\
-        \u043D\u044B\u0439 \u043F\u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\
-        \u0438\u044F\u043C\n\n\u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\
-        \u0446\u0438\u044F: https://plotly.com/python/treemaps/ \u0438\u043B\u0438\
-        \ https://plotly.com/python/sunburst-charts/\n\n:param product_name_id:\n\
-        :param db:\n:return:"
+        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
+        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\
+        \u0432 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\
+        \u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\
+        \u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C"
       operationId: customer_sentiment_comments_category_api_v1_analysis_sentiments_comments_category_get
       parameters:
       - in: query
@@ -270,27 +318,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Customer Sentiment Comments Category
+      summary: Commentators sentiments by category
       tags:
       - analysis_sentiments
   /api/v1/analysis_sentiments/comments/region:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
         \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
-        \ \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\
-        \u043D\u044B\u0439 \u043F\u043E \u0440\u0443\u0433\u0438\u043E\u043D\u0430\
-        \u043C \u0434\u043B\u044F \u0432\u0441\u0435\u0445 \u043A\u043E\u043C\u043C\
-        \u0435\u043D\u0442\u0430\u0440\u0438\u0435\u0432 \u043A\u043B\u0438\u0435\u043D\
-        \u0442\u043E\u0432 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E\
-        \ \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430\n\n:\u0432\u0438\u0437\u0443\
-        \u0430\u043B\u0438\u0437\u0430\u0446\u0438\u044F \u041A\u0430\u0440\u0442\u0430\
-        : https://plotly.com/python/scattermapbox/#basic-example-with-plotly-express\n\
-        \ (\u0446\u0432\u0435\u0442\u043E\u043C \u043F\u043E\u043A\u0430\u0437\u044B\
-        \u0432\u0430\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F\
-        \ \u043F\u043E\u0437\u0438\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438\
-        \ \u043D\u0435\u0433\u0430\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438\
-        \ \u043E\u0442 -1 \u0434\u043E 1)\n\n:param product_name_id:\n:param db:\n\
-        :return:"
+        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\
+        \u0432 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\
+        \u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\
+        \u043E \u0440\u0435\u0433\u0438\u043E\u043D\u0430\u043C"
       operationId: customer_sentiment_comments_region_api_v1_analysis_sentiments_comments_region_get
       parameters:
       - in: query
@@ -316,21 +354,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Customer Sentiment Comments Region
+      summary: Commentators sentiments by region
       tags:
       - analysis_sentiments
   /api/v1/analysis_sentiments/reviews/category:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
-        \u0438\u0442\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
-        \ \u043E\u0442\u0437\u044B\u0432\u043E\u0432 \u043A\u043B\u0438\u0435\u043D\
-        \u0442\u043E\u0432 \u0443\u043A\u0430\u0437\u0430\u043D\u043D\u043E\u0433\u043E\
-        \ \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\u0443\
-        \u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\u043E\
-        \ \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C\n\n\u0432\u0438\
-        \u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0446\u0438\u044F: https://plotly.com/python/treemaps/\
-        \ \u0438\u043B\u0438 https://plotly.com/python/sunburst-charts/\n\n:param\
-        \ product_name_id:\n:param db:\n:return:"
+        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
+        \ \u0440\u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432 \u043F\u0440\u043E\
+        \u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\
+        \u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\u043E \u043A\u0430\u0442\
+        \u0435\u0433\u043E\u0440\u0438\u044F\u043C"
       operationId: customer_sentiment_reviews_category_api_v1_analysis_sentiments_reviews_category_get
       parameters:
       - in: query
@@ -356,26 +390,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Customer Sentiment Reviews Category
+      summary: Reviewers sentiments by category
       tags:
       - analysis_sentiments
   /api/v1/analysis_sentiments/reviews/region:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
         \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
-        \ \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\
-        \u043D\u044B\u0439 \u043F\u043E \u0440\u0443\u0433\u0438\u043E\u043D\u0430\
-        \u043C \u0434\u043B\u044F \u0432\u0441\u0435\u0445 \u043E\u0442\u0437\u044B\
-        \u0432\u043E\u0432 \u043A\u043B\u0438\u0435\u043D\u0442\u043E\u0432 \u0432\
-        \u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u043F\u0440\u043E\u0434\
-        \u0443\u043A\u0442\u0430\n\n:\u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\
-        \u0430\u0446\u0438\u044F \u041A\u0430\u0440\u0442\u0430: https://plotly.com/python/scattermapbox/#basic-example-with-plotly-express\n\
-        \ (\u0446\u0432\u0435\u0442\u043E\u043C \u043F\u043E\u043A\u0430\u0437\u044B\
-        \u0432\u0430\u0442\u044C \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F\
-        \ \u043F\u043E\u0437\u0438\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438\
-        \ \u043D\u0435\u0433\u0430\u0442\u0438\u0432\u043D\u043E\u0441\u0442\u0438\
-        \ \u043E\u0442 -1 \u0434\u043E 1)\n\n:param product_name_id:\n:param db:\n\
-        :return:"
+        \ \u0440\u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432 \u043F\u0440\u043E\
+        \u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\
+        \u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\u043E \u0440\u0435\u0433\
+        \u0438\u043E\u043D\u0430\u043C"
       operationId: customer_sentiment_reviews_region_api_v1_analysis_sentiments_reviews_region_get
       parameters:
       - in: query
@@ -401,30 +426,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Customer Sentiment Reviews Region
+      summary: Reviewers sentiments by region
       tags:
       - analysis_sentiments
-  /api/v1/analysis_similarity/comments:
+  /api/v1/analysis_similarity/comments/reputation:
     get:
-      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0437\u043D\u0430\
-        \u0447\u0435\u043D\u0438\u044F \u0441\u0445\u043E\u0434\u0441\u0442\u0432\u0430\
-        \ \u043F\u043E \u0432\u0441\u0435\u043C \u043E\u0442\u0437\u044B\u0432\u0430\
-        \u043C \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u043A\u043B\u0438\u0435\
-        \u043D\u0442\u0430 (\u043F\u0438\u0441\u0430\u043B \u043A\u043E\u043C\u043C\
-        \u0435\u043D\u0442\u0430\u0440\u0438\u0439) \u043F\u0440\u043E\u0434\u0443\
-        \u043A\u0442\u0430\n\n:\u0432\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\
-        \u0446\u0438\u044F https://plotly.com/python/histograms/#several-histograms-for-the-different-values-of-one-column\n\
-        \u043F\u043E \u043E\u0441\u0438 x - \u0432\u0441\u0435 \u043A\u043B\u0438\u0435\
-        \u043D\u0442\u044B\n\u043F\u043E \u043E\u0441\u0438 y - \u0437\u043D\u0430\
-        \u0447\u0435\u043D\u0438\u044F \u0441\u0445\u0435\u0436\u0435\u0441\u0442\u0438\
-        \ \u043F\u043E \u0432\u0441\u0435\u043C \u043E\u0442\u0437\u044B\u0432\u0430\
-        \u043C \u0434\u043B\u044F \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u043A\
-        \u043B\u0438\u0435\u043D\u0442\u0430\n\u0443\u0440\u043E\u043A\u043D\u0438\
-        \ \u0433\u0438\u0441\u0442\u043E\u0433\u0440\u0430\u043C\u043C\u044B - \u0433\
-        \u0440\u0443\u043F\u043F\u0438\u0440\u043E\u0432\u043A\u0430 \u043F\u043E\
-        \ \u0433\u043E\u0440\u043E\u0434\u0430\u043C (city_ru \u0438\u043B\u0438 \u0441\
-        ity_en)\n\n:param product_name_id:\n:param db:\n:return:"
-      operationId: get_customer_similarity_analysis_product_by_comments_api_v1_analysis_similarity_comments_get
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0430\u043D\u0430\
+        \u043B\u0438\u0437 \u0441\u0445\u043E\u0436\u0435\u0441\u0442\u0438 \u043E\
+        \u0442\u0437\u044B\u0432\u043E\u0432 \u043A\u0430\u0436\u0434\u043E\u0433\u043E\
+        \ \u043A\u043B\u0438\u0435\u043D\u0442\u0430 \u0441\u043E \u0437\u043D\u0430\
+        \u0447\u0435\u043D\u0438\u0435\u043C \u0440\u0435\u043F\u0443\u0442\u0430\u0446\
+        \u0438\u0438."
+      operationId: get_customer_similarity_analysis_product_by_comments_api_v1_analysis_similarity_comments_reputation_get
       parameters:
       - in: query
         name: product_name_id
@@ -436,7 +449,12 @@ paths:
         '200':
           content:
             application/json:
-              schema: {}
+              schema:
+                items:
+                  $ref: '#/components/schemas/CustomerReputationAnalysisValue'
+                title: Response Get Customer Similarity Analysis Product By Comments
+                  Api V1 Analysis Similarity Comments Reputation Get
+                type: array
           description: Successful Response
         '422':
           content:
@@ -444,29 +462,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Get Customer Similarity Analysis Product By Comments
+      summary: Similarity comments customer analysis by product
       tags:
       - analysis_similarity
-  /api/v1/analysis_similarity/reviews:
+  /api/v1/analysis_similarity/reviews/reputation:
     get:
-      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0437\u043D\u0430\
-        \u0447\u0435\u043D\u0438\u044F \u0441\u0445\u043E\u0434\u0441\u0442\u0432\u0430\
-        \ \u043F\u043E \u0432\u0441\u0435\u043C \u043E\u0442\u0437\u044B\u0432\u0430\
-        \u043C \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u043A\u043B\u0438\u0435\
-        \u043D\u0442\u0430 (\u043F\u0438\u0441\u0430\u043B \u043E\u0442\u0437\u044B\
-        \u0432) \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430\n\n:\u0432\u0438\u0437\
-        \u0443\u0430\u043B\u0438\u0437\u0430\u0446\u0438\u044F https://plotly.com/python/histograms/#several-histograms-for-the-different-values-of-one-column\n\
-        \u043F\u043E \u043E\u0441\u0438 x - \u0432\u0441\u0435 \u043A\u043B\u0438\u0435\
-        \u043D\u0442\u044B\n\u043F\u043E \u043E\u0441\u0438 y - \u0437\u043D\u0430\
-        \u0447\u0435\u043D\u0438\u044F \u0441\u0445\u0435\u0436\u0435\u0441\u0442\u0438\
-        \ \u043F\u043E \u0432\u0441\u0435\u043C \u043E\u0442\u0437\u044B\u0432\u0430\
-        \u043C \u0434\u043B\u044F \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u043A\
-        \u043B\u0438\u0435\u043D\u0442\u0430\n\u0443\u0440\u043E\u043A\u043D\u0438\
-        \ \u0433\u0438\u0441\u0442\u043E\u0433\u0440\u0430\u043C\u043C\u044B - \u0433\
-        \u0440\u0443\u043F\u043F\u0438\u0440\u043E\u0432\u043A\u0430 \u043F\u043E\
-        \ \u0433\u043E\u0440\u043E\u0434\u0430\u043C (city_ru \u0438\u043B\u0438 \u0441\
-        ity_en)\n\n:param product_name_id:\n:param db:\n:return:"
-      operationId: get_customer_similarity_analysis_product_by_reviews_api_v1_analysis_similarity_reviews_get
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0430\u043D\u0430\
+        \u043B\u0438\u0437 \u0441\u0445\u043E\u0436\u0435\u0441\u0442\u0438 \u043E\
+        \u0442\u0437\u044B\u0432\u043E\u0432 \u043A\u0430\u0436\u0434\u043E\u0433\u043E\
+        \ \u043A\u043B\u0438\u0435\u043D\u0442\u0430 \u0441\u043E \u0437\u043D\u0430\
+        \u0447\u0435\u043D\u0438\u0435\u043C \u0440\u0435\u043F\u0443\u0442\u0430\u0446\
+        \u0438\u0438."
+      operationId: get_customer_similarity_analysis_product_by_reviews_api_v1_analysis_similarity_reviews_reputation_get
       parameters:
       - in: query
         name: product_name_id
@@ -478,7 +485,12 @@ paths:
         '200':
           content:
             application/json:
-              schema: {}
+              schema:
+                items:
+                  $ref: '#/components/schemas/CustomerReputationAnalysisValue'
+                title: Response Get Customer Similarity Analysis Product By Reviews
+                  Api V1 Analysis Similarity Reviews Reputation Get
+                type: array
           description: Successful Response
         '422':
           content:
@@ -486,16 +498,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
-      summary: Get Customer Similarity Analysis Product By Reviews
+      summary: Similarity reviews customer analysis by product
       tags:
       - analysis_similarity
-  /swagger.yaml:
-    get:
-      operationId: get_swagger_swagger_yaml_get
-      responses:
-        '200':
-          content:
-            application/json:
-              schema: {}
-          description: Successful Response
-      summary: Get Swagger

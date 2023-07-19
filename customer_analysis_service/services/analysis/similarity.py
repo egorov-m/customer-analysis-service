@@ -6,6 +6,7 @@ import torch
 from sqlmodel import select, Session
 from transformers import AutoTokenizer, AutoModel
 
+from customer_analysis_service.api.v1.schemas.analysis import data_to_schema, CustomerReputationAnalysisValue
 from customer_analysis_service.db.models import Review, Comment, Product, ProductSimilarityAnalysis, Customer, \
     CustomerSimilarityAnalysis
 from customer_analysis_service.db.repository import ProductRepository, CustomerRepository, ReviewRepository, \
@@ -208,59 +209,50 @@ class SimilarityAnalysisService(BaseService):
         comments: list[Comment] = comment_repo.get_all_comments_for_customer(customer.name_id)
         return reviews, comments
 
-    def _get_customer_similarity_analysis_product(self, product_name_id: str, reviews_or_comments):
+    def get_customer_by_reputation_similarity_analysis_product_by_comments(self, product_name_id: str):
         """
-        SELECT c.country_ru,
-               c.country_en,
-               c.city_ru,
-               c.city_en,
-               csa.similarity_reviews_value,
-               csa.similarity_comments_value FROM customer_similarity_analysis csa
-                                             JOIN customer c on csa.customer_name_id = c.name_id
-        WHERE c.city_ru IS NOT NULL AND csa.customer_name_id IN (SELECT DISTINCT r.customer_name_id
-                                                                 FROM review r
-                                                                 WHERE r.evaluated_product_name_id = 'product_name_id')
-
+        SELECT similarity_comments_value, c.reputation
+        FROM customer_similarity_analysis
+        JOIN customer c on c.name_id = customer_similarity_analysis.customer_name_id
+        WHERE customer_name_id IN (SELECT comment.customer_name_id
+                                   FROM comment
+                                   JOIN review r on r.id = comment.review_id
+                                   WHERE r.evaluated_product_name_id = 'product_name_id');
         :param product_name_id:
         :return:
         """
         with self.session as session:
-            query = select(Customer.country_ru, Customer.country_en, Customer.city_ru, Customer.city_en, reviews_or_comments) \
-                .join(CustomerSimilarityAnalysis, CustomerSimilarityAnalysis.customer_name_id == Customer.name_id) \
-                .where(Customer.city_ru.isnot(None)) \
-                .where(CustomerSimilarityAnalysis.customer_name_id.in_(select(Review.customer_name_id)
-                                                                       .distinct()
-                                                                       .where(Review.evaluated_product_name_id == product_name_id)))\
-                .where(reviews_or_comments.isnot(None))
+            subquery = select(Comment.customer_name_id).distinct()\
+                .join(Review, Comment.review_id == Review.id)\
+                .where(Review.evaluated_product_name_id == product_name_id)
 
-            return session.execute(query).all()
+            query = select(Customer.reputation, CustomerSimilarityAnalysis.similarity_comments_value).\
+                join(Customer, CustomerSimilarityAnalysis.customer_name_id == Customer.name_id)\
+                .where(Customer.name_id.in_(subquery))
 
-    def get_customer_similarity_analysis_product_by_reviews(self, product_name_id: str):
+            result = session.execute(query).all()
+
+            return data_to_schema(result, CustomerReputationAnalysisValue)
+
+    def get_customer_by_reputation_similarity_analysis_product_by_reviews(self, product_name_id: str):
         """
-        Получить значения сходства по всем отзывам каждого клиента (писал отзыв) продукта
-
-        :визуализация https://plotly.com/python/histograms/#several-histograms-for-the-different-values-of-one-column
-        по оси x - все клиенты
-        по оси y - значения схежести по всем отзывам для каждого клиента
-        урокни гистограммы - группировка по городам (city_ru или сity_en)
-
+        SELECT similarity_reviews_value, c.reputation
+        FROM customer_similarity_analysis
+        JOIN customer c on c.name_id = customer_similarity_analysis.customer_name_id
+        WHERE customer_name_id IN (SELECT review.customer_name_id
+                                   FROM review
+                                   WHERE evaluated_product_name_id = product_name_id);
         :param product_name_id:
         :return:
         """
-        return self._get_customer_similarity_analysis_product(product_name_id, getattr(CustomerSimilarityAnalysis,
-                                                                                       'similarity_reviews_value'))
+        with self.session as session:
+            subquery = select(Review.customer_name_id).distinct()\
+                .where(Review.evaluated_product_name_id == product_name_id)
 
-    def get_customer_similarity_analysis_product_by_comments(self, product_name_id: str):
-        """
-        Получить значения сходства по всем отзывам каждого клиента (писал комментарий) продукта
+            query = select(Customer.reputation, CustomerSimilarityAnalysis.similarity_reviews_value)\
+                .join(Customer, CustomerSimilarityAnalysis.customer_name_id == Customer.name_id)\
+                .where(Customer.name_id.in_(subquery))
 
-        :визуализация https://plotly.com/python/histograms/#several-histograms-for-the-different-values-of-one-column
-        по оси x - все клиенты
-        по оси y - значения схежести по всем отзывам для каждого клиента
-        урокни гистограммы - группировка по городам (city_ru или сity_en)
+            result = session.execute(query).all()
 
-        :param product_name_id:
-        :return:
-        """
-        return self._get_customer_similarity_analysis_product(product_name_id, getattr(CustomerSimilarityAnalysis,
-                                                                                       'similarity_comments_value'))
+            return data_to_schema(result, CustomerReputationAnalysisValue)

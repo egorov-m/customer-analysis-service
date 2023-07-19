@@ -1,6 +1,6 @@
 from typing import Optional, Generator
 
-from pydantic import BaseModel, conint
+from pydantic import BaseModel, conint, Field
 
 
 class TunedModel(BaseModel):
@@ -9,31 +9,48 @@ class TunedModel(BaseModel):
 
 
 class CustomersForAllCategoriesBaseAnalysis(TunedModel):
-    ru_category_1: str
-    href_category_1: str
-    ru_category_2: str
-    href_category_2: str
-    ru_category_3: Optional[str]
-    href_category_3: Optional[str]
-    ru_category_4: Optional[str]
-    href_category_4: Optional[str]
-    product_fullname: str
-    customers_count: conint(ge=0)
+    ru_category_1: str = Field(..., description="Title of the first level category in russian")
+    href_category_1: str = Field(..., description="Href to the first level category")
+    ru_category_2: str = Field(..., description="Title of the second level category in russian")
+    href_category_2: str = Field(..., description="Href to the second level category")
+    ru_category_3: Optional[str] = Field(..., description="Title of the third level category in russian")
+    href_category_3: Optional[str] = Field(..., description="Href to the third level category")
+    ru_category_4: Optional[str] = Field(..., description="Title of the fourth level category in russian")
+    href_category_4: Optional[str] = Field(..., description="Href to the fourth level category")
+    product_fullname: str = Field(..., description="The full name of the analysis product")
+    customers_count: conint(ge=0) = Field(..., description="Count of customers of the product")
+
+    class Config:
+        title = "Analysis customers across all categories"
 
 
 class CustomersForAllCategoriesAnalysis(CustomersForAllCategoriesBaseAnalysis):
-    analysis_value_avg: float
+    analysis_value_avg: float = Field(..., description="Average value of the analysis for the customer across all reviews / comments")
+
+    class Config:
+        title = "Analysis value customers across all categories"
 
 
 class GroupRegionallyAllCustomerAnalysis(TunedModel):
-    country_ru: Optional[str]
-    country_en: Optional[str]
-    city_ru: Optional[str]
-    city_en: Optional[str]
-    latitude: float
-    longitude: float
-    object_count: conint(ge=0)
-    analysis_value_avg: float
+    country_ru: Optional[str] = Field(..., description="Customer country in russian")
+    country_en: Optional[str] = Field(..., description="Customer country in english")
+    city_ru: Optional[str] = Field(..., description="Customer city in russian")
+    city_en: Optional[str] = Field(..., description="Customer city in english")
+    latitude: float = Field(..., description="Latitude of the customer region")
+    longitude: float = Field(..., description="Longitude of the customer region")
+    object_count: conint(ge=0) = Field(..., description="Count of reviews / comments on the analysis by region")
+    analysis_value_avg: float = Field(..., description="Average value of the analysis for the customer across all reviews / comments")
+
+    class Config:
+        title = "Customer analysis values by region"
+
+
+class CustomerReputationAnalysisValue(TunedModel):
+    reputation: int = Field(..., description="Customer reputation value")
+    analysis_value: float = Field(..., description="Customer analysis value")
+
+    class Config:
+        title = "Value of customer analysis mapped to customer reputation"
 
 
 def data_to_schema(data: list[tuple], schema: TunedModel.__class__) -> Generator[TunedModel, None, None]:
