@@ -8,10 +8,14 @@ class CasErrorCode(IntEnum):
 
     Ranges:
            0-1000: general errors
+        3001-4000: visualizer errors
     """
 
     # 0-1000: general errors
     GENERIC_ERROR = 0
+
+    # 3001-4000: visualizer errors
+    VISUALIZATION_TYPE_ERROR = 3001
 
 
 class CasError(Exception):

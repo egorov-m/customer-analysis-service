@@ -210,12 +210,19 @@ components:
       - type
       title: ValidationError
       type: object
+    VisualizationType:
+      description: An enumeration.
+      enum:
+      - image
+      - html
+      title: VisualizationType
+      type: string
 info:
   title: Customer Analysis Service API
   version: 1.0.0
 openapi: 3.0.2
 paths:
-  /api/v1/analysis_interests/comments:
+  /api/v1/analysis/interests/comments:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0433\u0440\u0443\
         \u043F\u043F\u0438\u0440\u043E\u0432\u043A\u0443 \u043F\u043E \u0432\u0441\
@@ -250,7 +257,7 @@ paths:
       summary: Commentators interests
       tags:
       - analysis_interests
-  /api/v1/analysis_interests/reviews:
+  /api/v1/analysis/interests/reviews:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0433\u0440\u0443\
         \u043F\u043F\u0438\u0440\u043E\u0432\u043A\u0443 \u043F\u043E \u0432\u0441\
@@ -285,7 +292,7 @@ paths:
       summary: Reviewers interests
       tags:
       - analysis_interests
-  /api/v1/analysis_sentiments/comments/category:
+  /api/v1/analysis/sentiments/comments/category:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
         \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
@@ -321,7 +328,7 @@ paths:
       summary: Commentators sentiments by category
       tags:
       - analysis_sentiments
-  /api/v1/analysis_sentiments/comments/region:
+  /api/v1/analysis/sentiments/comments/region:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
         \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
@@ -357,7 +364,7 @@ paths:
       summary: Commentators sentiments by region
       tags:
       - analysis_sentiments
-  /api/v1/analysis_sentiments/reviews/category:
+  /api/v1/analysis/sentiments/reviews/category:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
         \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
@@ -393,7 +400,7 @@ paths:
       summary: Reviewers sentiments by category
       tags:
       - analysis_sentiments
-  /api/v1/analysis_sentiments/reviews/region:
+  /api/v1/analysis/sentiments/reviews/region:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
         \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
@@ -429,7 +436,7 @@ paths:
       summary: Reviewers sentiments by region
       tags:
       - analysis_sentiments
-  /api/v1/analysis_similarity/comments/reputation:
+  /api/v1/analysis/similarity/comments/reputation:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0430\u043D\u0430\
         \u043B\u0438\u0437 \u0441\u0445\u043E\u0436\u0435\u0441\u0442\u0438 \u043E\
@@ -465,7 +472,7 @@ paths:
       summary: Similarity comments customer analysis by product
       tags:
       - analysis_similarity
-  /api/v1/analysis_similarity/reviews/reputation:
+  /api/v1/analysis/similarity/reviews/reputation:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0430\u043D\u0430\
         \u043B\u0438\u0437 \u0441\u0445\u043E\u0436\u0435\u0441\u0442\u0438 \u043E\
@@ -501,3 +508,38 @@ paths:
       summary: Similarity reviews customer analysis by product
       tags:
       - analysis_similarity
+  /api/v1/visualizer/category/quantity:
+    post:
+      description: "\u0412\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0438\u0440\u043E\
+        \u0432\u0430\u0442\u044C \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\
+        \u043E, \u0433\u0440\u0443\u043F\u043F\u0438\u0440\u0443\u044F \u043F\u043E\
+        \ \u0432\u0441\u0435\u043C \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\
+        \u044F\u043C."
+      operationId: visualize_quantity_by_groupings_by_category_api_v1_visualizer_category_quantity_post
+      parameters:
+      - in: query
+        name: vis_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/VisualizationType'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/CustomersForAllCategoriesBaseAnalysis'
+              title: Data
+              type: array
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Visualize quantities by grouping by category
+      tags:
+      - visualizer_category

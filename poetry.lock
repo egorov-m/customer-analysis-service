@@ -1418,6 +1418,17 @@ files = [
 ]
 
 [[package]]
+name = "kaleido"
+version = "0.1.0.post1"
+description = "Static image export for web-based visualization libraries with zero dependencies"
+optional = false
+python-versions = "*"
+files = [
+    {file = "kaleido-0.1.0.post1-py2.py3-none-win32.whl", hash = "sha256:636aedcd89f359f54687b4fe331776a7224f7c31c27d03230e4e13c7cf4cb66a"},
+    {file = "kaleido-0.1.0.post1-py2.py3-none-win_amd64.whl", hash = "sha256:2a942606a13c70dfd0a02e092ec140a1083e093ae06661c5e1b1179e477a9e44"},
+]
+
+[[package]]
 name = "lxml"
 version = "4.9.2"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
@@ -4056,4 +4067,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "e26b14df8e885e901047f73a8c118bd14fc67252a176548e54920ebb6fd15cea"
+content-hash = "e41367a14cafef765f12773a64c34ae024cbf338d81bf4a8b51d000c60719501"
