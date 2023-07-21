@@ -103,8 +103,8 @@ class InterestAnalysisService(BaseService):
                 )
                 .join(Product, Review.evaluated_product_name_id == Product.name_id)
                 .where(
-                    field_ru_3.isnot(None), field_href_3.isnot(None),
-                    field_ru_4.isnot(None), field_href_4.isnot(None),
+                    # field_ru_3.isnot(None), field_href_3.isnot(None),
+                    # field_ru_4.isnot(None), field_href_4.isnot(None),
                     Review.customer_name_id.in_(subquery),
                 )
                 .group_by(*p)
@@ -176,8 +176,8 @@ class InterestAnalysisService(BaseService):
                 .join(Review, Comment.review_id == Review.id)
                 .join(Product, Review.evaluated_product_name_id == Product.name_id)
                 .where(
-                    field_ru_3.isnot(None), field_href_3.isnot(None),
-                    field_ru_4.isnot(None), field_href_4.isnot(None),
+                    # field_ru_3.isnot(None), field_href_3.isnot(None),
+                    # field_ru_4.isnot(None), field_href_4.isnot(None),
                     Comment.customer_name_id.in_(subquery),
                 )
                 .group_by(*p)
