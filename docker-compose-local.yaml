@@ -24,6 +24,23 @@ services:
     networks:
       - cas
 
+  cas_cache:
+    container_name: "cas_cache"
+    image: redis:alpine
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis_cache.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+    networks:
+      - cas
+
 networks:
   cas:
     driver: bridge
