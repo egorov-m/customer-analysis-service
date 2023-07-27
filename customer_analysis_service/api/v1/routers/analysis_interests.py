@@ -16,7 +16,7 @@ router = APIRouter()
     description="Получить группировку по всем интересам комментаторов продукта.",
     summary="Commentators interests"
 )
-def customer_interest_comments(product_name_id: str, db: Session = Depends(get_db)):
+async def customer_interest_comments(product_name_id: str, db: Session = Depends(get_db)):
     service: InterestAnalysisService = InterestAnalysisService(db)
     return service.get_group_customers_interest_for_all_categories_by_comments(product_name_id)
 
@@ -28,6 +28,6 @@ def customer_interest_comments(product_name_id: str, db: Session = Depends(get_d
     description="Получить группировку по всем интересам ревьюеров продукта.",
     summary="Reviewers interests"
 )
-def customer_interests_reviews(product_name_id: str, db: Session = Depends(get_db)):
+async def customer_interests_reviews(product_name_id: str, db: Session = Depends(get_db)):
     service: InterestAnalysisService = InterestAnalysisService(db)
     return service.get_group_customers_interest_for_all_categories_by_reviews(product_name_id)

@@ -16,8 +16,14 @@ class Settings(BaseSettings):
     DATABASE_POOL_SIZE = 75
     DATABASE_MAX_OVERFLOW = 20
 
-    def get_database_url(self):
-        return f'postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}/{self.POSTGRES_DB}'
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: str = "6379"
+
+    def get_postgres_url(self):
+        return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
+    def get_redis_url(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
 
     class Config:
         env_file = ".env"

@@ -14,6 +14,8 @@ class CasErrorCode(IntEnum):
     # 0-1000: general errors
     GENERIC_ERROR = 0
 
+    TOO_MANY_REQUESTS = 429
+
     # 3001-4000: visualizer errors
     VISUALIZATION_TYPE_ERROR = 3001
 

@@ -16,7 +16,7 @@ router = APIRouter()
     description="Получить анализ схожести отзывов каждого клиента со значением репутации.",
     summary="Similarity comments customer analysis by product"
 )
-def get_customer_similarity_analysis_product_by_comments(product_name_id: str, db: Session = Depends(get_db)):
+async def get_customer_similarity_analysis_product_by_comments(product_name_id: str, db: Session = Depends(get_db)):
     service: SimilarityAnalysisService = SimilarityAnalysisService(db)
     return service.get_customer_by_reputation_similarity_analysis_product_by_comments(product_name_id)
 
@@ -28,6 +28,6 @@ def get_customer_similarity_analysis_product_by_comments(product_name_id: str, d
     description="Получить анализ схожести отзывов каждого клиента со значением репутации.",
     summary="Similarity reviews customer analysis by product"
 )
-def get_customer_similarity_analysis_product_by_reviews(product_name_id: str, db: Session = Depends(get_db)):
+async def get_customer_similarity_analysis_product_by_reviews(product_name_id: str, db: Session = Depends(get_db)):
     service: SimilarityAnalysisService = SimilarityAnalysisService(db)
     return service.get_customer_by_reputation_similarity_analysis_product_by_reviews(product_name_id)
