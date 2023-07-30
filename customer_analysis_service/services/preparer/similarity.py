@@ -3,33 +3,24 @@ import logging as log
 import faiss
 import numpy as np
 import torch
-from sqlmodel import select, Session
+from sqlmodel import Session
 from transformers import AutoTokenizer, AutoModel
 
-from customer_analysis_service.api.v1.schemas.analysis import data_to_schema, CustomerReputationAnalysisValue
-from customer_analysis_service.db.models import Review, Comment, Product, ProductSimilarityAnalysis, Customer, \
-    CustomerSimilarityAnalysis
+from customer_analysis_service.db.models import Product, ProductSimilarityAnalysis, Customer, \
+    CustomerSimilarityAnalysis, Review, Comment
 from customer_analysis_service.db.repository import ProductRepository, CustomerRepository, ReviewRepository, \
     CommentRepository
-from customer_analysis_service.services.analysis.base import BaseService
+from customer_analysis_service.services.preparer.base import Preparer
 
 
-class SimilarityAnalysisService(BaseService):
-    logger = log.getLogger('similarity_analysis_service_logger')
+class SimilarityAnalysisPreparer(Preparer):
+    logger = log.getLogger('similarity_analysis_preparer_logger')
 
-    def __init__(self, session: Session, is_init_model: bool = False):
+    def __init__(self, session: Session):
         super().__init__(session)
-        if is_init_model:
-            self._init_model()
-        else:
-            self.tokenizer = None
-            self.model = None
-        self.logger.info('SimilarityAnalysisService initialized.')
-
-    def _init_model(self):
-        # Load model from HuggingFace Hub
         self.tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
         self.model = AutoModel.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
+        self.logger.info('SimilarityAnalysisPreparer initialized.')
 
     @staticmethod
     def _mean_pooling(model_output, attention_mask):
@@ -60,7 +51,7 @@ class SimilarityAnalysisService(BaseService):
         :param sentences:
         :return:
         """
-        encoded_input = self.tokenizer(sentences,  padding=True, truncation=True, return_tensors='pt')
+        encoded_input = self.tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')
         with torch.no_grad():
             self.logger.info('Begin model.')
             model_output = self.model(**encoded_input)
@@ -97,7 +88,9 @@ class SimilarityAnalysisService(BaseService):
         self.logger.info(f'{len(products)} products found.')
 
         for product in products:
-            products_similarity_analysis: list[ProductSimilarityAnalysis] = product_repo.get_products_similarity_analysis(product.name_id, version_mark)
+            products_similarity_analysis: list[
+                ProductSimilarityAnalysis] = product_repo.get_products_similarity_analysis(product.name_id,
+                                                                                           version_mark)
             if len(products_similarity_analysis) > 0:
                 product_similarity_analysis: ProductSimilarityAnalysis = products_similarity_analysis[0]
                 if is_override:
@@ -107,13 +100,15 @@ class SimilarityAnalysisService(BaseService):
                     similarity_value_comments: float = self.get_mean_similarity_for_all_sentence(
                         [item.text_comment for item in comments])
                     if similarity_value_reviews is None and similarity_value_comments is None:
-                        self.logger.info(f'[{count}] Product {product.name_id} skipped (no valid amount reviews and comments).')
+                        self.logger.info(
+                            f'[{count}] Product {product.name_id} skipped (no valid amount reviews and comments).')
                         count += 1
                         continue
                     product_repo.update_similarity_values_product_similarity_analysis(product_similarity_analysis,
                                                                                       similarity_value_reviews,
                                                                                       similarity_value_comments)
-                    self.logger.info(f'[{count}] Product {product.name_id} updated: r - {similarity_value_reviews}, c - {similarity_value_comments}.')
+                    self.logger.info(
+                        f'[{count}] Product {product.name_id} updated: r - {similarity_value_reviews}, c - {similarity_value_comments}.')
                 else:
                     self.logger.info(f'[{count}] Product {product.name_id} skipped.')
 
@@ -125,7 +120,8 @@ class SimilarityAnalysisService(BaseService):
                 similarity_value_comments: float = self.get_mean_similarity_for_all_sentence(
                     [item.text_comment for item in comments])
                 if similarity_value_reviews is None and similarity_value_comments is None:
-                    self.logger.info(f'[{count}] Product {product.name_id} skipped (no valid amount reviews and comments).')
+                    self.logger.info(
+                        f'[{count}] Product {product.name_id} skipped (no valid amount reviews and comments).')
                     count += 1
                     continue
 
@@ -135,7 +131,8 @@ class SimilarityAnalysisService(BaseService):
                 product_similarity_analysis.similarity_reviews_value = similarity_value_reviews
                 product_similarity_analysis.similarity_comments_value = similarity_value_comments
                 product_repo.add_product_sentiment_analysis(product_similarity_analysis)
-                self.logger.info(f'[{count}] Similarity analysis added product: {product.name_id}: r - {similarity_value_reviews}, c - {similarity_value_comments}.')
+                self.logger.info(
+                    f'[{count}] Similarity analysis added product: {product.name_id}: r - {similarity_value_reviews}, c - {similarity_value_comments}.')
                 count += 1
 
         self.logger.info('Similarity analysis of all products is complete.')
@@ -148,7 +145,9 @@ class SimilarityAnalysisService(BaseService):
         self.logger.info(f'{len(customers)} customers found.')
 
         for customer in customers:
-            customers_similarity_analysis: list[CustomerSimilarityAnalysis] = customer_repo.get_customers_similarity_analysis(customer.name_id, version_mark)
+            customers_similarity_analysis: list[
+                CustomerSimilarityAnalysis] = customer_repo.get_customers_similarity_analysis(customer.name_id,
+                                                                                              version_mark)
             if len(customers_similarity_analysis) > 0:
                 customer_similarity_analysis: CustomerSimilarityAnalysis = customers_similarity_analysis[0]
                 if is_override:
@@ -159,7 +158,8 @@ class SimilarityAnalysisService(BaseService):
                     similarity_value_comments: float = self.get_mean_similarity_for_all_sentence(
                         [item.text_comment for item in comments])
                     if similarity_value_reviews is None and similarity_value_comments is None:
-                        self.logger.info(f'[{count}] Customer {customer.name_id} skipped (no valid amount reviews and comments).')
+                        self.logger.info(
+                            f'[{count}] Customer {customer.name_id} skipped (no valid amount reviews and comments).')
                         count += 1
                         continue
                     customer_repo.update_similarity_values_customer_similarity_analysis(customer_similarity_analysis,
@@ -179,7 +179,8 @@ class SimilarityAnalysisService(BaseService):
                 similarity_value_comments: float = self.get_mean_similarity_for_all_sentence(
                     [item.text_comment for item in comments])
                 if similarity_value_reviews is None and similarity_value_comments is None:
-                    self.logger.info(f'[{count}] Customer {customer.name_id} skipped (no valid amount reviews and comments).')
+                    self.logger.info(
+                        f'[{count}] Customer {customer.name_id} skipped (no valid amount reviews and comments).')
                     count += 1
                     continue
 
@@ -208,51 +209,3 @@ class SimilarityAnalysisService(BaseService):
         reviews: list[Review] = review_repo.get_all_reviews_for_customer(customer.name_id)
         comments: list[Comment] = comment_repo.get_all_comments_for_customer(customer.name_id)
         return reviews, comments
-
-    def get_customer_by_reputation_similarity_analysis_product_by_comments(self, product_name_id: str):
-        """
-        SELECT similarity_comments_value, c.reputation
-        FROM customer_similarity_analysis
-        JOIN customer c on c.name_id = customer_similarity_analysis.customer_name_id
-        WHERE customer_name_id IN (SELECT comment.customer_name_id
-                                   FROM comment
-                                   JOIN review r on r.id = comment.review_id
-                                   WHERE r.evaluated_product_name_id = 'product_name_id');
-        :param product_name_id:
-        :return:
-        """
-        with self.session as session:
-            subquery = select(Comment.customer_name_id).distinct()\
-                .join(Review, Comment.review_id == Review.id)\
-                .where(Review.evaluated_product_name_id == product_name_id)
-
-            query = select(Customer.reputation, CustomerSimilarityAnalysis.similarity_comments_value).\
-                join(Customer, CustomerSimilarityAnalysis.customer_name_id == Customer.name_id)\
-                .where(Customer.name_id.in_(subquery))
-
-            result = session.execute(query).all()
-
-            return data_to_schema(result, CustomerReputationAnalysisValue)
-
-    def get_customer_by_reputation_similarity_analysis_product_by_reviews(self, product_name_id: str):
-        """
-        SELECT similarity_reviews_value, c.reputation
-        FROM customer_similarity_analysis
-        JOIN customer c on c.name_id = customer_similarity_analysis.customer_name_id
-        WHERE customer_name_id IN (SELECT review.customer_name_id
-                                   FROM review
-                                   WHERE evaluated_product_name_id = product_name_id);
-        :param product_name_id:
-        :return:
-        """
-        with self.session as session:
-            subquery = select(Review.customer_name_id).distinct()\
-                .where(Review.evaluated_product_name_id == product_name_id)
-
-            query = select(Customer.reputation, CustomerSimilarityAnalysis.similarity_reviews_value)\
-                .join(Customer, CustomerSimilarityAnalysis.customer_name_id == Customer.name_id)\
-                .where(Customer.name_id.in_(subquery))
-
-            result = session.execute(query).all()
-
-            return data_to_schema(result, CustomerReputationAnalysisValue)

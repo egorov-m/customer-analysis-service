@@ -5,7 +5,7 @@ from starlette import status
 from customer_analysis_service.api.deps import get_db
 from customer_analysis_service.api.v1.schemas.analysis import GroupRegionallyAllCustomerAnalysis, \
     CustomersForAllCategoriesAnalysis
-from customer_analysis_service.services.analysis.sentiments import SentimentAnalysisService
+from customer_analysis_service.services.provider.sentiment import SentimentAnalysisProvider
 
 router = APIRouter()
 
@@ -18,8 +18,8 @@ router = APIRouter()
     summary="Commentators sentiments by region"
 )
 async def customer_sentiment_comments_region(product_name_id: str, db: Session = Depends(get_db)):
-    service: SentimentAnalysisService = SentimentAnalysisService(db)
-    return service.get_sentiment_analysis_group_regionally_all_customer_comments_product(product_name_id)
+    service: SentimentAnalysisProvider = SentimentAnalysisProvider(db)
+    return service.get_sentiment_analysis_by_regionally_of_commentators(product_name_id)
 
 
 @router.get(
@@ -30,8 +30,8 @@ async def customer_sentiment_comments_region(product_name_id: str, db: Session =
     summary="Reviewers sentiments by region"
 )
 async def customer_sentiment_reviews_region(product_name_id: str, db: Session = Depends(get_db)):
-    service: SentimentAnalysisService = SentimentAnalysisService(db)
-    return service.get_sentiment_analysis_group_regionally_all_customer_reviews_product(product_name_id)
+    service: SentimentAnalysisProvider = SentimentAnalysisProvider(db)
+    return service.get_sentiment_analysis_by_regionally_of_reviewers(product_name_id)
 
 
 @router.get(
@@ -42,8 +42,8 @@ async def customer_sentiment_reviews_region(product_name_id: str, db: Session = 
     summary="Commentators sentiments by category"
 )
 async def customer_sentiment_comments_category(product_name_id: str, db: Session = Depends(get_db)):
-    service: SentimentAnalysisService = SentimentAnalysisService(db)
-    return service.get_sentiment_analysis_customer_comments_product_grouped_by_category(product_name_id)
+    service: SentimentAnalysisProvider = SentimentAnalysisProvider(db)
+    return service.get_sentiment_analysis_by_category_of_commentators(product_name_id)
 
 
 @router.get(
@@ -54,5 +54,5 @@ async def customer_sentiment_comments_category(product_name_id: str, db: Session
     summary="Reviewers sentiments by category"
 )
 async def customer_sentiment_reviews_category(product_name_id: str, db: Session = Depends(get_db)):
-    service: SentimentAnalysisService = SentimentAnalysisService(db)
-    return service.get_sentiment_analysis_customer_reviews_product_grouped_by_category(product_name_id)
+    service: SentimentAnalysisProvider = SentimentAnalysisProvider(db)
+    return service.get_sentiment_analysis_by_category_of_reviewers(product_name_id)

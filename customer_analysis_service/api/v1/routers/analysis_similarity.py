@@ -4,7 +4,7 @@ from starlette import status
 
 from customer_analysis_service.api.deps import get_db
 from customer_analysis_service.api.v1.schemas.analysis import CustomerReputationAnalysisValue
-from customer_analysis_service.services.analysis.similarity import SimilarityAnalysisService
+from customer_analysis_service.services.provider.similarity import SimilarityAnalysisProvider
 
 router = APIRouter()
 
@@ -17,8 +17,8 @@ router = APIRouter()
     summary="Similarity comments customer analysis by product"
 )
 async def get_customer_similarity_analysis_product_by_comments(product_name_id: str, db: Session = Depends(get_db)):
-    service: SimilarityAnalysisService = SimilarityAnalysisService(db)
-    return service.get_customer_by_reputation_similarity_analysis_product_by_comments(product_name_id)
+    service: SimilarityAnalysisProvider = SimilarityAnalysisProvider(db)
+    return service.get_similarity_analysis_by_reputation_of_commentators(product_name_id)
 
 
 @router.get(
@@ -29,5 +29,5 @@ async def get_customer_similarity_analysis_product_by_comments(product_name_id: 
     summary="Similarity reviews customer analysis by product"
 )
 async def get_customer_similarity_analysis_product_by_reviews(product_name_id: str, db: Session = Depends(get_db)):
-    service: SimilarityAnalysisService = SimilarityAnalysisService(db)
-    return service.get_customer_by_reputation_similarity_analysis_product_by_reviews(product_name_id)
+    service: SimilarityAnalysisProvider = SimilarityAnalysisProvider(db)
+    return service.get_similarity_analysis_by_reputation_of_reviewers(product_name_id)

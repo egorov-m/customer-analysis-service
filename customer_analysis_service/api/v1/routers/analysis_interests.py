@@ -4,7 +4,7 @@ from starlette import status
 
 from customer_analysis_service.api.deps import get_db
 from customer_analysis_service.api.v1.schemas.analysis import CustomersForAllCategoriesBaseAnalysis
-from customer_analysis_service.services.analysis.interests import InterestAnalysisService
+from customer_analysis_service.services.provider.interests import InterestsAnalysisProvider
 
 router = APIRouter()
 
@@ -17,8 +17,8 @@ router = APIRouter()
     summary="Commentators interests"
 )
 async def customer_interest_comments(product_name_id: str, db: Session = Depends(get_db)):
-    service: InterestAnalysisService = InterestAnalysisService(db)
-    return service.get_group_customers_interest_for_all_categories_by_comments(product_name_id)
+    service: InterestsAnalysisProvider = InterestsAnalysisProvider(db)
+    return service.get_interests_analysis_by_category_of_commentators(product_name_id)
 
 
 @router.get(
@@ -29,5 +29,5 @@ async def customer_interest_comments(product_name_id: str, db: Session = Depends
     summary="Reviewers interests"
 )
 async def customer_interests_reviews(product_name_id: str, db: Session = Depends(get_db)):
-    service: InterestAnalysisService = InterestAnalysisService(db)
-    return service.get_group_customers_interest_for_all_categories_by_reviews(product_name_id)
+    service: InterestsAnalysisProvider = InterestsAnalysisProvider(db)
+    return service.get_interests_analysis_by_category_of_reviewers(product_name_id)

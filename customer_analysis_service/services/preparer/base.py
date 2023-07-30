@@ -1,17 +1,22 @@
 import logging as log
+
 from random import randint
 from time import sleep
 
 from geopy import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
-from sqlalchemy import not_, or_
-from sqlmodel import select, Session
+from sqlalchemy import or_, not_
+from sqlmodel import Session, select
 
 from customer_analysis_service.db.models import Customer, RegionalLocation
 
 
-class BaseService:
-    logger = log.getLogger('analysis_service_logger')
+class Preparer:
+    """
+    Data preparer base class
+    """
+
+    logger = log.getLogger('analysis_preparer_logger')
 
     def __init__(self, session: Session):
         self.session = session
