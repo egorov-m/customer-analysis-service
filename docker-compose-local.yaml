@@ -24,8 +24,8 @@ services:
     networks:
       - cas
 
-  cas_cache:
-    container_name: "cas_cache"
+  redis:
+    container_name: "redis"
     image: redis:alpine
     restart: always
     healthcheck:
@@ -38,6 +38,17 @@ services:
       - ./redis_cache.conf:/usr/local/etc/redis/redis.conf
     ports:
       - "6379:6379"
+    networks:
+      - cas
+
+  flower_dashboard:
+    container_name: "flower_dashboard"
+    image: mher/flower
+    restart: always
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    ports:
+      - "5555:5555"
     networks:
       - cas
 

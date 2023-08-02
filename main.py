@@ -7,10 +7,10 @@ from fastapi import FastAPI, Request
 from fastapi.openapi.utils import get_openapi
 from starlette.responses import JSONResponse
 
-from customer_analysis_service.api.v1.exceptions.cas_api_error import CasError, CasErrorCode
-from customer_analysis_service.api.v1.routers.api import api_router
-from customer_analysis_service.api.v1.schemas.exception import CasErrorResponse
-from customer_analysis_service.config import settings
+from cas_shared.exceptions.cas_api_error import CasError, CasErrorCode
+from cas_api.v1.routers.api import api_router
+from cas_shared.schemas.exception import CasErrorResponse
+from config import settings
 
 logger = log.getLogger('customer_analysis_service_logger')
 log.basicConfig(level=log.INFO)
