@@ -1,5 +1,19 @@
 components:
   schemas:
+    CasTask:
+      properties:
+        task_id:
+          format: uuid4
+          title: Task Id
+          type: string
+        task_status:
+          title: Task Status
+          type: string
+      required:
+      - task_id
+      - task_status
+      title: CasTask
+      type: object
     CustomerReputationAnalysisValue:
       properties:
         analysis_value:
@@ -508,6 +522,32 @@ paths:
       summary: Similarity reviews customer analysis by product
       tags:
       - analysis_similarity
+  /api/v1/result/:
+    get:
+      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0440\u0435\u0437\
+        \u0443\u043B\u044C\u0442\u0430\u0442 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\
+        \u043D\u0438\u044F \u0437\u0430\u0434\u0430\u0447\u0438."
+      operationId: get_result_api_v1_result__get
+      parameters:
+      - in: query
+        name: task_id
+        required: true
+        schema:
+          format: uuid4
+          title: Task Id
+          type: string
+      responses:
+        '200':
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get task result
+      tags:
+      - result
   /api/v1/visualizer/analysis_value/category:
     post:
       description: "\u0412\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0438\u0440\u043E\
@@ -544,7 +584,7 @@ paths:
           \ \u043A\u043B\u0438\u0435\u043D\u0442\u044B / \u043E\u0442\u0437\u044B\u0432\
           \u044B / \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u0438"
         in: query
-        name: title_quantity
+        name: title_object_count
         required: false
         schema:
           default: Count customers
@@ -556,7 +596,7 @@ paths:
             \u0438"
           maxLength: 50
           minLength: 3
-          title: Title Quantity
+          title: Title Object Count
           type: string
       - description: "\u041E\u0431\u043E\u0437\u043D\u0430\u0447\u0435\u043D\u0438\
           \u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F \u0430\u043D\u0430\
@@ -588,6 +628,10 @@ paths:
         required: true
       responses:
         '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -677,6 +721,10 @@ paths:
         required: true
       responses:
         '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -747,6 +795,10 @@ paths:
         required: true
       responses:
         '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:

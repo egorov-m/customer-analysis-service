@@ -1,10 +1,12 @@
+from enum import StrEnum
 from functools import lru_cache
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, BaseModel
 
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Customer Analysis Service"
+    WORKER_NAME: str = "cas_worker"
     API_V1_STR: str = "/api/v1"
 
     POSTGRES_HOST: str = "localhost"
@@ -38,3 +40,10 @@ def get_settings() -> Settings:
 
 
 settings: Settings = get_settings()
+
+
+class WorkerTasks(StrEnum):
+    _visualizer: str = f"{settings.WORKER_NAME}.visualizer"
+    visualizer_group_visualize_analysis_value: str = f"{_visualizer}.group_visualize_analysis_value"
+    visualizer_group_visualize_quantity: str = f"{_visualizer}.group_visualize_quantity"
+    visualizer_maps_visualize_analysis_value: str = f"{_visualizer}.maps_visualize_analysis_value"

@@ -4,11 +4,15 @@ from cas_api.v1.routers import (
     analysis_interests,
     analysis_sentiments,
     analysis_similarity,
+    result,
     visualizer_analysis_value,
     visualizer_quantity
 )
 
 api_router = APIRouter()
+
+result_router = APIRouter()
+result_router.include_router(result.router, prefix="/result", tags=["result"])
 
 analysis_router = APIRouter()
 analysis_router.include_router(analysis_interests.router, prefix="/interests", tags=["analysis_interests"])
@@ -19,5 +23,6 @@ visualizer_router = APIRouter()
 visualizer_router.include_router(visualizer_analysis_value.router, prefix="/analysis_value", tags=["visualizer_analysis_value"])
 visualizer_router.include_router(visualizer_quantity.router, prefix="/quantity", tags=["visualizer_quantity"])
 
+api_router.include_router(result_router)
 api_router.include_router(analysis_router, prefix="/analysis")
 api_router.include_router(visualizer_router, prefix="/visualizer")

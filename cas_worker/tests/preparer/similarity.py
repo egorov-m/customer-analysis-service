@@ -10,7 +10,7 @@ from cas_worker.db.models import Product, ProductSimilarityAnalysis, Customer, \
     CustomerSimilarityAnalysis, Review, Comment
 from cas_worker.db.repository import ProductRepository, CustomerRepository, ReviewRepository, \
     CommentRepository
-from cas_worker.services.preparer.base import Preparer
+from cas_worker.tests.preparer.base import Preparer
 
 
 class SimilarityAnalysisPreparer(Preparer):

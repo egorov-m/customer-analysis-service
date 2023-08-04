@@ -4,9 +4,9 @@ import re
 from scrapy import Spider, Request
 from scrapy.http import Response
 
-from cas_worker.services.scraper.parsers import ReviewParser
-from cas_worker.services.scraper.spiders.utils.error import handle_http_errors
-from cas_worker.services.scraper.spiders.utils.pagination import spider_pagination
+from cas_worker.tests.scraper.parsers import ReviewParser
+from cas_worker.tests.scraper.spiders.utils.error import handle_http_errors
+from cas_worker.tests.scraper.spiders.utils.pagination import spider_pagination
 
 
 class ReviewsCustomerSpider(Spider):

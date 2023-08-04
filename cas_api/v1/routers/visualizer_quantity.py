@@ -1,24 +1,24 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Response, Query
+from fastapi import APIRouter, Query
 from starlette import status
 
 from cas_shared.schemas.analysis import CustomersForAllCategoriesBaseAnalysis
+from cas_shared.schemas.task import CasTask
 from cas_shared.schemas.visualizer import VisualizationType
-from cas_worker.services.visualizer.group import GroupVisualizer
-from cas_api.utils import menage_visualize_type
+from cas_worker.worker import cas_worker
+from config import WorkerTasks
 
 router = APIRouter()
 
 
 @router.post(
     "/category",
-    response_class=Response,
+    response_model=CasTask,
     status_code=status.HTTP_200_OK,
     description="Визуализировать количество, группируя по всем категориям. (для analysis_interests)",
     summary="Visualize quantities by grouping by category"
 )
-@menage_visualize_type()
 async def visualize_quantity_by_groupings_by_category(data: list[CustomersForAllCategoriesBaseAnalysis],
                                                       vis_type: VisualizationType,
                                                       title: Annotated[str, Query(
@@ -30,7 +30,6 @@ async def visualize_quantity_by_groupings_by_category(data: list[CustomersForAll
                                                           min_length=3,
                                                           max_length=50)] = "Count customers"
                                                       ):
-    visualizer: GroupVisualizer = GroupVisualizer()
-    return vis_type, visualizer.visualize_quantity(data,
-                                                   title_fig=title,
-                                                   title_quantity=title_quantity)
+    task = cas_worker.send_task(WorkerTasks.visualizer_group_visualize_quantity,
+                                args=[[dict(item) for item in data], title, title_quantity, vis_type])
+    return CasTask(task_id=task.id, task_status=task.status)

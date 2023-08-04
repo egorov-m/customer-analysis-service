@@ -4,7 +4,7 @@ from starlette import status
 
 from cas_api.deps import get_db
 from cas_shared.schemas.analysis import CustomerReputationAnalysisValue
-from cas_worker.services.provider.similarity import SimilarityAnalysisProvider
+from cas_worker.tests.provider.similarity import SimilarityAnalysisProvider
 
 router = APIRouter()
 

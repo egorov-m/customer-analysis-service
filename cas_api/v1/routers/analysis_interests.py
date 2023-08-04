@@ -4,7 +4,7 @@ from starlette import status
 
 from cas_api.deps import get_db
 from cas_shared.schemas.analysis import CustomersForAllCategoriesBaseAnalysis
-from cas_worker.services.provider.interests import InterestsAnalysisProvider
+from cas_worker.tests.provider.interests import InterestsAnalysisProvider
 
 router = APIRouter()
 

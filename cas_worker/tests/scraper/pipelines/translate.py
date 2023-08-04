@@ -3,7 +3,7 @@ from functools import lru_cache
 from translators import translate_text
 from scrapy import Item, Spider
 
-from cas_worker.services.scraper.items import CustomerItem
+from cas_worker.tests.scraper.items import CustomerItem
 
 
 class TranslateCustomerGeoLocationPipeline(object):

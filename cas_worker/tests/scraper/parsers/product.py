@@ -1,8 +1,8 @@
 from scrapy.http import Response
 from scrapy.selector import Selector
 
-from cas_worker.services.scraper.items import ProductItem
-from cas_worker.services.scraper.spiders.utils.error import handle_http_errors
+from cas_worker.tests.scraper.items import ProductItem
+from cas_worker.tests.scraper.spiders.utils.error import handle_http_errors
 
 
 class ProductParser:

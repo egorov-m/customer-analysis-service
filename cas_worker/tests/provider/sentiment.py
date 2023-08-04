@@ -5,7 +5,7 @@ from cas_shared.schemas.analysis import data_to_schema, GroupRegionallyAllCustom
     CustomersForAllCategoriesAnalysis
 from cas_worker.db.models import RegionalLocation, Customer, ReviewSentimentAnalysis, Review, Comment, \
     CommentSentimentAnalysis, Product
-from cas_worker.services.provider.base import Provider
+from cas_worker.tests.provider.base import Provider
 
 
 class SentimentAnalysisProvider(Provider):

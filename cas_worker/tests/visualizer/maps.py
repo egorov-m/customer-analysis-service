@@ -3,10 +3,15 @@ from plotly.express import scatter_mapbox
 from plotly.graph_objs import Figure
 
 from cas_shared.schemas.analysis import CustomersForAllCategoriesAnalysis
-from cas_worker.services.visualizer.visualizer import Visualizer
+from cas_worker.tests.visualizer.visualizer import Visualizer
+from config import WorkerTasks
 
 
-class MapsVisualizer(Visualizer):
+class MapsVisualizerAnalysisValue(Visualizer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = WorkerTasks.visualizer_maps_visualize_analysis_value
+
     def visualize_analysis_value(self,
                                  data: list[CustomersForAllCategoriesAnalysis],
                                  title_fig: str,

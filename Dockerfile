@@ -12,8 +12,8 @@ COPY cas_worker/db/models ./customer_analysis_service/db
 COPY cas_worker/db/repository ./customer_analysis_service/db
 COPY cas_worker/db/database.py ./customer_analysis_service/db
 COPY cas_worker/db/__init__.py ./customer_analysis_service/db
-COPY cas_worker/services/analysis ./customer_analysis_service/services
-COPY cas_worker/services/__init__.py ./customer_analysis_service/services
+COPY cas_worker/tests/analysis ./customer_analysis_service/services
+COPY cas_worker/tests/__init__.py ./customer_analysis_service/services
 COPY config.py ./customer_analysis_service
 COPY cas_server/__init__.py ./customer_analysis_service
 

@@ -47,6 +47,7 @@ services:
     restart: always
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_BASIC_AUTH=user:password
     ports:
       - "5555:5555"
     networks:

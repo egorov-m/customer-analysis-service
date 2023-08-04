@@ -4,11 +4,18 @@ from plotly.graph_objs import Figure
 
 from cas_shared.schemas.analysis import CustomersForAllCategoriesAnalysis, \
     CustomersForAllCategoriesBaseAnalysis
-from cas_worker.services.visualizer.config import visualizer_settings
-from cas_worker.services.visualizer.visualizer import Visualizer
+from cas_shared.schemas.visualizer import VisualizationType
+from cas_worker.tests.visualizer.config import visualizer_settings
+from cas_worker.tests.visualizer.utils import menage_visualize_type
+from cas_worker.tests.visualizer.visualizer import Visualizer
+from config import WorkerTasks
 
 
-class GroupVisualizer(Visualizer):
+class GroupVisualizerAnalysisValue(Visualizer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = WorkerTasks.visualizer_group_visualize_analysis_value
+
     def visualize_analysis_value(self,
                                  data: list[CustomersForAllCategoriesAnalysis],
                                  title_fig: str,
@@ -39,11 +46,25 @@ class GroupVisualizer(Visualizer):
 
         return fig
 
+
+class GroupVisualizerQuantity(Visualizer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = self.name = WorkerTasks.visualizer_group_visualize_quantity
+
+    def visualize_analysis_value(self,
+                                 data: list[CustomersForAllCategoriesAnalysis],
+                                 title_fig: str,
+                                 title_quantity: str,
+                                 title_analysis_value: str) -> Figure:
+        pass
+
     def visualize_quantity(self,
                            data: list[CustomersForAllCategoriesBaseAnalysis],
                            title_fig: str,
                            title_quantity: str) -> Figure:
-        df = DataFrame([item.dict() for item in data])
+        df = DataFrame(data)
+        # [item.dict() for item in data]
         df = df.fillna(" ")  # Category 3, 4 may not be available
         fig = treemap(df,
                       title=title_fig,
@@ -62,3 +83,13 @@ class GroupVisualizer(Visualizer):
         )
 
         return fig
+
+    @menage_visualize_type()
+    def run(self,
+            data: list[CustomersForAllCategoriesAnalysis | dict],
+            title_fig: str,
+            title_quantity: str,
+            vis_type: VisualizationType) -> Figure:
+        return vis_type, self.visualize_quantity(data,
+                                                 title_fig,
+                                                 title_quantity)

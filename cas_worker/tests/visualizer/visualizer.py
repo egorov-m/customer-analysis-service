@@ -5,11 +5,13 @@ from abc import ABC, abstractmethod
 from io import BytesIO
 
 import plotly
+from celery import Task
 from plotly.io import kaleido
 from plotly.graph_objs import Figure
 
 from cas_shared.schemas.analysis import CustomersForAllCategoriesAnalysis
-
+from cas_shared.schemas.visualizer import VisualizationType
+from cas_worker.tests.visualizer.utils import menage_visualize_type
 
 # Configuring plotlyjs to run the engine standalone without invoking cdn
 kaleido.scope.plotlyjs = urllib.parse.urljoin('file:',
@@ -18,7 +20,7 @@ kaleido.scope.plotlyjs = urllib.parse.urljoin('file:',
                                                                                        'plotly.min.js')))
 
 
-class Visualizer(ABC):
+class Visualizer(ABC, Task):
     buttons_restyle_category_chart: list = [
         dict(
             args=["type", "treemap"],
@@ -76,20 +78,17 @@ class Visualizer(ABC):
                                  data: list[CustomersForAllCategoriesAnalysis],
                                  title_fig: str,
                                  title_quantity: str,
-                                 title_analysis_value: str
-                                 ) -> Figure:
+                                 title_analysis_value: str) -> Figure:
         pass
 
-    @staticmethod
-    def fig_to_html(fig: Figure) -> str:
-        return fig.to_html(full_html=False)
-
-    @staticmethod
-    def fig_to_image(fig: Figure,
-                     img_format: str = "png",
-                     height: int | None = None,
-                     width: int | None = None) -> BytesIO:
-        return BytesIO(fig.to_image(format=img_format,
-                                    engine="kaleido",
-                                    height=height,
-                                    width=width))
+    @menage_visualize_type()
+    def run(self,
+            data: list[CustomersForAllCategoriesAnalysis | dict],
+            title_fig: str,
+            title_quantity: str,
+            title_analysis_value: str,
+            vis_type: VisualizationType) -> Figure:
+        return vis_type, self.visualize_analysis_value(data,
+                                                       title_fig,
+                                                       title_quantity,
+                                                       title_analysis_value)

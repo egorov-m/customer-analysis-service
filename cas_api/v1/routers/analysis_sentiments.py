@@ -5,7 +5,7 @@ from starlette import status
 from cas_api.deps import get_db
 from cas_shared.schemas.analysis import GroupRegionallyAllCustomerAnalysis, \
     CustomersForAllCategoriesAnalysis
-from cas_worker.services.provider.sentiment import SentimentAnalysisProvider
+from cas_worker.tests.provider.sentiment import SentimentAnalysisProvider
 
 router = APIRouter()
 

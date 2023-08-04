@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 
 from cas_shared.schemas.analysis import data_to_schema, CustomersForAllCategoriesBaseAnalysis
 from cas_worker.db.models import Product, Review, Comment
-from cas_worker.services.provider.base import Provider
+from cas_worker.tests.provider.base import Provider
 
 
 class InterestsAnalysisProvider(Provider):

@@ -1,11 +1,8 @@
 from typing import Optional, Generator
 
-from pydantic import BaseModel, conint, Field
+from pydantic import conint, Field
 
-
-class TunedModel(BaseModel):
-    class Config:
-        orm_mode = True
+from cas_shared.schemas.base import TunedModel
 
 
 class CustomersForAllCategoriesBaseAnalysis(TunedModel):

@@ -8,6 +8,7 @@ class CasErrorCode(IntEnum):
 
     Ranges:
            0-1000: general errors
+        1001-2000: tasks errors
         3001-4000: visualizer errors
     """
 
@@ -15,6 +16,11 @@ class CasErrorCode(IntEnum):
     GENERIC_ERROR = 0
 
     TOO_MANY_REQUESTS = 429
+
+    # 1001-2000: tasks errors
+    TASK_RETRY_ERROR = 1003
+    TASK_FAILURE_ERROR = 1004
+    TASK_NOT_FOUND_ERROR = 1404
 
     # 3001-4000: visualizer errors
     VISUALIZATION_TYPE_ERROR = 3001
