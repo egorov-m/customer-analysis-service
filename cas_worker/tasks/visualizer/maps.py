@@ -3,7 +3,7 @@ from plotly.express import scatter_mapbox
 from plotly.graph_objs import Figure
 
 from cas_shared.schemas.analysis import CustomersForAllCategoriesAnalysis
-from cas_worker.tests.visualizer.visualizer import Visualizer
+from cas_worker.tasks.visualizer.base import Visualizer
 from config import WorkerTasks
 
 

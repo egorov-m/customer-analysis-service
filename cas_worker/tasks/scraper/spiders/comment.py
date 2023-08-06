@@ -4,10 +4,10 @@ from datetime import datetime
 from scrapy import Spider, Request
 from scrapy.http import Response
 
-from cas_worker.tests.scraper.items import CommentItem
-from cas_worker.tests.scraper.parsers import ReviewParser
-from cas_worker.tests.scraper.spiders.utils.error import handle_http_errors
-from cas_worker.tests.scraper.spiders.utils.pagination import spider_pagination
+from cas_worker.tasks.scraper.items import CommentItem
+from cas_worker.tasks.scraper.parsers import ReviewParser
+from cas_worker.tasks.scraper.spiders.utils.error import handle_http_errors
+from cas_worker.tasks.scraper.spiders.utils.pagination import spider_pagination
 
 
 class CommentsCustomerSpider(Spider):

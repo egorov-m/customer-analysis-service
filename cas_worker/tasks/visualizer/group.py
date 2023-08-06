@@ -5,9 +5,9 @@ from plotly.graph_objs import Figure
 from cas_shared.schemas.analysis import CustomersForAllCategoriesAnalysis, \
     CustomersForAllCategoriesBaseAnalysis
 from cas_shared.schemas.visualizer import VisualizationType
-from cas_worker.tests.visualizer.config import visualizer_settings
-from cas_worker.tests.visualizer.utils import menage_visualize_type
-from cas_worker.tests.visualizer.visualizer import Visualizer
+from cas_worker.tasks.visualizer.config import visualizer_settings
+from cas_worker.tasks.visualizer.utils import menage_visualize_type
+from cas_worker.tasks.visualizer.base import Visualizer
 from config import WorkerTasks
 
 

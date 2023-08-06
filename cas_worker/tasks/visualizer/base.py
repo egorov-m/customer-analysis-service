@@ -2,7 +2,6 @@ import os
 import urllib.parse
 import urllib.request
 from abc import ABC, abstractmethod
-from io import BytesIO
 
 import plotly
 from celery import Task
@@ -11,7 +10,7 @@ from plotly.graph_objs import Figure
 
 from cas_shared.schemas.analysis import CustomersForAllCategoriesAnalysis
 from cas_shared.schemas.visualizer import VisualizationType
-from cas_worker.tests.visualizer.utils import menage_visualize_type
+from cas_worker.tasks.visualizer.utils import menage_visualize_type
 
 # Configuring plotlyjs to run the engine standalone without invoking cdn
 kaleido.scope.plotlyjs = urllib.parse.urljoin('file:',

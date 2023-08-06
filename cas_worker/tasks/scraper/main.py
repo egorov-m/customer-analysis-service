@@ -5,11 +5,11 @@ import subprocess
 from scrapy import Spider, Item
 from typing import Type
 
-from cas_worker.tests.scraper.items import ProductItem, CustomerItem
-from cas_worker.tests.scraper.spiders.product import ProductSpider
-from cas_worker.tests.scraper.spiders.customer import CustomerSpider
-from cas_worker.tests.scraper.spiders.review import ReviewsCustomerSpider
-from cas_worker.tests.scraper.spiders.comment import CommentsCustomerSpider
+from cas_worker.tasks.scraper.items import ProductItem, CustomerItem
+from cas_worker.tasks.scraper.spiders.product import ProductSpider
+from cas_worker.tasks.scraper.spiders.customer import CustomerSpider
+from cas_worker.tasks.scraper.spiders.review import ReviewsCustomerSpider
+from cas_worker.tasks.scraper.spiders.comment import CommentsCustomerSpider
 
 
 BUFFER_FILE_PATH: str = './.scrapy/buffer.json'

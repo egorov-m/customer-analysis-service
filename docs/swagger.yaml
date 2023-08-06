@@ -14,21 +14,6 @@ components:
       - task_status
       title: CasTask
       type: object
-    CustomerReputationAnalysisValue:
-      properties:
-        analysis_value:
-          description: Customer analysis value
-          title: Analysis Value
-          type: number
-        reputation:
-          description: Customer reputation value
-          title: Reputation
-          type: integer
-      required:
-      - reputation
-      - analysis_value
-      title: Value of customer analysis mapped to customer reputation
-      type: object
     CustomersForAllCategoriesAnalysis:
       properties:
         analysis_value_avg:
@@ -256,11 +241,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/CustomersForAllCategoriesBaseAnalysis'
-                title: Response Customer Interest Comments Api V1 Analysis Interests
-                  Comments Get
-                type: array
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -291,11 +272,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/CustomersForAllCategoriesBaseAnalysis'
-                title: Response Customer Interests Reviews Api V1 Analysis Interests
-                  Reviews Get
-                type: array
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -327,11 +304,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/CustomersForAllCategoriesAnalysis'
-                title: Response Customer Sentiment Comments Category Api V1 Analysis
-                  Sentiments Comments Category Get
-                type: array
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -363,11 +336,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/GroupRegionallyAllCustomerAnalysis'
-                title: Response Customer Sentiment Comments Region Api V1 Analysis
-                  Sentiments Comments Region Get
-                type: array
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -399,11 +368,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/CustomersForAllCategoriesAnalysis'
-                title: Response Customer Sentiment Reviews Category Api V1 Analysis
-                  Sentiments Reviews Category Get
-                type: array
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -435,11 +400,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/GroupRegionallyAllCustomerAnalysis'
-                title: Response Customer Sentiment Reviews Region Api V1 Analysis
-                  Sentiments Reviews Region Get
-                type: array
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -471,11 +432,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/CustomerReputationAnalysisValue'
-                title: Response Get Customer Similarity Analysis Product By Comments
-                  Api V1 Analysis Similarity Comments Reputation Get
-                type: array
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -507,11 +464,7 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/CustomerReputationAnalysisValue'
-                title: Response Get Customer Similarity Analysis Product By Reviews
-                  Api V1 Analysis Similarity Reviews Reputation Get
-                type: array
+                $ref: '#/components/schemas/CasTask'
           description: Successful Response
         '422':
           content:
@@ -522,12 +475,12 @@ paths:
       summary: Similarity reviews customer analysis by product
       tags:
       - analysis_similarity
-  /api/v1/result/:
+  /api/v1/result:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0440\u0435\u0437\
         \u0443\u043B\u044C\u0442\u0430\u0442 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\
         \u043D\u0438\u044F \u0437\u0430\u0434\u0430\u0447\u0438."
-      operationId: get_result_api_v1_result__get
+      operationId: get_result_api_v1_result_get
       parameters:
       - in: query
         name: task_id

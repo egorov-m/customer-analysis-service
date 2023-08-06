@@ -8,7 +8,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 from cas_worker.db.models import Review, ReviewSentimentAnalysis, Comment, CommentSentimentAnalysis
 from cas_worker.db.repository import ReviewRepository, CommentRepository
-from cas_worker.tests.preparer.base import Preparer
+from cas_worker.tasks.preparer.base import Preparer
 
 
 class SentimentAnalysisPreparer(Preparer):

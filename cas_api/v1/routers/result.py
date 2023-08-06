@@ -6,21 +6,21 @@ from pydantic import UUID4
 from starlette import status
 from starlette.responses import Response, StreamingResponse, JSONResponse, HTMLResponse
 
+from cas_api.worker import cas_api_worker
 from cas_shared.exceptions.cas_api_error import CasError, CasErrorCode
-from cas_worker.worker import cas_worker
 
 router = APIRouter()
 
 
 @router.get(
-    "/",
+    "",
     response_class=Response,
     status_code=status.HTTP_200_OK,
     description="Получить результат выполнения задачи.",
     summary="Get task result"
 )
 async def get_result(task_id: UUID4):
-    res: AsyncResult = cas_worker.AsyncResult(str(task_id))
+    res: AsyncResult = cas_api_worker.AsyncResult(str(task_id))
     if res is None:
         raise CasError(
             message="Task not found.",

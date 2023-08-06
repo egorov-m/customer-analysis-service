@@ -3,8 +3,8 @@ from datetime import datetime
 from scrapy.http import Response
 from scrapy.selector import Selector
 
-from cas_worker.tests.scraper.items import CustomerItem
-from cas_worker.tests.scraper.spiders.utils.error import handle_http_errors
+from cas_worker.tasks.scraper.items import CustomerItem
+from cas_worker.tasks.scraper.spiders.utils.error import handle_http_errors
 
 
 class CustomerParser:

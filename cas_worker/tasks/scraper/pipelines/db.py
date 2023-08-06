@@ -11,7 +11,7 @@ from cas_worker.db.models.comment import Comment
 from cas_worker.db.models.customer import Customer
 from cas_worker.db.models.product import Product
 from cas_worker.db.models.review import Review
-from cas_worker.tests.scraper.items import ReviewItem, CommentItem, CustomerItem, ProductItem
+from cas_worker.tasks.scraper.items import ReviewItem, CommentItem, CustomerItem, ProductItem
 
 
 class DbPostgresBasePipline(object):

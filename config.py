@@ -1,7 +1,7 @@
 from enum import StrEnum
 from functools import lru_cache
 
-from pydantic import BaseSettings, BaseModel
+from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -47,3 +47,17 @@ class WorkerTasks(StrEnum):
     visualizer_group_visualize_analysis_value: str = f"{_visualizer}.group_visualize_analysis_value"
     visualizer_group_visualize_quantity: str = f"{_visualizer}.group_visualize_quantity"
     visualizer_maps_visualize_analysis_value: str = f"{_visualizer}.maps_visualize_analysis_value"
+
+    _analyser_interests: str = f"{settings.WORKER_NAME}.analyser.interests"
+    analyser_interests_reviewers: str = f"{_analyser_interests}.reviewers"
+    analyser_interests_commentators: str = f"{_analyser_interests}.commentators"
+
+    _analyser_sentiment: str = f"{settings.WORKER_NAME}.analyser.sentiment"
+    analyser_sentiment_regionally_reviewers: str = f"{_analyser_sentiment}.regionally.reviewers"
+    analyser_sentiment_regionally_commentators: str = f"{_analyser_sentiment}.regionally.commentators"
+    analyser_sentiment_category_reviewers: str = f"{_analyser_sentiment}.category.reviewers"
+    analyser_sentiment_category_commentators: str = f"{_analyser_sentiment}.category.commentators"
+
+    _analyser_similarity: str = f"{settings.WORKER_NAME}.analyser.similarity"
+    analyser_similarity_reputation_reviewers: str = f"{_analyser_similarity}.reputation.reviewers"
+    analyser_similarity_reputation_commentators: str = f"{_analyser_similarity}.reputation.commentators"

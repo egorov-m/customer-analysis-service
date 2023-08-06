@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Query
 from starlette import status
 
+from cas_api.worker import cas_api_worker
 from cas_shared.schemas.analysis import CustomersForAllCategoriesAnalysis,\
     GroupRegionallyAllCustomerAnalysis
 from cas_shared.schemas.task import CasTask
 from cas_shared.schemas.visualizer import VisualizationType
-from cas_worker.worker import cas_worker
 from config import WorkerTasks
 
 router = APIRouter()
@@ -35,8 +35,9 @@ async def visualize_analysis_value_by_groupings_by_category(data: list[Customers
                                                                 min_length=3,
                                                                 max_length=50)] = "Analysis value",
                                                             ):
-    task = cas_worker.send_task(WorkerTasks.visualizer_group_visualize_analysis_value,
-                                args=[[dict(item) for item in data], title, title_object_count, title_analysis_value, vis_type])
+    task = cas_api_worker.send_task(WorkerTasks.visualizer_group_visualize_analysis_value,
+                                    args=[[dict(item) for item in data], title, title_object_count, title_analysis_value,
+                                          vis_type])
     return CasTask(task_id=task.id, task_status=task.status)
 
 
@@ -62,7 +63,7 @@ async def visualize_analysis_value_by_groupings_by_regions(data: list[GroupRegio
                                                                 min_length=3,
                                                                 max_length=50)] = "Analysis value",
                                                            ):
-    task = cas_worker.send_task(WorkerTasks.visualizer_maps_visualize_analysis_value,
-                                args=[[dict(item) for item in data], title, title_object_count, title_analysis_value,
-                                      vis_type])
+    task = cas_api_worker.send_task(WorkerTasks.visualizer_maps_visualize_analysis_value,
+                                    args=[[dict(item) for item in data], title, title_object_count, title_analysis_value,
+                                          vis_type])
     return CasTask(task_id=task.id, task_status=task.status)
