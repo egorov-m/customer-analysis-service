@@ -74,7 +74,7 @@ class Visualizer(ABC, Task):
 
     @abstractmethod
     def visualize_analysis_value(self,
-                                 data: list[CustomersForAllCategoriesAnalysis],
+                                 data: list[CustomersForAllCategoriesAnalysis | dict],
                                  title_fig: str,
                                  title_quantity: str,
                                  title_analysis_value: str) -> Figure:
@@ -86,7 +86,7 @@ class Visualizer(ABC, Task):
             title_fig: str,
             title_quantity: str,
             title_analysis_value: str,
-            vis_type: VisualizationType) -> Figure:
+            vis_type: VisualizationType):
         return vis_type, self.visualize_analysis_value(data,
                                                        title_fig,
                                                        title_quantity,

@@ -13,11 +13,12 @@ class MapsVisualizerAnalysisValue(Visualizer):
         self.name = WorkerTasks.visualizer_maps_visualize_analysis_value
 
     def visualize_analysis_value(self,
-                                 data: list[CustomersForAllCategoriesAnalysis],
+                                 data: list[CustomersForAllCategoriesAnalysis | dict],
                                  title_fig: str,
                                  title_quantity: str,
                                  title_analysis_value: str) -> Figure:
-        df = DataFrame([item.dict() for item in data])
+        df = DataFrame(data)
+        # [item.dict() for item in data]
 
         df["country_ru"].fillna('—')
         df['city_ru'].fillna('—')

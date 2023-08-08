@@ -1,5 +1,6 @@
 from celery import Celery
 
+from cas_worker.pipelines.shaper import ComprehensiveVisualizedAnalysis
 from cas_worker.tasks.provider.interests import InterestsAnalysisReviewersProvider,\
     InterestsAnalysisCommentatorsProvider
 from cas_worker.tasks.provider.sentiment import (
@@ -36,6 +37,8 @@ cas_worker.register_task(SimilarityAnalysisReputationCommentatorsProvider)
 cas_worker.register_task(GroupVisualizerQuantity)
 cas_worker.register_task(GroupVisualizerAnalysisValue)
 cas_worker.register_task(MapsVisualizerAnalysisValue)
+
+cas_worker.register_task(ComprehensiveVisualizedAnalysis)
 
 cas_worker.conf.timezone = "UTC"
 

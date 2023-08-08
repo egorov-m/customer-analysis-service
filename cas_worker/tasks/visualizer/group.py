@@ -17,11 +17,12 @@ class GroupVisualizerAnalysisValue(Visualizer):
         self.name = WorkerTasks.visualizer_group_visualize_analysis_value
 
     def visualize_analysis_value(self,
-                                 data: list[CustomersForAllCategoriesAnalysis],
+                                 data: list[CustomersForAllCategoriesAnalysis | dict],
                                  title_fig: str,
                                  title_quantity: str,
                                  title_analysis_value: str) -> Figure:
-        df = DataFrame([item.dict() for item in data])
+        df = DataFrame(data)
+        # [item.dict() for item in data]
         df = df.fillna(" ")  # Category 3, 4 may not be available
         fig = treemap(df,
                       title=title_fig,
@@ -53,14 +54,14 @@ class GroupVisualizerQuantity(Visualizer):
         self.name = self.name = WorkerTasks.visualizer_group_visualize_quantity
 
     def visualize_analysis_value(self,
-                                 data: list[CustomersForAllCategoriesAnalysis],
+                                 data: list[CustomersForAllCategoriesAnalysis | dict],
                                  title_fig: str,
                                  title_quantity: str,
                                  title_analysis_value: str) -> Figure:
         pass
 
     def visualize_quantity(self,
-                           data: list[CustomersForAllCategoriesBaseAnalysis],
+                           data: list[CustomersForAllCategoriesBaseAnalysis | dict],
                            title_fig: str,
                            title_quantity: str) -> Figure:
         df = DataFrame(data)
@@ -89,7 +90,7 @@ class GroupVisualizerQuantity(Visualizer):
             data: list[CustomersForAllCategoriesAnalysis | dict],
             title_fig: str,
             title_quantity: str,
-            vis_type: VisualizationType) -> Figure:
+            vis_type: VisualizationType):
         return vis_type, self.visualize_quantity(data,
                                                  title_fig,
                                                  title_quantity)

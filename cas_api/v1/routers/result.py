@@ -2,6 +2,7 @@ from io import BytesIO
 
 from celery.result import AsyncResult
 from fastapi import APIRouter
+from fastapi.encoders import jsonable_encoder
 from pydantic import UUID4
 from starlette import status
 from starlette.responses import Response, StreamingResponse, JSONResponse, HTMLResponse
@@ -50,6 +51,6 @@ async def get_result(task_id: UUID4):
     if isinstance(result, BytesIO):
         return StreamingResponse(content=result, media_type="image/png")
     elif isinstance(result, list):
-        return JSONResponse(content=result)
+        return JSONResponse(content=jsonable_encoder(result))
     else:
         return HTMLResponse(content=result)

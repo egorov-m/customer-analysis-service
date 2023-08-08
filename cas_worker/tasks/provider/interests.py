@@ -1,7 +1,8 @@
 from sqlalchemy.sql.functions import count
 from sqlmodel import select
 
-from cas_shared.schemas.analysis import CustomersForAllCategoriesBaseAnalysis, data_to_schema_dict
+from cas_shared.schemas.analysis import CustomersForAllCategoriesBaseAnalysis
+from cas_shared.schemas.base import data_to_schema_dict
 from cas_worker.db.models import Product, Review, Comment
 from cas_worker.tasks.provider.base import Provider
 from config import WorkerTasks

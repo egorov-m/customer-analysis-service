@@ -1,5 +1,28 @@
 components:
   schemas:
+    AnalysisVisualizationType:
+      description: An enumeration.
+      enum:
+      - image
+      - html
+      - all
+      - none
+      title: AnalysisVisualizationType
+      type: string
+    CasPipeline:
+      properties:
+        pipeline_id:
+          format: uuid4
+          title: Pipeline Id
+          type: string
+        pipeline_status:
+          title: Pipeline Status
+          type: string
+      required:
+      - pipeline_id
+      - pipeline_status
+      title: CasPipeline
+      type: object
     CasTask:
       properties:
         task_id:
@@ -475,6 +498,191 @@ paths:
       summary: Similarity reviews customer analysis by product
       tags:
       - analysis_similarity
+  /api/v1/pipeline/shaper/comprehensive_analysis:
+    get:
+      operationId: comprehensive_analysis_api_v1_pipeline_shaper_comprehensive_analysis_get
+      parameters:
+      - in: query
+        name: product_name_id
+        required: true
+        schema:
+          title: Product Name Id
+          type: string
+      - in: query
+        name: analysis_vis_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/AnalysisVisualizationType'
+      - in: query
+        name: ia_r_title_fig
+        required: false
+        schema:
+          default: "\u0410\u043D\u0430\u043B\u0438\u0437 \u0438\u043D\u0442\u0435\u0440\
+            \u0435\u0441\u043E\u0432 \u0440\u0435\u0432\u044C\u044E\u0435\u0440\u043E\
+            \u0432"
+          title: Ia R Title Fig
+          type: string
+      - in: query
+        name: ia_r_title_quantity
+        required: false
+        schema:
+          default: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u0440\
+            \u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432"
+          title: Ia R Title Quantity
+          type: string
+      - in: query
+        name: ia_c_title_fig
+        required: false
+        schema:
+          default: "\u0410\u043D\u0430\u043B\u0438\u0437 \u0438\u043D\u0442\u0435\u0440\
+            \u0435\u0441\u043E\u0432 \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\
+            \u0442\u043E\u0440\u043E\u0432"
+          title: Ia C Title Fig
+          type: string
+      - in: query
+        name: ia_c_title_quantity
+        required: false
+        schema:
+          default: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043A\
+            \u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\u0432"
+          title: Ia C Title Quantity
+          type: string
+      - in: query
+        name: sea_c_r_title_fig
+        required: false
+        schema:
+          default: "\u0410\u043D\u0430\u043B\u0438\u0437 \u043D\u0430\u0441\u0442\u0440\
+            \u043E\u0435\u043D\u0438\u0439 \u0440\u0435\u0432\u044C\u044E\u0435\u0440\
+            \u043E\u0432 \u043F\u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\
+            \u044F\u043C"
+          title: Sea C R Title Fig
+          type: string
+      - in: query
+        name: sea_c_r_title_quantity
+        required: false
+        schema:
+          default: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043E\
+            \u0442\u0437\u044B\u0432\u043E\u0432"
+          title: Sea C R Title Quantity
+          type: string
+      - in: query
+        name: sea_c_r_title_analysis_value
+        required: false
+        schema:
+          default: "\u041D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0435 \u0440\
+            \u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432"
+          title: Sea C R Title Analysis Value
+          type: string
+      - in: query
+        name: sea_c_c_title_fig
+        required: false
+        schema:
+          default: "\u0410\u043D\u0430\u043B\u0438\u0437 \u043D\u0430\u0441\u0442\u0440\
+            \u043E\u0435\u043D\u0438\u0439 \u043A\u043E\u043C\u043C\u0435\u043D\u0442\
+            \u0430\u0442\u043E\u0440\u043E\u0432 \u043F\u043E \u043A\u0430\u0442\u0435\
+            \u0433\u043E\u0440\u0438\u044F\u043C"
+          title: Sea C C Title Fig
+          type: string
+      - in: query
+        name: sea_c_c_title_quantity
+        required: false
+        schema:
+          default: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043A\
+            \u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u0435\u0432"
+          title: Sea C C Title Quantity
+          type: string
+      - in: query
+        name: sea_c_c_title_analysis_value
+        required: false
+        schema:
+          default: "\u041D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0435 \u043A\
+            \u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\u0432"
+          title: Sea C C Title Analysis Value
+          type: string
+      - in: query
+        name: sea_r_r_title_fig
+        required: false
+        schema:
+          default: "\u0410\u043D\u0430\u043B\u0438\u0437 \u043D\u0430\u0441\u0442\u0440\
+            \u043E\u0435\u043D\u0438\u0439 \u0440\u0435\u0432\u044C\u044E\u0435\u0440\
+            \u043E\u0432 \u043F\u043E \u0440\u0435\u0433\u0438\u043E\u043D\u0430\u043C"
+          title: Sea R R Title Fig
+          type: string
+      - in: query
+        name: sea_r_r_title_quantity
+        required: false
+        schema:
+          default: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043E\
+            \u0442\u0437\u044B\u0432\u043E\u0432"
+          title: Sea R R Title Quantity
+          type: string
+      - in: query
+        name: sea_r_r_title_analysis_value
+        required: false
+        schema:
+          default: "\u041D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0435 \u0440\
+            \u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432"
+          title: Sea R R Title Analysis Value
+          type: string
+      - in: query
+        name: sea_r_c_title_fig
+        required: false
+        schema:
+          default: "\u0410\u043D\u0430\u043B\u0438\u0437 \u043D\u0430\u0441\u0442\u0440\
+            \u043E\u0435\u043D\u0438\u0439 \u043A\u043E\u043C\u043C\u0435\u043D\u0442\
+            \u0430\u0442\u043E\u0440\u043E\u0432 \u043F\u043E \u0440\u0435\u0433\u0438\
+            \u043E\u043D\u0430\u043C"
+          title: Sea R C Title Fig
+          type: string
+      - in: query
+        name: sea_r_c_title_quantity
+        required: false
+        schema:
+          default: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043A\
+            \u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u0435\u0432"
+          title: Sea R C Title Quantity
+          type: string
+      - in: query
+        name: sea_r_c_title_analysis_value
+        required: false
+        schema:
+          default: "\u041D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0435 \u043A\
+            \u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\u0432"
+          title: Sea R C Title Analysis Value
+          type: string
+      - in: query
+        name: visualization_image_title
+        required: false
+        schema:
+          default: "\u0412\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0446\u0438\
+            \u044F \u0440\u0430\u0441\u0442\u0440\u043E\u0432\u043E\u0433\u043E \u0438\
+            \u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F"
+          title: Visualization Image Title
+          type: string
+      - in: query
+        name: visualization_html_title
+        required: false
+        schema:
+          default: "\u0412\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0430\u0446\u0438\
+            \u044F html"
+          title: Visualization Html Title
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CasPipeline'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Comprehensive Analysis
+      tags:
+      - pipeline_shaper
   /api/v1/result:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0440\u0435\u0437\

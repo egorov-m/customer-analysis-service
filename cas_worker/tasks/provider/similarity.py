@@ -1,6 +1,7 @@
 from sqlmodel import select
 
-from cas_shared.schemas.analysis import CustomerReputationAnalysisValue, data_to_schema_dict
+from cas_shared.schemas.analysis import CustomerReputationAnalysisValue
+from cas_shared.schemas.base import data_to_schema_dict
 from cas_worker.db.models import Comment, Review, Customer, CustomerSimilarityAnalysis
 from cas_worker.tasks.provider.base import Provider
 from config import WorkerTasks

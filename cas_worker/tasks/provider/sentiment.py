@@ -2,7 +2,8 @@ from sqlalchemy import func, and_
 from sqlmodel import select
 
 from cas_shared.schemas.analysis import GroupRegionallyAllCustomerAnalysis, \
-    CustomersForAllCategoriesAnalysis, data_to_schema_dict
+    CustomersForAllCategoriesAnalysis
+from cas_shared.schemas.base import data_to_schema_dict
 from cas_worker.db.models import RegionalLocation, Customer, ReviewSentimentAnalysis, Review, Comment, \
     CommentSentimentAnalysis, Product
 from cas_worker.tasks.provider.base import Provider
