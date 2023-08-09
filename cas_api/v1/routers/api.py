@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Security
 
+from cas_api.deps import get_api_key
 from cas_api.v1.routers import (
     analysis_interests,
     analysis_sentiments,
@@ -10,7 +11,7 @@ from cas_api.v1.routers import (
     visualizer_quantity
 )
 
-api_router = APIRouter()
+api_router = APIRouter(dependencies=[Security(get_api_key)])
 
 result_router = APIRouter()
 result_router.include_router(result.router, prefix="/result", tags=["result"])

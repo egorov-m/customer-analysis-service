@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Customer Analysis Service"
     WORKER_NAME: str = "cas_worker"
     API_V1_STR: str = "/api/v1"
+    CAS_API_MAIN_KEY: str = "f0a3e8d7c6b5a4929190a1b2c3d4e5f6f7f8f9fafbfcfdfeff"
 
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: str = "5432"

@@ -239,6 +239,11 @@ components:
       - html
       title: VisualizationType
       type: string
+  securitySchemes:
+    Cas API Key:
+      in: header
+      name: X-API-Key
+      type: apiKey
 info:
   title: Customer Analysis Service API
   version: 1.0.0
@@ -272,6 +277,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Commentators interests
       tags:
       - analysis_interests
@@ -303,6 +310,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Reviewers interests
       tags:
       - analysis_interests
@@ -335,6 +344,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Commentators sentiments by category
       tags:
       - analysis_sentiments
@@ -367,6 +378,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Commentators sentiments by region
       tags:
       - analysis_sentiments
@@ -399,6 +412,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Reviewers sentiments by category
       tags:
       - analysis_sentiments
@@ -431,6 +446,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Reviewers sentiments by region
       tags:
       - analysis_sentiments
@@ -463,6 +480,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Similarity comments customer analysis by product
       tags:
       - analysis_similarity
@@ -495,6 +514,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Similarity reviews customer analysis by product
       tags:
       - analysis_similarity
@@ -680,6 +701,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Comprehensive Analysis
       tags:
       - pipeline_shaper
@@ -706,6 +729,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Get task result
       tags:
       - result
@@ -800,6 +825,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Visualize analysis values by grouping by category
       tags:
       - visualizer_analysis_value
@@ -893,6 +920,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Visualize analysis values by grouping by regions
       tags:
       - visualizer_analysis_value
@@ -967,6 +996,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
+      security:
+      - Cas API Key: []
       summary: Visualize quantities by grouping by category
       tags:
       - visualizer_quantity

@@ -5,6 +5,7 @@ from cas_shared.schemas.analysis import CustomersForAllCategoriesBaseAnalysis
 from cas_shared.schemas.base import data_to_schema_dict
 from cas_worker.db.models import Product, Review, Comment
 from cas_worker.tasks.provider.base import Provider
+from cas_worker.tasks.provider.utils import manage_result_size
 from config import WorkerTasks
 
 
@@ -13,6 +14,7 @@ class InterestsAnalysisReviewersProvider(Provider):
         super().__init__()
         self.name = self.name = WorkerTasks.analyser_interests_reviewers
 
+    @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:
         p = self._get_list_fields_to_group()
 
@@ -38,6 +40,7 @@ class InterestsAnalysisCommentatorsProvider(Provider):
         super().__init__()
         self.name = self.name = WorkerTasks.analyser_interests_commentators
 
+    @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:
         p = self._get_list_fields_to_group()
 
@@ -56,4 +59,5 @@ class InterestsAnalysisCommentatorsProvider(Provider):
             )
 
             result = session.execute(query).all()
+
             return list(data_to_schema_dict(result, CustomersForAllCategoriesBaseAnalysis))

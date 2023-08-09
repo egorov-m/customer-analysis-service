@@ -10,11 +10,13 @@ class CasErrorCode(IntEnum):
            0-1000: general errors
         1001-2000: tasks errors
         3001-4000: visualizer errors
+        4001-5000: analysis shaper errors
     """
 
     # 0-1000: general errors
     GENERIC_ERROR = 0
 
+    UNAUTHORIZED_REQUEST = 401
     TOO_MANY_REQUESTS = 429
 
     # 1001-2000: tasks errors
@@ -24,6 +26,9 @@ class CasErrorCode(IntEnum):
 
     # 3001-4000: visualizer errors
     VISUALIZATION_TYPE_ERROR = 3001
+
+    # 4001-5000: analysis shaper errors
+    ANALYSIS_SHAPER_ERROR = 4001
 
 
 class CasError(Exception):

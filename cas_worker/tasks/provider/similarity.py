@@ -4,6 +4,7 @@ from cas_shared.schemas.analysis import CustomerReputationAnalysisValue
 from cas_shared.schemas.base import data_to_schema_dict
 from cas_worker.db.models import Comment, Review, Customer, CustomerSimilarityAnalysis
 from cas_worker.tasks.provider.base import Provider
+from cas_worker.tasks.provider.utils import manage_result_size
 from config import WorkerTasks
 
 
@@ -12,6 +13,7 @@ class SimilarityAnalysisReputationReviewersProvider(Provider):
         super().__init__()
         self.name = self.name = WorkerTasks.analyser_similarity_reputation_reviewers
 
+    @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:
         with self.session as session:
             subquery = select(Review.customer_name_id).distinct()\
@@ -31,6 +33,7 @@ class SimilarityAnalysisReputationCommentatorsProvider(Provider):
         super().__init__()
         self.name = self.name = WorkerTasks.analyser_similarity_reputation_commentators
 
+    @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:
         with self.session as session:
             subquery = select(Comment.customer_name_id).distinct()\
