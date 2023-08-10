@@ -6,7 +6,7 @@ help:
 
 .PHONY: up
 up:
-		docker compose -f docker-compose-local.yaml up -d
+		docker compose -f docker-compose-local.yaml --profile dev --profile flower up -d
 
 .PHONY: down
 down:

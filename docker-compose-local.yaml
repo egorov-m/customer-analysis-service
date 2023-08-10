@@ -21,6 +21,7 @@ services:
       - ./cas_db_log:/var/log/postgresql
     ports:
       - "5432:5432"
+    profiles: ["dev", "ci"]
     networks:
       - cas
 
@@ -38,6 +39,7 @@ services:
       - ./redis_cache.conf:/usr/local/etc/redis/redis.conf
     ports:
       - "6379:6379"
+    profiles: ["dev", "ci"]
     networks:
       - cas
 
@@ -50,6 +52,38 @@ services:
       - FLOWER_BASIC_AUTH=user:password
     ports:
       - "5555:5555"
+    profiles: ["flower", "observability"]
+    networks:
+      - cas
+
+  prometheus:
+    container_name: "prometheus"
+    image: prom/prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./cas_prom_data:/prometheus
+    ports:
+      - "9090:9090"
+    profiles: ["observability"]
+    networks:
+      - cas
+
+  grafana:
+    container_name: "grafana"
+    image: grafana/grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+      - GF_SERVER_HTTP_PORT=3000
+    volumes:
+      - ./cas_grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    profiles: ["observability"]
     networks:
       - cas
 

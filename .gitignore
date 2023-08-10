@@ -29,3 +29,5 @@ venv.bak/
 
 cas_db_data/
 cas_db_log/
+cas_prom_data/
+cas_grafana_data/
