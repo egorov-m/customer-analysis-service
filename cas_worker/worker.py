@@ -12,6 +12,7 @@ from cas_worker.tasks.provider.sentiment import (
 from cas_worker.tasks.provider.similarity import SimilarityAnalysisReputationReviewersProvider,\
     SimilarityAnalysisReputationCommentatorsProvider
 from cas_worker.tasks.visualizer.group import GroupVisualizerQuantity, GroupVisualizerAnalysisValue
+from cas_worker.tasks.visualizer.histogram import HistogramVisualizerQuantity
 from cas_worker.tasks.visualizer.maps import MapsVisualizerAnalysisValue
 from config import settings
 
@@ -36,6 +37,7 @@ cas_worker.register_task(SimilarityAnalysisReputationCommentatorsProvider)
 
 cas_worker.register_task(GroupVisualizerQuantity)
 cas_worker.register_task(GroupVisualizerAnalysisValue)
+cas_worker.register_task(HistogramVisualizerQuantity)
 cas_worker.register_task(MapsVisualizerAnalysisValue)
 
 cas_worker.register_task(ComprehensiveVisualizedAnalysis)

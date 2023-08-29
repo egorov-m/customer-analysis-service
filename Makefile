@@ -10,7 +10,7 @@ up:
 
 .PHONY: down
 down:
-		docker compose -f docker-compose-local.yaml down && docker network prune --force
+		docker compose -f docker-compose-local.yaml --profile dev --profile flower down && docker network prune --force
 
 # Alembic
 .PHONY: generate

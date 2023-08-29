@@ -8,7 +8,8 @@ from cas_api.v1.routers import (
     pipeline,
     result,
     visualizer_analysis_value,
-    visualizer_quantity
+    visualizer_quantity,
+    visualizer_histogram
 )
 
 api_router = APIRouter(dependencies=[Security(get_api_key)])
@@ -24,6 +25,7 @@ analysis_router.include_router(analysis_similarity.router, prefix="/similarity",
 visualizer_router = APIRouter()
 visualizer_router.include_router(visualizer_analysis_value.router, prefix="/analysis_value", tags=["visualizer_analysis_value"])
 visualizer_router.include_router(visualizer_quantity.router, prefix="/quantity", tags=["visualizer_quantity"])
+visualizer_router.include_router(visualizer_histogram.router, prefix="/histogram", tags=["visualizer_histogram"])
 
 pipeline_router = APIRouter()
 pipeline_router.include_router(pipeline.router, prefix="/shaper", tags=["pipeline_shaper"])

@@ -18,6 +18,8 @@ def manage_result_size():
                     http_status_code=status.HTTP_422_UNPROCESSABLE_ENTITY
                 )
 
+            return result
+
         return wrapped_f
 
     return decorator

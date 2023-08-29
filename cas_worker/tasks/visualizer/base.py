@@ -1,7 +1,7 @@
 import os
 import urllib.parse
 import urllib.request
-from abc import ABC, abstractmethod
+from abc import ABC
 
 import plotly
 from celery import Task
@@ -9,6 +9,7 @@ from plotly.io import kaleido
 from plotly.graph_objs import Figure
 
 from cas_shared.schemas.analysis import CustomersForAllCategoriesAnalysis
+from cas_shared.schemas.base import TunedModel
 from cas_shared.schemas.visualizer import VisualizationType
 from cas_worker.tasks.visualizer.utils import menage_visualize_type
 
@@ -72,9 +73,8 @@ class Visualizer(ABC, Task):
         "product_fullname"
     ]
 
-    @abstractmethod
     def visualize_analysis_value(self,
-                                 data: list[CustomersForAllCategoriesAnalysis | dict],
+                                 data: list[TunedModel | dict],
                                  title_fig: str,
                                  title_quantity: str,
                                  title_analysis_value: str) -> Figure:

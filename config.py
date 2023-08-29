@@ -48,6 +48,7 @@ class WorkerTasks(StrEnum):
     visualizer_group_visualize_analysis_value: str = f"{_visualizer}.group_visualize_analysis_value"
     visualizer_group_visualize_quantity: str = f"{_visualizer}.group_visualize_quantity"
     visualizer_maps_visualize_analysis_value: str = f"{_visualizer}.maps_visualize_analysis_value"
+    visualizer_histogram_visualize: str = f"{_visualizer}.histogram_visualize"
 
     _analyser_interests: str = f"{settings.WORKER_NAME}.analyser.interests"
     analyser_interests_reviewers: str = f"{_analyser_interests}.reviewers"

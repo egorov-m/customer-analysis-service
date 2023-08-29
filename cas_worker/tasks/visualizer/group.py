@@ -53,13 +53,6 @@ class GroupVisualizerQuantity(Visualizer):
         super().__init__(*args, **kwargs)
         self.name = self.name = WorkerTasks.visualizer_group_visualize_quantity
 
-    def visualize_analysis_value(self,
-                                 data: list[CustomersForAllCategoriesAnalysis | dict],
-                                 title_fig: str,
-                                 title_quantity: str,
-                                 title_analysis_value: str) -> Figure:
-        pass
-
     def visualize_quantity(self,
                            data: list[CustomersForAllCategoriesBaseAnalysis | dict],
                            title_fig: str,
