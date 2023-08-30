@@ -32,11 +32,7 @@ async def visualize_similarity_by_reputation(data: list[CustomerReputationAnalys
                                              title_analysis_value: Annotated[str, Query(
                                                  description="Обозначение значения анализа настроение / схожесть / т.п.",
                                                  min_length=3,
-                                                 max_length=50)] = "Analysis value",
-                                             # title_quantity: Annotated[str, Query(
-                                             #     description="Обозначение количественного значения клиенты / отзывы / комментарии",
-                                             #     min_length=3,
-                                             #     max_length=50)] = "Count customers"
+                                                 max_length=50)] = "Analysis value"
                                              ):
     task = cas_api_worker.send_task(WorkerTasks.visualizer_histogram_visualize,
                                     args=[[dict(item) for item in data],

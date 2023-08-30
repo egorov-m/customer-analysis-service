@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     REDIS_PORT: str = "6379"
     REDIS_DB: str = "0"
 
+    SCRAPER_BUFFER_FILE_PATH: str = '../../../../.scrapy/buffer.json'
+
     def get_postgres_url(self):
         return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
@@ -68,3 +70,7 @@ class WorkerTasks(StrEnum):
     _pipeline_shaper: str = f"{_pipeline}.shaper"
     pipeline_shaper_comprehensive_analysis: str = f"{_pipeline_shaper}.comprehensive_analysis"
     pipeline_shaper_comprehensive_visualized_analysis: str = f"{_pipeline_shaper}.comprehensive_visualized_analysis"
+
+    products_search = f"{settings.WORKER_NAME}.products_search"
+    products_data = f"{settings.WORKER_NAME}.products_data"
+    category_data = f"{settings.WORKER_NAME}.category_data"

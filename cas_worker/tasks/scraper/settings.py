@@ -9,8 +9,8 @@
 
 BOT_NAME = "scraper"
 
-SPIDER_MODULES = ["cas_server.tasks.scraper.spiders"]
-NEWSPIDER_MODULE = "cas_server.tasks.scraper.spiders"
+SPIDER_MODULES = ["cas_worker.tasks.scraper.spiders"]
+NEWSPIDER_MODULE = "cas_worker.tasks.scraper.spiders"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
@@ -75,14 +75,14 @@ SPIDER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware": None,
-    "cas_server.tasks.scraper.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
+    "cas_worker.tasks.scraper.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
 
     # "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
     # "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
     "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 700,  # 700
 }
 
-ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
+ROTATING_PROXY_LIST_PATH = "../../../.scrapy/httpproxy/list.txt"
 # ROTATING_PROXY_PAGE_RETRY_TIMES =
 # ROTATING_PROXY_CLOSE_SPIDER = True
 
@@ -95,10 +95,10 @@ ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "cas_server.tasks.scraper.pipelines.clean.CleanTextPipeline": 301,
-    "cas_server.tasks.scraper.pipelines.truncate.TruncateTextPipeline": 302,
-    "cas_server.tasks.scraper.pipelines.translate.TranslateCustomerGeoLocationPipeline": 303,
-    "cas_server.tasks.scraper.pipelines.db.DbPostgresPipeline": 304,
+    "cas_worker.tasks.scraper.pipelines.clean.CleanTextPipeline": 301,
+    "cas_worker.tasks.scraper.pipelines.truncate.TruncateTextPipeline": 302,
+    "cas_worker.tasks.scraper.pipelines.translate.TranslateCustomerGeoLocationPipeline": 303,
+    "cas_worker.tasks.scraper.pipelines.db.DbPostgresPipeline": 304,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
