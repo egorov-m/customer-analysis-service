@@ -19,17 +19,17 @@ class ProductRepository:
         self.session.add(product_sentiment_analysis)
 
     def get_product(self, name_id: str) -> Product:
-        return self.session.exec(select(Product).where(Product.name_id == name_id)).first()
+        return self.session.get(Product, name_id)
 
     def get_all_products(self) -> list[Product]:
-        return self.session.exec(select(Product)).all()
+        return self.session.execute(select(Product)).scalars().all()
 
     def get_products_similarity_analysis(self, product_name_id: str, version_mark: str = None):
-        query = select(ProductSimilarityAnalysis).where(ProductSimilarityAnalysis.product_name_id == product_name_id)
+        st = select(ProductSimilarityAnalysis).where(ProductSimilarityAnalysis.product_name_id == product_name_id)
         if version_mark is not None:
-            query.where(ProductSimilarityAnalysis.version_mark == version_mark)
+            st.where(ProductSimilarityAnalysis.version_mark == version_mark)
 
-        return self.session.exec(query).all()
+        return self.session.execute(st).scalar().all()
 
     @menage_db_method(CommitMode.FLUSH)
     def update_similarity_values_product_similarity_analysis(self, product_similarity_analysis: ProductSimilarityAnalysis,

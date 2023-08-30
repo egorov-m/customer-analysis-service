@@ -30,7 +30,7 @@ class ProductSpider(Spider):
         self.start_urls = [f'https://otzovik.com{href_product_path}']
         self.href_category = href_product_path
         self.handle_httpstatus_list = [507]
-        self.max_count_items = max_count_items
+        self.max_count_items = int(max_count_items)
         self.count_items = 0
 
     def start_requests(self):

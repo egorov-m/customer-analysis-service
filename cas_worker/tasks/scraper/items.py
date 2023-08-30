@@ -68,4 +68,3 @@ class CustomerItem(Item):
     profession = Field()
     reg_date = Field()
     count_subscribers = Field()
-    # last_activity_date = Field()

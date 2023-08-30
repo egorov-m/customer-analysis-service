@@ -12,6 +12,9 @@ BOT_NAME = "scraper"
 SPIDER_MODULES = ["cas_worker.tasks.scraper.spiders"]
 NEWSPIDER_MODULE = "cas_worker.tasks.scraper.spiders"
 
+LOG_FILE = "./.scrapy/log"
+LOG_STDOUT = False
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
 
@@ -82,7 +85,7 @@ DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.cookies.CookiesMiddleware": 700,  # 700
 }
 
-ROTATING_PROXY_LIST_PATH = "../../../.scrapy/httpproxy/list.txt"
+ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
 # ROTATING_PROXY_PAGE_RETRY_TIMES =
 # ROTATING_PROXY_CLOSE_SPIDER = True
 

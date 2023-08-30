@@ -1,4 +1,5 @@
 import subprocess
+import sys
 from json import loads
 import logging as log
 
@@ -6,8 +7,6 @@ from celery import Task
 from typing import Type
 
 from scrapy import Spider, Item
-
-from config import settings
 
 
 class BaseScraperTask(Task):
@@ -18,27 +17,21 @@ class BaseScraperTask(Task):
 
     @staticmethod
     def start_sub_process_spider(spider_cls: Type[Spider], **kwargs):
-        cmd = ["scrapy", "crawl", spider_cls.name]
+        cmd = [sys.executable.replace("python", "scrapy"), "crawl", spider_cls.name]
         for key, value in kwargs.items():
             if isinstance(value, list):
                 cmd.append("-a")
                 cmd.append(f"{key}={' '.join(str(x) for x in value)}")
             else:
                 cmd.append("-a")
-                cmd.append(f"{key}='{value}'")
+                cmd.append(f"{key}={value}")
         cmd.append("-o")
-        cmd.append(settings.SCRAPER_BUFFER_FILE_PATH)
+        cmd.append("-:json")  # stdout
 
-        subprocess.run(cmd)
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, encoding="utf-8")
+        out = process.communicate()[0].replace("[0m", "")
+        return out
 
     @staticmethod
-    def extract_from_buffer() -> list[Item]:
-        try:
-            with open(settings.SCRAPER_BUFFER_FILE_PATH, 'r+', encoding='utf-8') as json_file:
-                data = json_file.read()
-                data = loads(data)
-                json_file.truncate(0)
-        except Exception:
-            pass
-
-        return data
+    def get_list_item(data_json: str) -> list[Item]:
+        return loads(data_json) if data_json is not None else []

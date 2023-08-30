@@ -19,17 +19,17 @@ class CustomerRepository:
         self.session.add(customer_sentiment_analysis)
 
     def get_customer(self, name_id: str) -> Customer:
-        return self.session.exec(select(Customer).where(Customer.name_id == name_id)).first()
+        return self.session.get(Customer, name_id)
 
     def get_all_customers(self) -> list[Customer]:
-        return self.session.exec(select(Customer)).all()
+        return self.session.execute(select(Customer)).scalars().all()
 
     def get_customers_similarity_analysis(self, customer_name_id: str, version_mark: str = None):
-        query = select(CustomerSimilarityAnalysis).where(CustomerSimilarityAnalysis.customer_name_id == customer_name_id)
+        st = select(CustomerSimilarityAnalysis).where(CustomerSimilarityAnalysis.customer_name_id == customer_name_id)
         if version_mark is not None:
-            query.where(CustomerSimilarityAnalysis.version_mark == version_mark)
+            st.where(CustomerSimilarityAnalysis.version_mark == version_mark)
 
-        return self.session.exec(query).all()
+        return self.session.execute(st).scalars().all()
 
     @menage_db_method(CommitMode.FLUSH)
     def update_state_all_comments_available(self, customer: Customer, new_state: bool):

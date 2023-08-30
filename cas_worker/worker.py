@@ -1,16 +1,23 @@
 from celery import Celery
 
 from cas_worker.pipelines.shaper import ComprehensiveVisualizedAnalysis
-from cas_worker.tasks.provider.interests import InterestsAnalysisReviewersProvider,\
+from cas_worker.tasks.provider.interests import (
+    InterestsAnalysisReviewersProvider,
     InterestsAnalysisCommentatorsProvider
+)
 from cas_worker.tasks.provider.sentiment import (
     SentimentAnalysisCategoryReviewersProvider,
     SentimentAnalysisCategoryCommentatorsProvider,
     SentimentAnalysisRegionallyReviewersProvider,
     SentimentAnalysisRegionallyCommentatorsProvider
 )
-from cas_worker.tasks.provider.similarity import SimilarityAnalysisReputationReviewersProvider,\
+from cas_worker.tasks.provider.similarity import (
+    SimilarityAnalysisReputationReviewersProvider,
     SimilarityAnalysisReputationCommentatorsProvider
+)
+from cas_worker.tasks.scraper.tasks.category_data import CategoryDataScraperTask
+from cas_worker.tasks.scraper.tasks.products_data import ProductsDataScraperTask
+from cas_worker.tasks.scraper.tasks.products_search import ProductsSearchScraperTask
 from cas_worker.tasks.visualizer.group import GroupVisualizerQuantity, GroupVisualizerAnalysisValue
 from cas_worker.tasks.visualizer.histogram import HistogramVisualizerQuantity
 from cas_worker.tasks.visualizer.maps import MapsVisualizerAnalysisValue
@@ -39,6 +46,10 @@ cas_worker.register_task(GroupVisualizerQuantity)
 cas_worker.register_task(GroupVisualizerAnalysisValue)
 cas_worker.register_task(HistogramVisualizerQuantity)
 cas_worker.register_task(MapsVisualizerAnalysisValue)
+
+cas_worker.register_task(CategoryDataScraperTask)
+cas_worker.register_task(ProductsDataScraperTask)
+cas_worker.register_task(ProductsSearchScraperTask)
 
 cas_worker.register_task(ComprehensiveVisualizedAnalysis)
 

@@ -1,5 +1,3 @@
-from typing import Callable
-
 from scrapy import Spider, Item
 from sqlmodel import Session, SQLModel
 
@@ -13,9 +11,8 @@ from cas_worker.tasks.scraper.items import ReviewItem, CommentItem, CustomerItem
 
 
 class DbPostgresBasePipline(object):
-    def __init__(self, pool: Callable[[], Session]):
+    def __init__(self):
         self.session = None
-        self.pool = pool
 
     def open_spider(self, spider: Spider):
         session: Session = get_session()
@@ -27,9 +24,6 @@ class DbPostgresBasePipline(object):
 
 
 class DbPostgresPipeline(DbPostgresBasePipline):
-    def __init__(self, pool: Callable[[], Session]):
-        super().__init__(pool)
-
     @staticmethod
     def item_to_model(item: Item, model_obj: SQLModel) -> SQLModel:
         for field in {key for key, value in item.items() if value is not None}:

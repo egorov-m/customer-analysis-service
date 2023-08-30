@@ -12,9 +12,8 @@ class ProductsDataScraperTask(BaseScraperTask):
     def run(self, product_name_id: str):
         self.logger.info(f'The parsing of the product has started: {product_name_id}!')
 
-        self.start_sub_process_spider(CustomerSpider, product_name_ids=[product_name_id])
-
-        customers: list[CustomerItem] = self.extract_from_buffer()
+        customers: list[CustomerItem] = self.get_list_item(self.start_sub_process_spider(CustomerSpider,
+                                                                                         product_name_ids=[product_name_id]))
 
         self.start_sub_process_spider(ReviewsCustomerSpider, customer_name_ids=[item['name_id'] for item in customers])
 

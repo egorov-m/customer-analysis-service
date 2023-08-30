@@ -23,8 +23,6 @@ class Settings(BaseSettings):
     REDIS_PORT: str = "6379"
     REDIS_DB: str = "0"
 
-    SCRAPER_BUFFER_FILE_PATH: str = '../../../../.scrapy/buffer.json'
-
     def get_postgres_url(self):
         return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 

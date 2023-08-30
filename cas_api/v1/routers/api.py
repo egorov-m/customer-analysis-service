@@ -5,6 +5,7 @@ from cas_api.v1.routers import (
     analysis_interests,
     analysis_sentiments,
     analysis_similarity,
+    products,
     pipeline,
     result,
     visualizer_analysis_value,
@@ -16,6 +17,9 @@ api_router = APIRouter(dependencies=[Security(get_api_key)])
 
 result_router = APIRouter()
 result_router.include_router(result.router, prefix="/result", tags=["result"])
+
+products_search_router = APIRouter()
+products_search_router.include_router(products.router, prefix="/products", tags=["products"])
 
 analysis_router = APIRouter()
 analysis_router.include_router(analysis_interests.router, prefix="/interests", tags=["analysis_interests"])
@@ -31,6 +35,7 @@ pipeline_router = APIRouter()
 pipeline_router.include_router(pipeline.router, prefix="/shaper", tags=["pipeline_shaper"])
 
 api_router.include_router(result_router)
+api_router.include_router(products_search_router)
 api_router.include_router(analysis_router, prefix="/analysis")
 api_router.include_router(visualizer_router, prefix="/visualizer")
 api_router.include_router(pipeline_router, prefix="/pipeline")
