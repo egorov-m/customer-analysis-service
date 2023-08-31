@@ -1,10 +1,16 @@
 import logging as log
+from collections import Counter
+from heapq import nlargest
 
 import faiss
 import numpy as np
 import torch
+from spacy import load, Language
+from spacy.lang import punctuation
+from spacy.lang.ru.stop_words import STOP_WORDS
+from spacy.tokens.span import Span
 from sqlmodel import Session
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoTokenizer, AutoModel, RobertaTokenizerFast, RobertaModel
 
 from cas_worker.db.models import Product, ProductSimilarityAnalysis, Customer, \
     CustomerSimilarityAnalysis, Review, Comment
@@ -18,8 +24,9 @@ class SimilarityAnalysisPreparer(Preparer):
 
     def __init__(self, session: Session):
         super().__init__(session)
-        self.tokenizer = AutoTokenizer.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
-        self.model = AutoModel.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
+        self.tokenizer: RobertaTokenizerFast = AutoTokenizer.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
+        self.model: RobertaModel = AutoModel.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
+        self.spacy_nlp: Language = load("ru_core_news_lg")
         self.logger.info('SimilarityAnalysisPreparer initialized.')
 
     @staticmethod
@@ -44,6 +51,41 @@ class SimilarityAnalysisPreparer(Preparer):
         D, I = index.search(embeddings, k=len(embeddings))
         return D
 
+    def _summarize_sentence(self, sentence: str) -> str:
+        doc = self.spacy_nlp(sentence)
+        # Filtering tokens
+        keyword = []
+        stopwords = list(STOP_WORDS)
+        pos_tag = ['PROPN', 'ADJ', 'NOUN', 'VERB']
+        for token in doc:
+            if token.text in stopwords or token.text in punctuation:
+                continue
+            if token.pos_ in pos_tag:
+                keyword.append(token.text)
+        freq_word = Counter(keyword)
+        # Normalization
+        max_freq = Counter(keyword).most_common(1)[0][1]
+        for word in freq_word.keys():
+            freq_word[word] = freq_word[word] / max_freq
+        # Weighing sentences
+        sent_strength = {}
+        for sent in doc.sents:
+            for word in sent:
+                if word.text in freq_word.keys():
+                    if sent in sent_strength.keys():
+                        sent_strength[sent] += freq_word[word.text]
+                    else:
+                        sent_strength[sent] = freq_word[word.text]
+        # Summarizing the string
+        summarized_sentences: list[Span] = nlargest(3, sent_strength, key=sent_strength.get)
+        final_sentences = [w.text for w in summarized_sentences]
+        summary = " ".join(final_sentences)
+
+        return summary
+
+    def _summarize_sentences(self, sentences: list[str]) -> list[str]:
+        return [self._summarize_sentence(sentence) for sentence in sentences]
+
     def _tokenize_and_get_vector_representations(self, sentences: list[str]):
         """
         Tokenize the input sentences and get a representation for faiss
@@ -51,7 +93,11 @@ class SimilarityAnalysisPreparer(Preparer):
         :param sentences:
         :return:
         """
-        encoded_input = self.tokenizer(sentences, padding=True, truncation=True, return_tensors='pt')
+        encoded_input = self.tokenizer(self._summarize_sentences(sentences),
+                                       padding=True,
+                                       max_length=500,
+                                       truncation=True,
+                                       return_tensors='pt')
         with torch.no_grad():
             self.logger.info('Begin model.')
             model_output = self.model(**encoded_input)
