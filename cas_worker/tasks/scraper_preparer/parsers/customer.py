@@ -14,28 +14,39 @@ class CustomerParser:
         return CustomerParser.extract_customer_profile_data(Selector(response))
 
     @classmethod
-    def _table_to_dict(cls,table):
+    def _table_to_dict(cls, table):
         return {item.css('td')[0].css('::text').get(): item.css('td')[1].css('::text').get() for item in table}
 
     @classmethod
     def extract_customer_profile_data(cls, selector: Selector) -> CustomerItem:
         name_id = selector.css('div.content-left h1.login ::text').get().replace(' ', '+')
         reputation = int(
-            selector.css('div.content div.content-left div.glory-box div.karma div[class^="karma"] ::text').get())
-        table_selectors = 'div.content div.content-right div.columns'
+            selector.css('div.content div.content-left div.flex-table div.karma div.val ::text').get())
+        table_selectors = 'div.content div.content-left div.ava-wrap div.login-wrap'
 
-        table_1 = selector.css(f'{table_selectors} table.table_1 tr')
-        table_2 = selector.css(f'{table_selectors} table.table_2 tr')
-        table_1_dict = cls._table_to_dict(table_1)
-        table_2_dict = cls._table_to_dict(table_2)
+        # !!! otzovik.com has made layout changes
 
-        country_str = table_1_dict.get('Страна:')
-        country = country_str if country_str is not None and country_str != '<Нет>' else None
-        city_str = table_1_dict.get('Город:')
-        city = city_str if city_str is not None and city_str != '<Нет>' else None
-        profession = table_1_dict.get('Профессия:')
+        # table_1 = selector.css(f'{table_selectors} table.table_1 tr')
+        # table_2 = selector.css(f'{table_selectors} table.table_2 tr')
+        # table_1_dict = cls._table_to_dict(table_1)
+        # table_2_dict = cls._table_to_dict(table_2)
+        location = selector.css(f"{table_selectors} div.location span ::text").get().split(", ")
+        country = None
+        city = None
+        if len(location) > 0:
+            country = location[0]
+        if len(location) > 1:
+            city = location[1]
 
-        reg_date_str: str = table_1_dict.get('Регистрация:')
+        # country_str = table_1_dict.get('Страна:')
+        # country = country_str if country_str is not None and country_str != '<Нет>' else None
+        # city_str = table_1_dict.get('Город:')
+        # city = city_str if city_str is not None and city_str != '<Нет>' else None
+        # profession = table_1_dict.get('Профессия:')
+        profession = None
+
+        # reg_date_str: str = table_1_dict.get('Регистрация:')
+        reg_date_str: str = selector.css(f"{table_selectors} div div.regdate span")[1].css("::text").get()
         month_dict = {'янв': '01', 'фев': '02', 'мар': '03', 'апр': '04', 'май': '05', 'мая': '05', 'июн': '06',
                       'июл': '07', 'авг': '08', 'сен': '09', 'окт': '10', 'ноя': '11', 'дек': '12'}
         for key, value in month_dict.items():
@@ -43,7 +54,8 @@ class CustomerParser:
         if len(reg_date_str.split(' ')) == 2:  # the date can be specified without the year, if the year is current
             reg_date_str += f' {datetime.now().year}'
         reg_date = datetime.strptime(reg_date_str, '%d %m %Y').date()
-        count_subscribers = int(table_2_dict.get('Подписчиков:'))
+        # count_subscribers = int(table_2_dict.get('Подписчиков:'))
+        count_subscribers = int(selector.css("div.content div.content-left div.flex-table div.subs div.val ::text").get())
 
         customer = CustomerItem()
         customer['name_id'] = name_id
