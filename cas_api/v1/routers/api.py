@@ -2,9 +2,6 @@ from fastapi import APIRouter, Security
 
 from cas_api.deps import get_api_key
 from cas_api.v1.routers import (
-    analysis_interests,
-    analysis_sentiments,
-    analysis_similarity,
     products,
     pipeline,
     result,
@@ -12,6 +9,12 @@ from cas_api.v1.routers import (
     visualizer_quantity,
     visualizer_histogram
 )
+from cas_api.v1.routers.provider import analysis_sentiments, analysis_interests, analysis_similarity
+from cas_api.v1.routers.preparer import (
+    analysis_sentiments as preparer_analysis_sentiments,
+    analysis_similarity as preparer_analysis_similarity
+)
+
 
 api_router = APIRouter(dependencies=[Security(get_api_key)])
 
@@ -22,9 +25,12 @@ products_search_router = APIRouter()
 products_search_router.include_router(products.router, prefix="/products", tags=["products"])
 
 analysis_router = APIRouter()
-analysis_router.include_router(analysis_interests.router, prefix="/interests", tags=["analysis_interests"])
-analysis_router.include_router(analysis_sentiments.router, prefix="/sentiments", tags=["analysis_sentiments"])
-analysis_router.include_router(analysis_similarity.router, prefix="/similarity", tags=["analysis_similarity"])
+analysis_router.include_router(analysis_interests.router, prefix="/provider/interests", tags=["analysis_interests"])
+analysis_router.include_router(analysis_sentiments.router, prefix="/provider/sentiments", tags=["analysis_sentiments"])
+analysis_router.include_router(analysis_similarity.router, prefix="/provider/similarity", tags=["analysis_similarity"])
+
+analysis_router.include_router(preparer_analysis_sentiments.router, prefix="/preparer/sentiments", tags=["analysis_sentiments"])
+analysis_router.include_router(preparer_analysis_similarity.router, prefix="/preparer/similarity", tags=["analysis_similarity"])
 
 visualizer_router = APIRouter()
 visualizer_router.include_router(visualizer_analysis_value.router, prefix="/analysis_value", tags=["visualizer_analysis_value"])

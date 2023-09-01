@@ -3,15 +3,15 @@ from sqlmodel import select
 from cas_shared.schemas.analysis import CustomerReputationAnalysisValue
 from cas_shared.schemas.base import data_to_schema_dict
 from cas_worker.db.models import Comment, Review, Customer, CustomerSimilarityAnalysis
-from cas_worker.tasks.provider.base import Provider
-from cas_worker.tasks.provider.utils import manage_result_size
+from cas_worker.tasks.analysis_provider.base import Provider
+from cas_worker.tasks.analysis_provider.utils import manage_result_size
 from config import WorkerTasks
 
 
 class SimilarityAnalysisReputationReviewersProvider(Provider):
     def __init__(self):
         super().__init__()
-        self.name = self.name = WorkerTasks.analyser_similarity_reputation_reviewers
+        self.name = WorkerTasks.analyser_similarity_reputation_reviewers
 
     @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:
@@ -31,7 +31,7 @@ class SimilarityAnalysisReputationReviewersProvider(Provider):
 class SimilarityAnalysisReputationCommentatorsProvider(Provider):
     def __init__(self):
         super().__init__()
-        self.name = self.name = WorkerTasks.analyser_similarity_reputation_commentators
+        self.name = WorkerTasks.analyser_similarity_reputation_commentators
 
     @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:

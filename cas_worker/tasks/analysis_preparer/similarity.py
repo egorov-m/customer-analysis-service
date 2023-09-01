@@ -9,21 +9,31 @@ from spacy import load, Language
 from spacy.lang import punctuation
 from spacy.lang.ru.stop_words import STOP_WORDS
 from spacy.tokens.span import Span
-from sqlmodel import Session
 from transformers import AutoTokenizer, AutoModel, RobertaTokenizerFast, RobertaModel
 
-from cas_worker.db.models import Product, ProductSimilarityAnalysis, Customer, \
-    CustomerSimilarityAnalysis, Review, Comment
-from cas_worker.db.repository import ProductRepository, CustomerRepository, ReviewRepository, \
+from cas_worker.db.models import (
+    Product,
+    ProductSimilarityAnalysis,
+    Customer,
+    CustomerSimilarityAnalysis,
+    Review,
+    Comment
+)
+from cas_worker.db.repository import (
+    ProductRepository,
+    CustomerRepository,
+    ReviewRepository,
     CommentRepository
-from cas_worker.tasks.preparer.base import Preparer
+)
+from cas_worker.tasks.analysis_preparer.base import AnalysisPreparer
+from config import WorkerTasks
 
 
-class SimilarityAnalysisPreparer(Preparer):
+class BaseSimilarityAnalysisPreparer(AnalysisPreparer):
     logger = log.getLogger('similarity_analysis_preparer_logger')
 
-    def __init__(self, session: Session):
-        super().__init__(session)
+    def __init__(self):
+        super().__init__()
         self.tokenizer: RobertaTokenizerFast = AutoTokenizer.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
         self.model: RobertaModel = AutoModel.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
         self.spacy_nlp: Language = load("ru_core_news_lg")
@@ -56,7 +66,7 @@ class SimilarityAnalysisPreparer(Preparer):
         # Filtering tokens
         keyword = []
         stopwords = list(STOP_WORDS)
-        pos_tag = ['PROPN', 'ADJ', 'NOUN', 'VERB']
+        pos_tag = ['PROPN', 'ADJ', 'NOUN', 'VERB']  # parts-of-speech list
         for token in doc:
             if token.text in stopwords or token.text in punctuation:
                 continue
@@ -125,7 +135,27 @@ class SimilarityAnalysisPreparer(Preparer):
         self.logger.info(f'Gets similarity value: {similarity} for the set of {len(sentences)} sentences')
         return float(similarity)
 
-    def execute_similarity_analysis_products(self, version_mark: str, is_override: bool = False):
+    def _init_reviews_comments_for_product(self, product: Product):
+        review_repo: ReviewRepository = ReviewRepository(self.session)
+        comment_repo: CommentRepository = CommentRepository(self.session)
+        reviews: list[Review] = review_repo.get_all_reviews_for_product(product.name_id)
+        comments: list[Comment] = comment_repo.get_all_comments_for_product(product.name_id)
+        return reviews, comments
+
+    def _init_reviews_comments_for_customer(self, customer: Customer):
+        review_repo: ReviewRepository = ReviewRepository(self.session)
+        comment_repo: CommentRepository = CommentRepository(self.session)
+        reviews: list[Review] = review_repo.get_all_reviews_for_customer(customer.name_id)
+        comments: list[Comment] = comment_repo.get_all_comments_for_customer(customer.name_id)
+        return reviews, comments
+
+
+class SimilarityAnalysisProductsPreparer(BaseSimilarityAnalysisPreparer):
+    def __init__(self):
+        super().__init__()
+        self.name = WorkerTasks.analyser_similarity_preparer_products
+
+    def run(self, version_mark: str, is_override: bool = False):
         self.logger.info('Similarity analysis process launched for all products.')
 
         product_repo: ProductRepository = ProductRepository(self.session)
@@ -183,7 +213,13 @@ class SimilarityAnalysisPreparer(Preparer):
 
         self.logger.info('Similarity analysis of all products is complete.')
 
-    def execute_similarity_analysis_customers(self, version_mark: str, is_override: bool = False):
+
+class SimilarityAnalysisCustomersPreparer(BaseSimilarityAnalysisPreparer):
+    def __init__(self):
+        super().__init__()
+        self.name = WorkerTasks.analyser_similarity_preparer_customers
+
+    def run(self, version_mark: str, is_override: bool = False):
         self.logger.info('Similarity analysis process launched for all customers.')
         customer_repo: CustomerRepository = CustomerRepository(self.session)
         customers: list[Customer] = customer_repo.get_all_customers()
@@ -241,17 +277,3 @@ class SimilarityAnalysisPreparer(Preparer):
                 count += 1
 
         self.logger.info('Similarity analysis of all customers is complete.')
-
-    def _init_reviews_comments_for_product(self, product: Product):
-        review_repo: ReviewRepository = ReviewRepository(self.session)
-        comment_repo: CommentRepository = CommentRepository(self.session)
-        reviews: list[Review] = review_repo.get_all_reviews_for_product(product.name_id)
-        comments: list[Comment] = comment_repo.get_all_comments_for_product(product.name_id)
-        return reviews, comments
-
-    def _init_reviews_comments_for_customer(self, customer: Customer):
-        review_repo: ReviewRepository = ReviewRepository(self.session)
-        comment_repo: CommentRepository = CommentRepository(self.session)
-        reviews: list[Review] = review_repo.get_all_reviews_for_customer(customer.name_id)
-        comments: list[Comment] = comment_repo.get_all_comments_for_customer(customer.name_id)
-        return reviews, comments

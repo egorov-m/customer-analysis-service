@@ -1,6 +1,6 @@
-from cas_worker.tasks.scraper.items import CustomerItem
-from cas_worker.tasks.scraper.spiders import CustomerSpider, ReviewsCustomerSpider, CommentsCustomerSpider
-from cas_worker.tasks.scraper.tasks.base import BaseScraperTask
+from cas_worker.tasks.scraper_preparer.items import CustomerItem
+from cas_worker.tasks.scraper_preparer.spiders import CustomerSpider, ReviewsCustomerSpider, CommentsCustomerSpider
+from cas_worker.tasks.scraper_preparer.tasks.base import BaseScraperTask
 from config import WorkerTasks
 
 

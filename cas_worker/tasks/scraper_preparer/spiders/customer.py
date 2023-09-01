@@ -4,9 +4,9 @@ import logging
 from scrapy import Spider, Request
 from scrapy.http import Response
 
-from cas_worker.tasks.scraper.parsers import CustomerParser
-from cas_worker.tasks.scraper.spiders.utils.error import handle_http_errors
-from cas_worker.tasks.scraper.spiders.utils.pagination import spider_pagination
+from cas_worker.tasks.scraper_preparer.parsers import CustomerParser
+from cas_worker.tasks.scraper_preparer.spiders.utils.error import handle_http_errors
+from cas_worker.tasks.scraper_preparer.spiders.utils.pagination import spider_pagination
 
 
 class CustomerSpider(Spider):

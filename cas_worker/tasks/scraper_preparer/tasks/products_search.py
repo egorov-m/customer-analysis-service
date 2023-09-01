@@ -1,7 +1,7 @@
 from cas_shared.schemas.product import FoundProduct
-from cas_worker.tasks.scraper.items import ProductItem
-from cas_worker.tasks.scraper.spiders import ProductSpider
-from cas_worker.tasks.scraper.tasks.base import BaseScraperTask
+from cas_worker.tasks.scraper_preparer.items import ProductItem
+from cas_worker.tasks.scraper_preparer.spiders import ProductSpider
+from cas_worker.tasks.scraper_preparer.tasks.base import BaseScraperTask
 from config import WorkerTasks
 
 

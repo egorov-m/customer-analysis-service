@@ -3,13 +3,13 @@ from celery.result import GroupResult
 
 from cas_shared.schemas.task import CasPipelineComponent
 from cas_shared.schemas.visualizer import VisualizationType, AnalysisVisualizationType
-from cas_worker.tasks.provider.base import Provider
-from cas_worker.tasks.provider.interests import InterestsAnalysisReviewersProvider, \
+from cas_worker.tasks.analysis_provider.base import Provider
+from cas_worker.tasks.analysis_provider.interests import InterestsAnalysisReviewersProvider, \
     InterestsAnalysisCommentatorsProvider
-from cas_worker.tasks.provider.sentiment import SentimentAnalysisCategoryReviewersProvider, \
+from cas_worker.tasks.analysis_provider.sentiment import SentimentAnalysisCategoryReviewersProvider, \
     SentimentAnalysisCategoryCommentatorsProvider, SentimentAnalysisRegionallyReviewersProvider, \
     SentimentAnalysisRegionallyCommentatorsProvider
-from cas_worker.tasks.provider.similarity import SimilarityAnalysisReputationReviewersProvider, \
+from cas_worker.tasks.analysis_provider.similarity import SimilarityAnalysisReputationReviewersProvider, \
     SimilarityAnalysisReputationCommentatorsProvider
 from cas_worker.tasks.visualizer.base import Visualizer
 from cas_worker.tasks.visualizer.group import GroupVisualizerQuantity, GroupVisualizerAnalysisValue

@@ -3,19 +3,19 @@ import textwrap
 
 import numpy as np
 import torch
-from sqlmodel import Session
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 from cas_worker.db.models import Review, ReviewSentimentAnalysis, Comment, CommentSentimentAnalysis
 from cas_worker.db.repository import ReviewRepository, CommentRepository
-from cas_worker.tasks.preparer.base import Preparer
+from cas_worker.tasks.analysis_preparer.base import AnalysisPreparer
+from config import WorkerTasks
 
 
-class SentimentAnalysisPreparer(Preparer):
+class BaseSentimentAnalysisPreparer(AnalysisPreparer):
     logger = log.getLogger('sentiment_analysis_preparer_logger')
 
-    def __init__(self, session: Session):
-        super().__init__(session)
+    def __init__(self):
+        super().__init__()
 
         self.tokenizer = AutoTokenizer.from_pretrained("blanchefort/rubert-base-cased-sentiment")
         self.model = AutoModelForSequenceClassification.from_pretrained("blanchefort/rubert-base-cased-sentiment",
@@ -47,7 +47,13 @@ class SentimentAnalysisPreparer(Preparer):
 
         return res / len(chunks)
 
-    def execute_sentiment_analysis_all_reviews(self, version_mark: str, is_override: bool = False):
+
+class SentimentAnalysisReviewsPreparer(BaseSentimentAnalysisPreparer):
+    def __init__(self):
+        super().__init__()
+        self.name = WorkerTasks.analyser_sentiment_preparer_reviewers
+
+    def run(self, version_mark: str, is_override: bool = False):
         self.logger.info('Sentiment analysis process launched for all reviews.')
 
         review_repo: ReviewRepository = ReviewRepository(self.session)
@@ -56,13 +62,16 @@ class SentimentAnalysisPreparer(Preparer):
         self.logger.info(f'{len(reviews)} reviews found.')
 
         for review in reviews:
-            reviews_sentiment_analysis: list[ReviewSentimentAnalysis] = review_repo.get_reviews_sentiment_analysis_by_review_id(review.id, version_mark)
+            reviews_sentiment_analysis: list[
+                ReviewSentimentAnalysis] = review_repo.get_reviews_sentiment_analysis_by_review_id(review.id,
+                                                                                                   version_mark)
             sentiment_value: float = self._get_sentiment_analysis_texts(review.text_review)
             if len(reviews_sentiment_analysis) > 0:
                 review_sentiment_analysis: ReviewSentimentAnalysis = reviews_sentiment_analysis[0]
                 if is_override:
 
-                    review_repo.update_sentiment_value_review_sentiment_analysis(review_sentiment_analysis, sentiment_value)
+                    review_repo.update_sentiment_value_review_sentiment_analysis(review_sentiment_analysis,
+                                                                                 sentiment_value)
                     self.logger.info(f'[{count}] Review {review.id} updated: {sentiment_value}')
                 else:
                     self.logger.info(f'[{count}] Review {review.id} skipped.')
@@ -79,7 +88,13 @@ class SentimentAnalysisPreparer(Preparer):
 
         self.logger.info('Sentiment analysis of all reviews is complete.')
 
-    def execute_sentiment_analysis_all_comments(self, version_mark: str, is_override: bool = False):
+
+class SentimentAnalysisCommentsPreparer(BaseSentimentAnalysisPreparer):
+    def __init__(self):
+        super().__init__()
+        self.name = WorkerTasks.analyser_sentiment_preparer_commentators
+
+    def run(self, version_mark: str, is_override: bool = False):
         self.logger.info('Sentiment analysis process launched for all comments.')
 
         comment_repo: CommentRepository = CommentRepository(self.session)
@@ -88,12 +103,15 @@ class SentimentAnalysisPreparer(Preparer):
         self.logger.info(f'{len(comments)} comments found.')
 
         for comment in comments:
-            comments_sentiment_analysis: list[CommentSentimentAnalysis] = comment_repo.get_comments_sentiment_analysis_by_comment_id(comment.id, version_mark)
+            comments_sentiment_analysis: list[
+                CommentSentimentAnalysis] = comment_repo.get_comments_sentiment_analysis_by_comment_id(comment.id,
+                                                                                                       version_mark)
             if len(comments_sentiment_analysis) > 0:
                 comment_sentiment_analysis: CommentSentimentAnalysis = comments_sentiment_analysis[0]
                 if is_override:
                     sentiment_value: float = self._get_sentiment_analysis_texts(comment.text_comment)
-                    comment_repo.update_sentiment_value_review_sentiment_analysis(comment_sentiment_analysis, sentiment_value)
+                    comment_repo.update_sentiment_value_review_sentiment_analysis(comment_sentiment_analysis,
+                                                                                  sentiment_value)
                     self.logger.info(f'[{count}] Comment {comment.id} updated: {sentiment_value}')
                 else:
                     self.logger.info(f'[{count}] Comment {comment.id} skipped.')

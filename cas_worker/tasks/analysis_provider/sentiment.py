@@ -6,15 +6,15 @@ from cas_shared.schemas.analysis import GroupRegionallyAllCustomerAnalysis, \
 from cas_shared.schemas.base import data_to_schema_dict
 from cas_worker.db.models import RegionalLocation, Customer, ReviewSentimentAnalysis, Review, Comment, \
     CommentSentimentAnalysis, Product
-from cas_worker.tasks.provider.base import Provider
-from cas_worker.tasks.provider.utils import manage_result_size
+from cas_worker.tasks.analysis_provider.base import Provider
+from cas_worker.tasks.analysis_provider.utils import manage_result_size
 from config import WorkerTasks
 
 
 class SentimentAnalysisCategoryReviewersProvider(Provider):
     def __init__(self):
         super().__init__()
-        self.name = self.name = WorkerTasks.analyser_sentiment_category_reviewers
+        self.name = WorkerTasks.analyser_sentiment_category_reviewers
 
     @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:
@@ -43,7 +43,7 @@ class SentimentAnalysisCategoryReviewersProvider(Provider):
 class SentimentAnalysisCategoryCommentatorsProvider(Provider):
     def __init__(self):
         super().__init__()
-        self.name = self.name = WorkerTasks.analyser_sentiment_category_commentators
+        self.name = WorkerTasks.analyser_sentiment_category_commentators
 
     @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:
@@ -75,7 +75,7 @@ class SentimentAnalysisCategoryCommentatorsProvider(Provider):
 class SentimentAnalysisRegionallyReviewersProvider(Provider):
     def __init__(self):
         super().__init__()
-        self.name = self.name = WorkerTasks.analyser_sentiment_regionally_reviewers
+        self.name = WorkerTasks.analyser_sentiment_regionally_reviewers
 
     @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:
@@ -102,7 +102,7 @@ class SentimentAnalysisRegionallyReviewersProvider(Provider):
 class SentimentAnalysisRegionallyCommentatorsProvider(Provider):
     def __init__(self):
         super().__init__()
-        self.name = self.name = WorkerTasks.analyser_sentiment_regionally_commentators
+        self.name = WorkerTasks.analyser_sentiment_regionally_commentators
 
     @manage_result_size()
     def run(self, product_name_id: str) -> list[dict]:

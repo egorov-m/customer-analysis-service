@@ -1,10 +1,7 @@
 from enum import IntEnum
 
-from celery import Task
-from sqlmodel import Session
-
-from cas_worker.db.database import get_session
 from cas_worker.db.models import Review, RegionalLocation, Product
+from cas_worker.tasks.base import TaskWithDbSession
 
 
 class ProductCategory(IntEnum):
@@ -14,21 +11,10 @@ class ProductCategory(IntEnum):
     CATEGORY_4 = 4
 
 
-class Provider(Task):
+class Provider(TaskWithDbSession):
     """
-    Data provider base class
+    Data analysis_provider base class
     """
-
-    def __init__(self):
-        self.session = None
-
-    def before_start(self, task_id, args, kwargs):
-        session: Session = get_session()
-        with session.begin() as transaction:
-            self.session = session
-
-    def after_return(self, status, retval, task_id, args, kwargs, einfo):
-        self.session.close()
 
     @classmethod
     def _get_field_category_ru(cls, category_number: ProductCategory | int):

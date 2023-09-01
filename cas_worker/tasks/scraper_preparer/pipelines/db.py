@@ -7,7 +7,7 @@ from cas_worker.db.models.customer import Customer
 from cas_worker.db.models.product import Product
 from cas_worker.db.models.review import Review
 from cas_worker.db.repository import CommentRepository, CustomerRepository, ProductRepository, ReviewRepository
-from cas_worker.tasks.scraper.items import ReviewItem, CommentItem, CustomerItem, ProductItem
+from cas_worker.tasks.scraper_preparer.items import ReviewItem, CommentItem, CustomerItem, ProductItem
 
 
 class DbPostgresBasePipline(object):

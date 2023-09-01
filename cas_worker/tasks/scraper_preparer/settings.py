@@ -1,4 +1,4 @@
-# Scrapy settings for scraper project
+# Scrapy settings for scraper_preparer project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,10 +7,10 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "scraper"
+BOT_NAME = "scraper_preparer"
 
-SPIDER_MODULES = ["cas_worker.tasks.scraper.spiders"]
-NEWSPIDER_MODULE = "cas_worker.tasks.scraper.spiders"
+SPIDER_MODULES = ["cas_worker.tasks.scraper_preparer.spiders"]
+NEWSPIDER_MODULE = "cas_worker.tasks.scraper_preparer.spiders"
 
 LOG_FILE = "./.scrapy/log"
 LOG_STDOUT = False
@@ -78,7 +78,7 @@ SPIDER_MIDDLEWARES = {
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware": None,
-    "cas_worker.tasks.scraper.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
+    "cas_worker.tasks.scraper_preparer.middleware.fake_http_headers.BaseFakeHttpHeadersMiddleware": 400,
 
     # "rotating_proxies.middlewares.RotatingProxyMiddleware": 610,
     # "rotating_proxies.middlewares.BanDetectionMiddleware": 620,
@@ -98,10 +98,10 @@ ROTATING_PROXY_LIST_PATH = "./.scrapy/httpproxy/list.txt"
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "cas_worker.tasks.scraper.pipelines.clean.CleanTextPipeline": 301,
-    "cas_worker.tasks.scraper.pipelines.truncate.TruncateTextPipeline": 302,
-    "cas_worker.tasks.scraper.pipelines.translate.TranslateCustomerGeoLocationPipeline": 303,
-    "cas_worker.tasks.scraper.pipelines.db.DbPostgresPipeline": 304,
+    "cas_worker.tasks.scraper_preparer.pipelines.clean.CleanTextPipeline": 301,
+    "cas_worker.tasks.scraper_preparer.pipelines.truncate.TruncateTextPipeline": 302,
+    "cas_worker.tasks.scraper_preparer.pipelines.translate.TranslateCustomerGeoLocationPipeline": 303,
+    "cas_worker.tasks.scraper_preparer.pipelines.db.DbPostgresPipeline": 304,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

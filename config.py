@@ -50,19 +50,30 @@ class WorkerTasks(StrEnum):
     visualizer_maps_visualize_analysis_value: str = f"{_visualizer}.maps_visualize_analysis_value"
     visualizer_histogram_visualize: str = f"{_visualizer}.histogram_visualize"
 
-    _analyser_interests: str = f"{settings.WORKER_NAME}.analyser.interests"
-    analyser_interests_reviewers: str = f"{_analyser_interests}.reviewers"
-    analyser_interests_commentators: str = f"{_analyser_interests}.commentators"
+    _preparer: str = f"{settings.WORKER_NAME}.preparer"
+    _provider: str = f"{settings.WORKER_NAME}.provider"
 
-    _analyser_sentiment: str = f"{settings.WORKER_NAME}.analyser.sentiment"
-    analyser_sentiment_regionally_reviewers: str = f"{_analyser_sentiment}.regionally.reviewers"
-    analyser_sentiment_regionally_commentators: str = f"{_analyser_sentiment}.regionally.commentators"
-    analyser_sentiment_category_reviewers: str = f"{_analyser_sentiment}.category.reviewers"
-    analyser_sentiment_category_commentators: str = f"{_analyser_sentiment}.category.commentators"
+    _analyser_sentiment_preparer: str = f"{_preparer}.analyser_sentiment"
+    analyser_sentiment_preparer_reviewers: str = f"{_analyser_sentiment_preparer}.reviewers"
+    analyser_sentiment_preparer_commentators: str = f"{_analyser_sentiment_preparer}.commentators"
 
-    _analyser_similarity: str = f"{settings.WORKER_NAME}.analyser.similarity"
-    analyser_similarity_reputation_reviewers: str = f"{_analyser_similarity}.reputation.reviewers"
-    analyser_similarity_reputation_commentators: str = f"{_analyser_similarity}.reputation.commentators"
+    _analyser_similarity_preparer: str = f"{_preparer}.analyser_similarity"
+    analyser_similarity_preparer_products: str = f"{_analyser_similarity_preparer}.products"
+    analyser_similarity_preparer_customers: str = f"{_analyser_similarity_preparer}.customers"
+
+    _analyser_interests_provider: str = f"{_provider}.analyser_interests"
+    analyser_interests_reviewers: str = f"{_analyser_interests_provider}.reviewers"
+    analyser_interests_commentators: str = f"{_analyser_interests_provider}.commentators"
+
+    _analyser_sentiment_provider: str = f"{_provider}.analyser_sentiment"
+    analyser_sentiment_regionally_reviewers: str = f"{_analyser_sentiment_provider}.regionally.reviewers"
+    analyser_sentiment_regionally_commentators: str = f"{_analyser_sentiment_provider}.regionally.commentators"
+    analyser_sentiment_category_reviewers: str = f"{_analyser_sentiment_provider}.category.reviewers"
+    analyser_sentiment_category_commentators: str = f"{_analyser_sentiment_provider}.category.commentators"
+
+    _analyser_similarity_provider: str = f"{_provider}.analyser_similarity"
+    analyser_similarity_reputation_reviewers: str = f"{_analyser_similarity_provider}.reputation.reviewers"
+    analyser_similarity_reputation_commentators: str = f"{_analyser_similarity_provider}.reputation.commentators"
 
     _pipeline: str = f"{settings.WORKER_NAME}.pipeline"
     _pipeline_shaper: str = f"{_pipeline}.shaper"

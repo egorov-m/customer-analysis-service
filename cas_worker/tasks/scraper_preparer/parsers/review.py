@@ -5,9 +5,9 @@ from urllib.parse import unquote
 from scrapy import Selector, Request
 from scrapy.http import Response
 
-from cas_worker.tasks.scraper.items import ReviewItem
-from cas_worker.tasks.scraper.parsers import ProductParser, CustomerParser
-from cas_worker.tasks.scraper.spiders.utils.error import handle_http_errors
+from cas_worker.tasks.scraper_preparer.items import ReviewItem
+from cas_worker.tasks.scraper_preparer.parsers import ProductParser, CustomerParser
+from cas_worker.tasks.scraper_preparer.spiders.utils.error import handle_http_errors
 
 
 class ReviewParser:
