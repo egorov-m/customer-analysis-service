@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlmodel import select, Session
 
 from cas_worker.db.models.customer import Customer, CustomerSimilarityAnalysis
@@ -22,14 +24,16 @@ class CustomerRepository:
         return self.session.get(Customer, name_id)
 
     def get_all_customers(self) -> list[Customer]:
-        return self.session.execute(select(Customer)).scalars().all()
+        res = self.session.execute(select(Customer)).scalars()
+        return res.all()
 
     def get_customers_similarity_analysis(self, customer_name_id: str, version_mark: str = None):
         st = select(CustomerSimilarityAnalysis).where(CustomerSimilarityAnalysis.customer_name_id == customer_name_id)
         if version_mark is not None:
             st.where(CustomerSimilarityAnalysis.version_mark == version_mark)
 
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     @menage_db_method(CommitMode.FLUSH)
     def update_state_all_comments_available(self, customer: Customer, new_state: bool):
@@ -37,11 +41,14 @@ class CustomerRepository:
         self.session.add(customer)
 
     @menage_db_method(CommitMode.FLUSH)
-    def update_similarity_values_customer_similarity_analysis(self, customer_similarity_analysis: CustomerSimilarityAnalysis,
-                                                              similarity_value_reviews: float,
-                                                              similarity_value_comments: float):
-        customer_similarity_analysis.similarity_reviews_value = similarity_value_reviews
-        customer_similarity_analysis.similarity_comments_value = similarity_value_comments
+    def update_similarity_values_customer_similarity_analysis(self,
+                                                              customer_similarity_analysis: CustomerSimilarityAnalysis,
+                                                              similarity_value_reviews: Optional[float],
+                                                              similarity_value_comments: Optional[float]):
+        if similarity_value_reviews is not None:
+            customer_similarity_analysis.similarity_reviews_value = similarity_value_reviews
+        if similarity_value_comments is not None:
+            customer_similarity_analysis.similarity_comments_value = similarity_value_comments
         self.session.add(customer_similarity_analysis)
 
     @menage_db_method(CommitMode.FLUSH)

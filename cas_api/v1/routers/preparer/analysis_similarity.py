@@ -28,6 +28,6 @@ async def similarity_analysis_products_preparer(version_mark: str = "v1", is_ove
     description="Выполнения подготовки анализа сходства отзывов / комментариев клиентов",
     summary="Similarity analysis customers preparer"
 )
-async def similarity_analysis_products_preparer(version_mark: str = "v1", is_override: bool = False):
+async def similarity_analysis_customers_preparer(version_mark: str = "v1", is_override: bool = False):
     task = cas_api_worker.send_task(WorkerTasks.analyser_similarity_preparer_customers, args=[version_mark, is_override])
     return CasTask(task_id=task.id, task_status=task.status)

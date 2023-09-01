@@ -26,11 +26,13 @@ class ReviewRepository:
         if version_mark is not None:
             st.where(ReviewSentimentAnalysis.version_mark == version_mark)
 
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     def get_reviews_sentiment_analysis_by_version_mark(self, version_mark: str) -> list[ReviewSentimentAnalysis]:
         st = select(ReviewSentimentAnalysis).where(ReviewSentimentAnalysis.version_mark == version_mark)
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     @menage_db_method(CommitMode.FLUSH)
     def update_sentiment_value_review_sentiment_analysis(self,
@@ -40,15 +42,18 @@ class ReviewRepository:
         self.session.add(review_sentiment_analysis)
 
     def get_all_reviews(self) -> list[Review]:
-        return self.session.execute(select(Review)).scalars().all()
+        res = self.session.execute(select(Review)).scalars()
+        return res.all()
 
     def get_all_reviews_for_product(self, product_name_id: str) -> list[Review]:
         st = select(Review).where(Review.evaluated_product_name_id == product_name_id)
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     def get_all_reviews_for_customer(self, customer_name_id: str) -> list[Review]:
         st = select(Review).where(Review.customer_name_id == customer_name_id)
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     @menage_db_method(CommitMode.FLUSH)
     def update_state_all_commenting_customers_available(self, review: Review, new_state: bool):

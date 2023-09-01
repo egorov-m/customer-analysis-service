@@ -6,7 +6,7 @@ import faiss
 import numpy as np
 import torch
 from spacy import load, Language
-from spacy.lang import punctuation
+from string import punctuation
 from spacy.lang.ru.stop_words import STOP_WORDS
 from spacy.tokens.span import Span
 from transformers import AutoTokenizer, AutoModel, RobertaTokenizerFast, RobertaModel
@@ -74,7 +74,9 @@ class BaseSimilarityAnalysisPreparer(AnalysisPreparer):
                 keyword.append(token.text)
         freq_word = Counter(keyword)
         # Normalization
-        max_freq = Counter(keyword).most_common(1)[0][1]
+        max_freq = 1
+        if keyword:
+            max_freq = freq_word.most_common(1)[0][1]
         for word in freq_word.keys():
             freq_word[word] = freq_word[word] / max_freq
         # Weighing sentences
@@ -87,7 +89,7 @@ class BaseSimilarityAnalysisPreparer(AnalysisPreparer):
                     else:
                         sent_strength[sent] = freq_word[word.text]
         # Summarizing the string
-        summarized_sentences: list[Span] = nlargest(3, sent_strength, key=sent_strength.get)
+        summarized_sentences: list[Span] = nlargest(2, sent_strength, key=sent_strength.get)
         final_sentences = [w.text for w in summarized_sentences]
         summary = " ".join(final_sentences)
 
@@ -105,7 +107,7 @@ class BaseSimilarityAnalysisPreparer(AnalysisPreparer):
         """
         encoded_input = self.tokenizer(self._summarize_sentences(sentences),
                                        padding=True,
-                                       max_length=500,
+                                       max_length=300,
                                        truncation=True,
                                        return_tensors='pt')
         with torch.no_grad():
@@ -239,11 +241,11 @@ class SimilarityAnalysisCustomersPreparer(BaseSimilarityAnalysisPreparer):
                         [item.text_review for item in reviews])
                     similarity_value_comments: float = self.get_mean_similarity_for_all_sentence(
                         [item.text_comment for item in comments])
-                    if similarity_value_reviews is None and similarity_value_comments is None:
-                        self.logger.info(
-                            f'[{count}] Customer {customer.name_id} skipped (no valid amount reviews and comments).')
-                        count += 1
-                        continue
+                    # if similarity_value_reviews is None and similarity_value_comments is None:
+                    #     self.logger.info(
+                    #         f'[{count}] Customer {customer.name_id} skipped (no valid amount reviews and comments).')
+                    #     count += 1
+                    #     continue
                     customer_repo.update_similarity_values_customer_similarity_analysis(customer_similarity_analysis,
                                                                                         similarity_value_reviews,
                                                                                         similarity_value_comments)

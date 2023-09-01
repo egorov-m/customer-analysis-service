@@ -22,14 +22,16 @@ class ProductRepository:
         return self.session.get(Product, name_id)
 
     def get_all_products(self) -> list[Product]:
-        return self.session.execute(select(Product)).scalars().all()
+        res = self.session.execute(select(Product)).scalars()
+        return res.all()
 
     def get_products_similarity_analysis(self, product_name_id: str, version_mark: str = None):
         st = select(ProductSimilarityAnalysis).where(ProductSimilarityAnalysis.product_name_id == product_name_id)
         if version_mark is not None:
             st.where(ProductSimilarityAnalysis.version_mark == version_mark)
 
-        return self.session.execute(st).scalar().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     @menage_db_method(CommitMode.FLUSH)
     def update_similarity_values_product_similarity_analysis(self, product_similarity_analysis: ProductSimilarityAnalysis,

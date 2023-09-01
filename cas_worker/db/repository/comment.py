@@ -26,7 +26,8 @@ class CommentRepository:
 
     def get_all_comments_for_customer(self, customer_name_id: str) -> list[Comment]:
         st = select(Comment).where(Comment.customer_name_id == customer_name_id)
-        return self.session.execute(st).scalar().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     def get_comment(self, customer_name_id: str, review_id: int, reg_datetime: datetime) -> Comment:
         """
@@ -41,7 +42,8 @@ class CommentRepository:
         st = select(Comment).where(Comment.customer_name_id == customer_name_id)\
             .where(Comment.review_id == review_id)\
             .where(Comment.reg_datetime == reg_datetime)
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     def get_comments_sentiment_analysis_by_comment_id(self,
                                                       comment_id: int,
@@ -50,17 +52,20 @@ class CommentRepository:
         if version_mark is not None:
             st.where(CommentSentimentAnalysis.version_mark == version_mark)
 
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     def get_all_comments_for_product(self, product_name_id: str) -> list[Comment]:
         st = select(Comment).join(Review, Comment.review_id == Review.id)\
             .where(Review.evaluated_product_name_id == product_name_id)
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     def get_comments_sentiment_analysis_by_version_mark(self, version_mark: str) -> list[CommentSentimentAnalysis]:
         st = select(CommentSentimentAnalysis)\
             .where(CommentSentimentAnalysis.version_mark == version_mark)
-        return self.session.execute(st).scalars().all()
+        res = self.session.execute(st).scalars()
+        return res.all()
 
     @menage_db_method(CommitMode.FLUSH)
     def update_sentiment_value_review_sentiment_analysis(self,
@@ -70,4 +75,5 @@ class CommentRepository:
         self.session.add(review_sentiment_analysis)
 
     def get_all_comments(self) -> list[Comment]:
-        return self.session.execute(select(Comment)).scalars().all()
+        res = self.session.execute(select(Comment)).scalars()
+        return res.all()
