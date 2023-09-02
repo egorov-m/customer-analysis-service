@@ -43,6 +43,13 @@ async def comprehensive_analysis(product_name_id: str,
                                  sim_reg_r_title_analysis_value: str = "Количество клиентов",
                                  sim_reg_c_title_analysis_value: str = "Количество клиентов",
 
+                                 sim_cat_r_title_fig: str = "Анализ сходства отзывов клиентов по категориям",
+                                 sim_cat_c_title_fig: str = "Анализ сходства комментариев клиентов по категориям",
+                                 sim_cat_r_title_quantity: str = "Сходство отзывов",
+                                 sim_cat_c_title_quantity: str = "Сходство комментариев",
+                                 sim_cat_r_title_analysis_value: str = "Количество клиентов",
+                                 sim_cat_c_title_analysis_value: str = "Количество клиентов",
+
                                  visualization_image_title: str = "Визуализация растрового изображения",
                                  visualization_html_title: str = "Визуализация html"):
     task: AsyncResult = cas_api_worker.send_task(WorkerTasks.pipeline_shaper_comprehensive_visualized_analysis,
@@ -55,7 +62,10 @@ async def comprehensive_analysis(product_name_id: str,
                                                        sea_r_c_title_fig, sea_r_c_title_quantity, sea_r_c_title_analysis_value,
                                                        sim_reg_r_title_fig, sim_reg_c_title_fig, sim_reg_r_title_quantity,
                                                        sim_reg_c_title_quantity, sim_reg_r_title_analysis_value,
-                                                       sim_reg_c_title_analysis_value,
+                                                       sim_reg_c_title_analysis_value, sim_cat_r_title_fig,
+                                                       sim_cat_c_title_fig, sim_cat_r_title_quantity,
+                                                       sim_cat_c_title_quantity, sim_cat_r_title_analysis_value,
+                                                       sim_cat_c_title_analysis_value,
                                                        visualization_image_title, visualization_html_title])
     return CasPipeline(
         pipeline_id=task.id,

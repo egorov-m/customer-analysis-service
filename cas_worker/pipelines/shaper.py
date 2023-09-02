@@ -4,13 +4,22 @@ from celery.result import GroupResult
 from cas_shared.schemas.task import CasPipelineComponent
 from cas_shared.schemas.visualizer import VisualizationType, AnalysisVisualizationType
 from cas_worker.tasks.analysis_provider.base import Provider
-from cas_worker.tasks.analysis_provider.interests import InterestsAnalysisReviewersProvider, \
+from cas_worker.tasks.analysis_provider.interests import (
+    InterestsAnalysisReviewersProvider,
     InterestsAnalysisCommentatorsProvider
-from cas_worker.tasks.analysis_provider.sentiment import SentimentAnalysisCategoryReviewersProvider, \
-    SentimentAnalysisCategoryCommentatorsProvider, SentimentAnalysisRegionallyReviewersProvider, \
+)
+from cas_worker.tasks.analysis_provider.sentiment import (
+    SentimentAnalysisCategoryReviewersProvider,
+    SentimentAnalysisCategoryCommentatorsProvider,
+    SentimentAnalysisRegionallyReviewersProvider,
     SentimentAnalysisRegionallyCommentatorsProvider
-from cas_worker.tasks.analysis_provider.similarity import SimilarityAnalysisReputationReviewersProvider, \
-    SimilarityAnalysisReputationCommentatorsProvider
+)
+from cas_worker.tasks.analysis_provider.similarity import (
+    SimilarityAnalysisReputationReviewersProvider,
+    SimilarityAnalysisReputationCommentatorsProvider,
+    SimilarityAnalysisCategoryReviewersProvider,
+    SimilarityAnalysisCategoryCommentatorsProvider
+)
 from cas_worker.tasks.visualizer.base import Visualizer
 from cas_worker.tasks.visualizer.group import GroupVisualizerQuantity, GroupVisualizerAnalysisValue
 from cas_worker.tasks.visualizer.histogram import HistogramVisualizerQuantity
@@ -45,12 +54,19 @@ class ComprehensiveVisualizedAnalysis(Task):
             sea_r_c_title_quantity: str,
             sea_r_c_title_analysis_value: str,
 
-            sim_reg_r_title_fig: str,
-            sim_reg_c_title_fig: str,
-            sim_reg_r_title_quantity: str,
-            sim_reg_c_title_quantity: str,
-            sim_reg_r_title_analysis_value: str,
-            sim_reg_c_title_analysis_value: str,
+            sim_rep_r_title_fig: str,
+            sim_rep_c_title_fig: str,
+            sim_rep_r_title_quantity: str,
+            sim_rep_c_title_quantity: str,
+            sim_rep_r_title_analysis_value: str,
+            sim_rep_c_title_analysis_value: str,
+
+            sim_cat_r_title_fig: str,
+            sim_cat_c_title_fig: str,
+            sim_cat_r_title_quantity: str,
+            sim_cat_c_title_quantity: str,
+            sim_cat_r_title_analysis_value: str,
+            sim_cat_c_title_analysis_value: str,
 
             visualization_image_title: str,
             visualization_html_title: str
@@ -81,12 +97,19 @@ class ComprehensiveVisualizedAnalysis(Task):
         :param sea_r_c_title_analysis_value:
 
         analysis_type | peculiarity | who | what
-        :param sim_reg_r_title_fig:
-        :param sim_reg_c_title_fig:
-        :param sim_reg_r_title_quantity:
-        :param sim_reg_c_title_quantity:
-        :param sim_reg_r_title_analysis_value:
-        :param sim_reg_c_title_analysis_value:
+        :param sim_rep_r_title_fig:
+        :param sim_rep_c_title_fig:
+        :param sim_rep_r_title_quantity:
+        :param sim_rep_c_title_quantity:
+        :param sim_rep_r_title_analysis_value:
+        :param sim_rep_c_title_analysis_value:
+
+        :param sim_cat_r_title_fig:
+        :param sim_cat_c_title_fig:
+        :param sim_cat_r_title_quantity:
+        :param sim_cat_c_title_quantity:
+        :param sim_cat_r_title_analysis_value:
+        :param sim_cat_c_title_analysis_value:
 
         :param visualization_html_title:
         :param visualization_image_title:
@@ -149,18 +172,36 @@ class ComprehensiveVisualizedAnalysis(Task):
             product_name_id=product_name_id,
             analysis_vis_type=analysis_vis_type,
             vis_task_type=HistogramVisualizerQuantity,
-            title_fig=sim_reg_r_title_fig,
-            title_quantity=sim_reg_r_title_quantity,
-            title_analysis_value=sim_reg_r_title_analysis_value
+            title_fig=sim_rep_r_title_fig,
+            title_quantity=sim_rep_r_title_quantity,
+            title_analysis_value=sim_rep_r_title_analysis_value
         )
         similarity_analysis_by_reputation_commentators_workflow = self.get_chain_analysis_tasks(
             analysis_provider_type=SimilarityAnalysisReputationCommentatorsProvider,
             product_name_id=product_name_id,
             analysis_vis_type=analysis_vis_type,
             vis_task_type=HistogramVisualizerQuantity,
-            title_fig=sim_reg_c_title_fig,
-            title_quantity=sim_reg_c_title_quantity,
-            title_analysis_value=sim_reg_c_title_analysis_value
+            title_fig=sim_rep_c_title_fig,
+            title_quantity=sim_rep_c_title_quantity,
+            title_analysis_value=sim_rep_c_title_analysis_value
+        )
+        similarity_analysis_by_category_reviewers_workflow = self.get_chain_analysis_tasks(
+            analysis_provider_type=SimilarityAnalysisCategoryReviewersProvider,
+            product_name_id=product_name_id,
+            analysis_vis_type=analysis_vis_type,
+            vis_task_type=GroupVisualizerAnalysisValue,
+            title_fig=sim_cat_r_title_fig,
+            title_quantity=sim_rep_c_title_quantity,
+            title_analysis_value=sim_cat_r_title_analysis_value
+        )
+        similarity_analysis_by_category_commentators_workflow = self.get_chain_analysis_tasks(
+            analysis_provider_type=SimilarityAnalysisCategoryCommentatorsProvider,
+            product_name_id=product_name_id,
+            analysis_vis_type=analysis_vis_type,
+            vis_task_type=GroupVisualizerAnalysisValue,
+            title_fig=sim_cat_c_title_fig,
+            title_quantity=sim_rep_c_title_quantity,
+            title_analysis_value=sim_cat_c_title_analysis_value
         )
 
         main_workflow = group(interest_analysis_reviewers_workflow,
@@ -173,7 +214,10 @@ class ComprehensiveVisualizedAnalysis(Task):
                               sentiment_analysis_regionally_commentators_workflow,
 
                               similarity_analysis_by_reputation_reviewers_workflow,
-                              similarity_analysis_by_reputation_commentators_workflow)
+                              similarity_analysis_by_reputation_commentators_workflow,
+
+                              similarity_analysis_by_category_reviewers_workflow,
+                              similarity_analysis_by_category_commentators_workflow)
 
         result: GroupResult = main_workflow()
 
@@ -186,8 +230,10 @@ class ComprehensiveVisualizedAnalysis(Task):
                                                                sea_c_c_title_fig,
                                                                sea_r_r_title_fig,
                                                                sea_r_c_title_fig,
-                                                               sim_reg_r_title_fig,
-                                                               sim_reg_c_title_fig])
+                                                               sim_rep_r_title_fig,
+                                                               sim_rep_c_title_fig,
+                                                               sim_cat_r_title_fig,
+                                                               sim_cat_c_title_fig])
 
     @staticmethod
     def result_formation(group_result: GroupResult,

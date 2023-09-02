@@ -21,7 +21,9 @@ from cas_worker.tasks.analysis_provider.sentiment import (
 )
 from cas_worker.tasks.analysis_provider.similarity import (
     SimilarityAnalysisReputationReviewersProvider,
-    SimilarityAnalysisReputationCommentatorsProvider
+    SimilarityAnalysisReputationCommentatorsProvider,
+    SimilarityAnalysisCategoryReviewersProvider,
+    SimilarityAnalysisCategoryCommentatorsProvider
 )
 from cas_worker.tasks.scraper_preparer.tasks.category_data import CategoryDataScraperTask
 from cas_worker.tasks.scraper_preparer.tasks.products_data import ProductsDataScraperTask
@@ -49,6 +51,8 @@ cas_worker.register_task(SentimentAnalysisRegionallyCommentatorsProvider)
 
 cas_worker.register_task(SimilarityAnalysisReputationReviewersProvider)
 cas_worker.register_task(SimilarityAnalysisReputationCommentatorsProvider)
+cas_worker.register_task(SimilarityAnalysisCategoryReviewersProvider)
+cas_worker.register_task(SimilarityAnalysisCategoryCommentatorsProvider)
 
 cas_worker.register_task(SentimentAnalysisReviewsPreparer)
 cas_worker.register_task(SentimentAnalysisCommentsPreparer)

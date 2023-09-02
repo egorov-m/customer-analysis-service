@@ -74,6 +74,8 @@ class WorkerTasks(StrEnum):
     _analyser_similarity_provider: str = f"{_provider}.analyser_similarity"
     analyser_similarity_reputation_reviewers: str = f"{_analyser_similarity_provider}.reputation.reviewers"
     analyser_similarity_reputation_commentators: str = f"{_analyser_similarity_provider}.reputation.commentators"
+    analyser_similarity_category_reviewers: str = f"{_analyser_similarity_provider}.category.reviewers"
+    analyser_similarity_category_commentators: str = f"{_analyser_similarity_provider}.category.commentators"
 
     _pipeline: str = f"{settings.WORKER_NAME}.pipeline"
     _pipeline_shaper: str = f"{_pipeline}.shaper"
