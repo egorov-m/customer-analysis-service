@@ -1,5 +1,19 @@
 components:
   schemas:
+    AnalysisObjectType:
+      description: An enumeration.
+      enum:
+      - reviewers
+      - commentators
+      title: AnalysisObjectType
+      type: string
+    AnalysisPrepareSimilarityObjectType:
+      description: An enumeration.
+      enum:
+      - products
+      - customers
+      title: AnalysisPrepareSimilarityObjectType
+      type: string
     AnalysisVisualizationType:
       description: An enumeration.
       enum:
@@ -226,6 +240,20 @@ components:
           type: array
       title: HTTPValidationError
       type: object
+    SentimentAnalysisType:
+      description: An enumeration.
+      enum:
+      - region
+      - category
+      title: SentimentAnalysisType
+      type: string
+    SimilarityAnalysisType:
+      description: An enumeration.
+      enum:
+      - category
+      - reputation
+      title: SimilarityAnalysisType
+      type: string
     ValidationError:
       properties:
         loc:
@@ -264,15 +292,18 @@ info:
   version: 1.0.0
 openapi: 3.0.2
 paths:
-  /api/v1/analysis/preparer/sentiments/commentators:
+  /api/v1/analysis/preparer/sentiment:
     get:
       description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u043F\
         \u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0438 \u0430\u043D\u0430\u043B\
-        \u0438\u0437\u0430 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0439\
-        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\
-        \u0432"
-      operationId: sentiment_analysis_commentators_preparer_api_v1_analysis_preparer_sentiments_commentators_get
+        \u0438\u0437\u0430 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0439"
+      operationId: sentiment_analysis_api_v1_analysis_preparer_sentiment_get
       parameters:
+      - in: query
+        name: analysis_object_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/AnalysisObjectType'
       - in: query
         name: version_mark
         required: false
@@ -302,17 +333,21 @@ paths:
           description: Validation Error
       security:
       - Cas API Key: []
-      summary: Sentiment analysis commentators preparer
+      summary: Sentiment analysis preparer
       tags:
-      - analysis_sentiments
-  /api/v1/analysis/preparer/sentiments/reviewers:
+      - analysis_preparer
+  /api/v1/analysis/preparer/similarity:
     get:
       description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u043F\
         \u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0438 \u0430\u043D\u0430\u043B\
-        \u0438\u0437\u0430 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0439\
-        \ \u0440\u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432"
-      operationId: sentiment_analysis_reviewers_preparer_api_v1_analysis_preparer_sentiments_reviewers_get
+        \u0438\u0437\u0430 \u0441\u0445\u043E\u0434\u0441\u0442\u0432\u0430"
+      operationId: similarity_analysis_api_v1_analysis_preparer_similarity_get
       parameters:
+      - in: query
+        name: analysis_object_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/AnalysisPrepareSimilarityObjectType'
       - in: query
         name: version_mark
         required: false
@@ -342,101 +377,15 @@ paths:
           description: Validation Error
       security:
       - Cas API Key: []
-      summary: Sentiment analysis reviewers preparer
+      summary: Similarity analysis preparer
       tags:
-      - analysis_sentiments
-  /api/v1/analysis/preparer/similarity/customers:
-    get:
-      description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u043F\
-        \u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0438 \u0430\u043D\u0430\u043B\
-        \u0438\u0437\u0430 \u0441\u0445\u043E\u0434\u0441\u0442\u0432\u0430 \u043E\
-        \u0442\u0437\u044B\u0432\u043E\u0432 / \u043A\u043E\u043C\u043C\u0435\u043D\
-        \u0442\u0430\u0440\u0438\u0435\u0432 \u043A\u043B\u0438\u0435\u043D\u0442\u043E\
-        \u0432"
-      operationId: similarity_analysis_products_preparer_api_v1_analysis_preparer_similarity_customers_get
-      parameters:
-      - in: query
-        name: version_mark
-        required: false
-        schema:
-          default: v1
-          title: Version Mark
-          type: string
-      - in: query
-        name: is_override
-        required: false
-        schema:
-          default: false
-          title: Is Override
-          type: boolean
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Similarity analysis customers preparer
-      tags:
-      - analysis_similarity
-  /api/v1/analysis/preparer/similarity/products:
-    get:
-      description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u044F \u043F\
-        \u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0438 \u0430\u043D\u0430\u043B\
-        \u0438\u0437\u0430 \u0441\u0445\u043E\u0434\u0441\u0442\u0432\u0430 \u043E\
-        \u0442\u0437\u044B\u0432\u043E\u0432 / \u043A\u043E\u043C\u043C\u0435\u043D\
-        \u0442\u0430\u0440\u0438\u0435\u0432 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\
-        \u043E\u0432"
-      operationId: similarity_analysis_products_preparer_api_v1_analysis_preparer_similarity_products_get
-      parameters:
-      - in: query
-        name: version_mark
-        required: false
-        schema:
-          default: v1
-          title: Version Mark
-          type: string
-      - in: query
-        name: is_override
-        required: false
-        schema:
-          default: false
-          title: Is Override
-          type: boolean
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Similarity analysis products preparer
-      tags:
-      - analysis_similarity
-  /api/v1/analysis/provider/interests/comments:
+      - analysis_preparer
+  /api/v1/analysis/provider/interests:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0433\u0440\u0443\
         \u043F\u043F\u0438\u0440\u043E\u0432\u043A\u0443 \u043F\u043E \u0432\u0441\
-        \u0435\u043C \u0438\u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C \u043A\
-        \u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\u0432 \u043F\
-        \u0440\u043E\u0434\u0443\u043A\u0442\u0430."
-      operationId: customer_interest_comments_api_v1_analysis_provider_interests_comments_get
+        \u0435\u043C \u0438\u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C."
+      operationId: interests_analysis_api_v1_analysis_provider_interests_get
       parameters:
       - in: query
         name: product_name_id
@@ -444,6 +393,11 @@ paths:
         schema:
           title: Product Name Id
           type: string
+      - in: query
+        name: analysis_object_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/AnalysisObjectType'
       responses:
         '200':
           content:
@@ -459,51 +413,14 @@ paths:
           description: Validation Error
       security:
       - Cas API Key: []
-      summary: Commentators interests
+      summary: Interests
       tags:
-      - analysis_interests
-  /api/v1/analysis/provider/interests/reviews:
-    get:
-      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0433\u0440\u0443\
-        \u043F\u043F\u0438\u0440\u043E\u0432\u043A\u0443 \u043F\u043E \u0432\u0441\
-        \u0435\u043C \u0438\u043D\u0442\u0435\u0440\u0435\u0441\u0430\u043C \u0440\
-        \u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432 \u043F\u0440\u043E\u0434\u0443\
-        \u043A\u0442\u0430."
-      operationId: customer_interests_reviews_api_v1_analysis_provider_interests_reviews_get
-      parameters:
-      - in: query
-        name: product_name_id
-        required: true
-        schema:
-          title: Product Name Id
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Reviewers interests
-      tags:
-      - analysis_interests
-  /api/v1/analysis/provider/sentiments/comments/category:
+      - analysis_provider
+  /api/v1/analysis/provider/sentiment:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
-        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
-        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\
-        \u0432 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\
-        \u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\
-        \u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C"
-      operationId: customer_sentiment_comments_category_api_v1_analysis_provider_sentiments_comments_category_get
+        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437."
+      operationId: sentiment_analysis_api_v1_analysis_provider_sentiment_get
       parameters:
       - in: query
         name: product_name_id
@@ -511,6 +428,16 @@ paths:
         schema:
           title: Product Name Id
           type: string
+      - in: query
+        name: analysis_object_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/AnalysisObjectType'
+      - in: query
+        name: sentiment_analysis_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/SentimentAnalysisType'
       responses:
         '200':
           content:
@@ -526,120 +453,14 @@ paths:
           description: Validation Error
       security:
       - Cas API Key: []
-      summary: Commentators sentiments by category
+      summary: Sentiments
       tags:
-      - analysis_sentiments
-  /api/v1/analysis/provider/sentiments/comments/region:
-    get:
-      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
-        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
-        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\
-        \u0432 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\
-        \u0443\u043F\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\
-        \u043E \u0440\u0435\u0433\u0438\u043E\u043D\u0430\u043C"
-      operationId: customer_sentiment_comments_region_api_v1_analysis_provider_sentiments_comments_region_get
-      parameters:
-      - in: query
-        name: product_name_id
-        required: true
-        schema:
-          title: Product Name Id
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Commentators sentiments by region
-      tags:
-      - analysis_sentiments
-  /api/v1/analysis/provider/sentiments/reviews/category:
-    get:
-      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
-        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
-        \ \u0440\u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432 \u043F\u0440\u043E\
-        \u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\
-        \u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\u043E \u043A\u0430\u0442\
-        \u0435\u0433\u043E\u0440\u0438\u044F\u043C"
-      operationId: customer_sentiment_reviews_category_api_v1_analysis_provider_sentiments_reviews_category_get
-      parameters:
-      - in: query
-        name: product_name_id
-        required: true
-        schema:
-          title: Product Name Id
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Reviewers sentiments by category
-      tags:
-      - analysis_sentiments
-  /api/v1/analysis/provider/sentiments/reviews/region:
-    get:
-      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0441\u0435\u043D\
-        \u0442\u0438\u043C\u0435\u043D\u0442 \u0430\u043D\u0430\u043B\u0438\u0437\
-        \ \u0440\u0435\u0432\u044C\u044E\u0435\u0440\u043E\u0432 \u043F\u0440\u043E\
-        \u0434\u0443\u043A\u0442\u0430 \u0441\u0433\u0440\u0443\u043F\u043F\u0438\u0440\
-        \u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u043F\u043E \u0440\u0435\u0433\
-        \u0438\u043E\u043D\u0430\u043C"
-      operationId: customer_sentiment_reviews_region_api_v1_analysis_provider_sentiments_reviews_region_get
-      parameters:
-      - in: query
-        name: product_name_id
-        required: true
-        schema:
-          title: Product Name Id
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Reviewers sentiments by region
-      tags:
-      - analysis_sentiments
-  /api/v1/analysis/provider/similarity/comments/reputation:
+      - analysis_provider
+  /api/v1/analysis/provider/similarity:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0430\u043D\u0430\
-        \u043B\u0438\u0437 \u0441\u0445\u043E\u0436\u0435\u0441\u0442\u0438 \u043E\
-        \u0442\u0437\u044B\u0432\u043E\u0432 \u043A\u0430\u0436\u0434\u043E\u0433\u043E\
-        \ \u043A\u043B\u0438\u0435\u043D\u0442\u0430 \u0441\u043E \u0437\u043D\u0430\
-        \u0447\u0435\u043D\u0438\u0435\u043C \u0440\u0435\u043F\u0443\u0442\u0430\u0446\
-        \u0438\u0438."
-      operationId: get_customer_similarity_analysis_product_by_comments_api_v1_analysis_provider_similarity_comments_reputation_get
+        \u043B\u0438\u0437 \u0441\u0445\u043E\u0436\u0435\u0441\u0442\u0438."
+      operationId: similarity_analysis_api_v1_analysis_provider_similarity_get
       parameters:
       - in: query
         name: product_name_id
@@ -647,6 +468,16 @@ paths:
         schema:
           title: Product Name Id
           type: string
+      - in: query
+        name: analysis_object_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/AnalysisObjectType'
+      - in: query
+        name: similarity_analysis_type
+        required: true
+        schema:
+          $ref: '#/components/schemas/SimilarityAnalysisType'
       responses:
         '200':
           content:
@@ -662,43 +493,9 @@ paths:
           description: Validation Error
       security:
       - Cas API Key: []
-      summary: Similarity comments customer analysis by product
+      summary: Similarity analysis
       tags:
-      - analysis_similarity
-  /api/v1/analysis/provider/similarity/reviews/reputation:
-    get:
-      description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0430\u043D\u0430\
-        \u043B\u0438\u0437 \u0441\u0445\u043E\u0436\u0435\u0441\u0442\u0438 \u043E\
-        \u0442\u0437\u044B\u0432\u043E\u0432 \u043A\u0430\u0436\u0434\u043E\u0433\u043E\
-        \ \u043A\u043B\u0438\u0435\u043D\u0442\u0430 \u0441\u043E \u0437\u043D\u0430\
-        \u0447\u0435\u043D\u0438\u0435\u043C \u0440\u0435\u043F\u0443\u0442\u0430\u0446\
-        \u0438\u0438."
-      operationId: get_customer_similarity_analysis_product_by_reviews_api_v1_analysis_provider_similarity_reviews_reputation_get
-      parameters:
-      - in: query
-        name: product_name_id
-        required: true
-        schema:
-          title: Product Name Id
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Similarity reviews customer analysis by product
-      tags:
-      - analysis_similarity
+      - analysis_provider
   /api/v1/pipeline/shaper/comprehensive_analysis:
     get:
       operationId: comprehensive_analysis_api_v1_pipeline_shaper_comprehensive_analysis_get
@@ -904,6 +701,58 @@ paths:
           title: Sim Reg C Title Analysis Value
           type: string
       - in: query
+        name: sim_cat_r_title_fig
+        required: false
+        schema:
+          default: "\u0410\u043D\u0430\u043B\u0438\u0437 \u0441\u0445\u043E\u0434\u0441\
+            \u0442\u0432\u0430 \u043E\u0442\u0437\u044B\u0432\u043E\u0432 \u043A\u043B\
+            \u0438\u0435\u043D\u0442\u043E\u0432 \u043F\u043E \u043A\u0430\u0442\u0435\
+            \u0433\u043E\u0440\u0438\u044F\u043C"
+          title: Sim Cat R Title Fig
+          type: string
+      - in: query
+        name: sim_cat_c_title_fig
+        required: false
+        schema:
+          default: "\u0410\u043D\u0430\u043B\u0438\u0437 \u0441\u0445\u043E\u0434\u0441\
+            \u0442\u0432\u0430 \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\
+            \u0438\u0435\u0432 \u043A\u043B\u0438\u0435\u043D\u0442\u043E\u0432 \u043F\
+            \u043E \u043A\u0430\u0442\u0435\u0433\u043E\u0440\u0438\u044F\u043C"
+          title: Sim Cat C Title Fig
+          type: string
+      - in: query
+        name: sim_cat_r_title_quantity
+        required: false
+        schema:
+          default: "\u0421\u0445\u043E\u0434\u0441\u0442\u0432\u043E \u043E\u0442\u0437\
+            \u044B\u0432\u043E\u0432"
+          title: Sim Cat R Title Quantity
+          type: string
+      - in: query
+        name: sim_cat_c_title_quantity
+        required: false
+        schema:
+          default: "\u0421\u0445\u043E\u0434\u0441\u0442\u0432\u043E \u043A\u043E\u043C\
+            \u043C\u0435\u043D\u0442\u0430\u0440\u0438\u0435\u0432"
+          title: Sim Cat C Title Quantity
+          type: string
+      - in: query
+        name: sim_cat_r_title_analysis_value
+        required: false
+        schema:
+          default: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043A\
+            \u043B\u0438\u0435\u043D\u0442\u043E\u0432"
+          title: Sim Cat R Title Analysis Value
+          type: string
+      - in: query
+        name: sim_cat_c_title_analysis_value
+        required: false
+        schema:
+          default: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E \u043A\
+            \u043B\u0438\u0435\u043D\u0442\u043E\u0432"
+          title: Sim Cat C Title Analysis Value
+          type: string
+      - in: query
         name: visualization_image_title
         required: false
         schema:
@@ -938,158 +787,6 @@ paths:
       summary: Comprehensive Analysis
       tags:
       - pipeline_shaper
-  /api/v1/products/category_data:
-    get:
-      description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0435 \u0441\
-        \u043A\u0440\u0430\u043F\u0438\u043D\u0433\u0430 \u0432\u0441\u0435\u0445\
-        \ \u0434\u0430\u043D\u043D\u044B\u0445 \u043D\u0435\u043E\u0431\u0445\u043E\
-        \u0434\u0438\u043C\u044B\u0445 \u0434\u043B\u044F \u0430\u043D\u0430\u043B\
-        \u0438\u0437\u0430 \u0432\u0441\u0435\u0445 \u043F\u0440\u043E\u0434\u0443\
-        \u043A\u0442\u043E\u0432 \u0432 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\
-        \u0438\u0438.(\u0434\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u043E\u0434\
-        \u0443\u043A\u0442\u043E\u0432, \u0434\u0430\u043D\u043D\u044B\u0435 \u0432\
-        \u0441\u0435\u0445 \u0440\u0435\u0432\u044C\u0435\u0440\u043E\u0432 \u0438\
-        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\
-        \u0432, \u0440\u0435\u0432\u044C\u044E, \u043A\u043E\u043C\u043C\u0435\u043D\
-        \u0442\u0430\u0440\u0438\u0438)"
-      operationId: category_data_api_v1_products_category_data_get
-      parameters:
-      - description: "\u0418\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u0446\u0438\
-          \u0440\u0443\u044E\u0449\u0438\u0439 \u043F\u0443\u0442\u044C \u043A\u0430\
-          \u0442\u0435\u0433\u043E\u0440\u0438\u0438"
-        in: query
-        name: href_product_path
-        required: false
-        schema:
-          default: /in_town/education_companies/
-          description: "\u0418\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u0446\u0438\
-            \u0440\u0443\u044E\u0449\u0438\u0439 \u043F\u0443\u0442\u044C \u043A\u0430\
-            \u0442\u0435\u0433\u043E\u0440\u0438\u0438"
-          maxLength: 200
-          minLength: 1
-          title: Href Product Path
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Category data collection
-      tags:
-      - products
-  /api/v1/products/products_data:
-    get:
-      description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0435 \u0441\
-        \u043A\u0440\u0430\u043F\u0438\u043D\u0433\u0430 \u0432\u0441\u0435\u0445\
-        \ \u0434\u0430\u043D\u043D\u044B\u0445 \u043D\u0435\u043E\u0431\u0445\u043E\
-        \u0434\u0438\u043C\u044B\u0445 \u0434\u043B\u044F \u0430\u043D\u0430\u043B\
-        \u0438\u0437\u0430 \u043F\u043E \u043F\u0440\u043E\u0434\u0443\u043A\u0442\
-        \u0443.(\u0434\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u043E\u0434\u0443\
-        \u043A\u0442\u0430, \u0434\u0430\u043D\u043D\u044B\u0435 \u0432\u0441\u0435\
-        \u0445 \u0440\u0435\u0432\u044C\u0435\u0440\u043E\u0432 \u0438 \u043A\u043E\
-        \u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\u0432, \u0440\
-        \u0435\u0432\u044C\u044E, \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\
-        \u0440\u0438\u0438)"
-      operationId: products_data_api_v1_products_products_data_get
-      parameters:
-      - description: "\u0418\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u0446\u0438\
-          \u0440\u0443\u044E\u0449\u0435\u0435 \u0438\u043C\u044F \u043F\u0440\u043E\
-          \u0434\u0443\u043A\u0442\u0430"
-        in: query
-        name: product_name_id
-        required: false
-        schema:
-          default: chelyabinskiy_gosudarstvenniy_universitet_russia_chelyabinsk
-          description: "\u0418\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u0446\u0438\
-            \u0440\u0443\u044E\u0449\u0435\u0435 \u0438\u043C\u044F \u043F\u0440\u043E\
-            \u0434\u0443\u043A\u0442\u0430"
-          maxLength: 100
-          minLength: 1
-          title: Product Name Id
-          type: string
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Product data collection
-      tags:
-      - products
-  /api/v1/products/search:
-    get:
-      description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0438\u0442\u044C \u043F\u043E\
-        \u0438\u0441\u043A \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0434\
-        \u043B\u044F \u0430\u043D\u0430\u043B\u0438\u0437\u0430."
-      operationId: products_search_api_v1_products_search_get
-      parameters:
-      - description: "\u041F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0439 \u0432\
-          \u0432\u043E\u0434"
-        in: query
-        name: search_input
-        required: false
-        schema:
-          default: "\u0427\u0435\u043B\u0413\u0443"
-          description: "\u041F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0439 \u0432\
-            \u0432\u043E\u0434"
-          maxLength: 100
-          minLength: 1
-          title: Search Input
-          type: string
-      - description: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\
-          \u043E\u0435 \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E\
-          \ \u043F\u043E\u043B\u0443\u0447\u0430\u0435\u043C\u044B\u0445 \u0441\u043E\
-          \u0432\u043F\u0430\u0434\u0435\u043D\u0438\u0439"
-        in: query
-        name: max_count_items
-        required: false
-        schema:
-          default: 5
-          description: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\
-            \u043E\u0435 \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E\
-            \ \u043F\u043E\u043B\u0443\u0447\u0430\u0435\u043C\u044B\u0445 \u0441\u043E\
-            \u0432\u043F\u0430\u0434\u0435\u043D\u0438\u0439"
-          maximum: 100.0
-          minimum: 3.0
-          title: Max Count Items
-          type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CasTask'
-          description: Successful Response
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - Cas API Key: []
-      summary: Search products
-      tags:
-      - products
   /api/v1/result:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0440\u0435\u0437\
@@ -1167,6 +864,158 @@ paths:
       summary: Get task result
       tags:
       - result
+  /api/v1/scraper/category_data:
+    get:
+      description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0435 \u0441\
+        \u043A\u0440\u0430\u043F\u0438\u043D\u0433\u0430 \u0432\u0441\u0435\u0445\
+        \ \u0434\u0430\u043D\u043D\u044B\u0445 \u043D\u0435\u043E\u0431\u0445\u043E\
+        \u0434\u0438\u043C\u044B\u0445 \u0434\u043B\u044F \u0430\u043D\u0430\u043B\
+        \u0438\u0437\u0430 \u0432\u0441\u0435\u0445 \u043F\u0440\u043E\u0434\u0443\
+        \u043A\u0442\u043E\u0432 \u0432 \u043A\u0430\u0442\u0435\u0433\u043E\u0440\
+        \u0438\u0438.(\u0434\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u043E\u0434\
+        \u0443\u043A\u0442\u043E\u0432, \u0434\u0430\u043D\u043D\u044B\u0435 \u0432\
+        \u0441\u0435\u0445 \u0440\u0435\u0432\u044C\u0435\u0440\u043E\u0432 \u0438\
+        \ \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\
+        \u0432, \u0440\u0435\u0432\u044C\u044E, \u043A\u043E\u043C\u043C\u0435\u043D\
+        \u0442\u0430\u0440\u0438\u0438)"
+      operationId: category_data_api_v1_scraper_category_data_get
+      parameters:
+      - description: "\u0418\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u0446\u0438\
+          \u0440\u0443\u044E\u0449\u0438\u0439 \u043F\u0443\u0442\u044C \u043A\u0430\
+          \u0442\u0435\u0433\u043E\u0440\u0438\u0438"
+        in: query
+        name: href_product_path
+        required: false
+        schema:
+          default: /in_town/education_companies/
+          description: "\u0418\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u0446\u0438\
+            \u0440\u0443\u044E\u0449\u0438\u0439 \u043F\u0443\u0442\u044C \u043A\u0430\
+            \u0442\u0435\u0433\u043E\u0440\u0438\u0438"
+          maxLength: 200
+          minLength: 1
+          title: Href Product Path
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CasTask'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - Cas API Key: []
+      summary: Category data collection
+      tags:
+      - scraper
+  /api/v1/scraper/products_data:
+    get:
+      description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0435 \u0441\
+        \u043A\u0440\u0430\u043F\u0438\u043D\u0433\u0430 \u0432\u0441\u0435\u0445\
+        \ \u0434\u0430\u043D\u043D\u044B\u0445 \u043D\u0435\u043E\u0431\u0445\u043E\
+        \u0434\u0438\u043C\u044B\u0445 \u0434\u043B\u044F \u0430\u043D\u0430\u043B\
+        \u0438\u0437\u0430 \u043F\u043E \u043F\u0440\u043E\u0434\u0443\u043A\u0442\
+        \u0443.(\u0434\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u043E\u0434\u0443\
+        \u043A\u0442\u0430, \u0434\u0430\u043D\u043D\u044B\u0435 \u0432\u0441\u0435\
+        \u0445 \u0440\u0435\u0432\u044C\u0435\u0440\u043E\u0432 \u0438 \u043A\u043E\
+        \u043C\u043C\u0435\u043D\u0442\u0430\u0442\u043E\u0440\u043E\u0432, \u0440\
+        \u0435\u0432\u044C\u044E, \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\
+        \u0440\u0438\u0438)"
+      operationId: products_data_api_v1_scraper_products_data_get
+      parameters:
+      - description: "\u0418\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u0446\u0438\
+          \u0440\u0443\u044E\u0449\u0435\u0435 \u0438\u043C\u044F \u043F\u0440\u043E\
+          \u0434\u0443\u043A\u0442\u0430"
+        in: query
+        name: product_name_id
+        required: false
+        schema:
+          default: chelyabinskiy_gosudarstvenniy_universitet_russia_chelyabinsk
+          description: "\u0418\u0434\u0435\u043D\u0442\u0438\u0444\u0438\u0446\u0438\
+            \u0440\u0443\u044E\u0449\u0435\u0435 \u0438\u043C\u044F \u043F\u0440\u043E\
+            \u0434\u0443\u043A\u0442\u0430"
+          maxLength: 100
+          minLength: 1
+          title: Product Name Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CasTask'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - Cas API Key: []
+      summary: Product data collection
+      tags:
+      - scraper
+  /api/v1/scraper/search:
+    get:
+      description: "\u0412\u044B\u043F\u043E\u043B\u043D\u0438\u0442\u044C \u043F\u043E\
+        \u0438\u0441\u043A \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430 \u0434\
+        \u043B\u044F \u0430\u043D\u0430\u043B\u0438\u0437\u0430."
+      operationId: products_search_api_v1_scraper_search_get
+      parameters:
+      - description: "\u041F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0439 \u0432\
+          \u0432\u043E\u0434"
+        in: query
+        name: search_input
+        required: false
+        schema:
+          default: "\u0427\u0435\u043B\u0413\u0443"
+          description: "\u041F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0439 \u0432\
+            \u0432\u043E\u0434"
+          maxLength: 100
+          minLength: 1
+          title: Search Input
+          type: string
+      - description: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\
+          \u043E\u0435 \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E\
+          \ \u043F\u043E\u043B\u0443\u0447\u0430\u0435\u043C\u044B\u0445 \u0441\u043E\
+          \u0432\u043F\u0430\u0434\u0435\u043D\u0438\u0439"
+        in: query
+        name: max_count_items
+        required: false
+        schema:
+          default: 5
+          description: "\u041C\u0430\u043A\u0441\u0438\u043C\u0430\u043B\u044C\u043D\
+            \u043E\u0435 \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E\
+            \ \u043F\u043E\u043B\u0443\u0447\u0430\u0435\u043C\u044B\u0445 \u0441\u043E\
+            \u0432\u043F\u0430\u0434\u0435\u043D\u0438\u0439"
+          maximum: 100.0
+          minimum: 3.0
+          title: Max Count Items
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CasTask'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - Cas API Key: []
+      summary: Search products
+      tags:
+      - scraper
   /api/v1/visualizer/analysis_value/category:
     post:
       description: "\u0412\u0438\u0437\u0443\u0430\u043B\u0438\u0437\u0438\u0440\u043E\

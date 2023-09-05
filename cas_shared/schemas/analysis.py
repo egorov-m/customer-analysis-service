@@ -1,3 +1,4 @@
+from enum import StrEnum
 from typing import Optional
 
 from pydantic import conint, Field
@@ -48,3 +49,23 @@ class CustomerReputationAnalysisValue(TunedModel):
 
     class Config:
         title = "Value of customer analysis mapped to customer reputation"
+
+
+class AnalysisObjectType(StrEnum):
+    reviewers = "reviewers"
+    commentators = "commentators"
+
+
+class AnalysisPrepareSimilarityObjectType(StrEnum):
+    products = "products"
+    customers = "customers"
+
+
+class SentimentAnalysisType(StrEnum):
+    region = "region"
+    category = "category"
+
+
+class SimilarityAnalysisType(StrEnum):
+    category = "category"
+    reputation = "reputation"
