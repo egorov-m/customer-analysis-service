@@ -21,13 +21,20 @@ class Settings(BaseSettings):
 
     REDIS_HOST: str = "localhost"
     REDIS_PORT: str = "6379"
-    REDIS_DB: str = "0"
+    REDIS_DB_WORKER: str = "0"
+    REDIS_DB_CACHE: str = "1"
 
     def get_postgres_url(self):
         return f"postgresql+psycopg2://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
-    def get_redis_url(self):
-        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
+    def _get_redis_url(self):
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}"
+
+    def get_redis_worker_url(self):
+        return f"{self._get_redis_url()}/{self.REDIS_DB_WORKER}"
+
+    def get_redis_cache_url(self):
+        return f"{self._get_redis_url()}/{self.REDIS_DB_CACHE}"
 
     class Config:
         env_file = ".env"

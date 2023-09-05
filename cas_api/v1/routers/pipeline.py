@@ -1,5 +1,6 @@
 from celery.result import AsyncResult
 from fastapi import APIRouter
+from fastapi_cache.decorator import cache
 
 from cas_api.worker import cas_api_worker
 from cas_shared.schemas.task import CasPipeline
@@ -13,6 +14,7 @@ router = APIRouter()
     "/comprehensive_analysis",
     response_model=CasPipeline
 )
+@cache(expire=600)
 async def comprehensive_analysis(product_name_id: str,
                                  analysis_vis_type: AnalysisVisualizationType,
                                  ia_r_title_fig: str = "Анализ интересов ревьюеров",

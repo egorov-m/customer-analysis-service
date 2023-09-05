@@ -1,10 +1,13 @@
 import logging as log
 from http import HTTPStatus
 
+from redis import asyncio as aioredis
 import uvicorn
 import yaml
 from fastapi import FastAPI, Request
 from fastapi.openapi.utils import get_openapi
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 from starlette.responses import JSONResponse
 
 from cas_shared.exceptions.cas_api_error import CasError, CasErrorCode
@@ -12,7 +15,7 @@ from cas_api.v1.routers.api import api_router
 from cas_shared.schemas.exception import CasErrorResponse
 from config import settings
 
-logger = log.getLogger('customer_analysis_service_logger')
+logger = log.getLogger("customer_analysis_service_logger")
 log.basicConfig(level=log.INFO)
 
 app = FastAPI(title=f"{settings.PROJECT_NAME} API", openapi_url=f"{settings.API_V1_STR}/openapi.json")
@@ -44,6 +47,12 @@ async def unhandled_exception_handler(request: Request, ex: Exception):
     return JSONResponse(
         status_code=status.value, content={"message": status.name, "error_code": CasErrorCode.GENERIC_ERROR}
     )
+
+
+@app.on_event("startup")
+async def startup():
+    redis = aioredis.from_url(settings.get_redis_cache_url(), encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
 
 
 if __name__ == "__main__":

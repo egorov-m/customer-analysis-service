@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from fastapi_cache.decorator import cache
 from starlette import status
 
 from cas_api.worker import cas_api_worker
@@ -16,6 +17,7 @@ router = APIRouter()
     description="Получить группировку по всем интересам.",
     summary="Interests"
 )
+@cache(expire=60)
 async def interests_analysis(product_name_id: str, analysis_object_type: AnalysisObjectType):
     match analysis_object_type:
         case AnalysisObjectType.reviewers:
@@ -33,6 +35,7 @@ async def interests_analysis(product_name_id: str, analysis_object_type: Analysi
     description="Получить сентимент анализ.",
     summary="Sentiments"
 )
+@cache(expire=60)
 async def sentiment_analysis(product_name_id: str,
                              analysis_object_type: AnalysisObjectType,
                              sentiment_analysis_type: SentimentAnalysisType):
@@ -62,6 +65,7 @@ async def sentiment_analysis(product_name_id: str,
     description="Получить анализ схожести.",
     summary="Similarity analysis"
 )
+@cache(expire=60)
 async def similarity_analysis(product_name_id: str,
                               analysis_object_type: AnalysisObjectType,
                               similarity_analysis_type: SimilarityAnalysisType):
