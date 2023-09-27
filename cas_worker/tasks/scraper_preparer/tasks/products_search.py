@@ -14,9 +14,10 @@ class ProductsSearchScraperTask(BaseScraperTask):
         href_search_path: str = f"/?search_text={search_input}"
         self.logger.info('The search for products by search query begins!')
 
-        products_json: list[ProductItem] = self.get_list_item(self.start_sub_process_spider(ProductSpider,
-                                                                                            href_product_path=href_search_path,
-                                                                                            max_count_items=max_count_items))
+        data_json: str = self.start_sub_process_spider(ProductSpider,
+                                                       href_product_path=href_search_path,
+                                                       max_count_items=max_count_items)
+        products_json: list[ProductItem] = self.get_list_item(data_json)
 
         self.logger.info('Products found!')
 

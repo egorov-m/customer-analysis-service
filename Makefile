@@ -12,15 +12,15 @@ up:
 down:
 		docker compose -f docker-compose-local.yaml --profile dev --profile flower down && docker network prune --force
 
-.PHONY worker
+.PHONY: worker
 worker:
-        poetry run celery -A cas_worker.worker.cas_worker worker -P solo
+		poetry run celery -A cas_worker.worker.cas_worker worker -P solo
 
 # Alembic
 .PHONY: generate
 generate:
-	poetry run alembic revision --m="$(m)" --autogenerate
+		poetry run alembic revision --m="$(m)" --autogenerate
 
 .PHONY: migrate
 migrate:
-	poetry run alembic upgrade head
+		poetry run alembic upgrade head

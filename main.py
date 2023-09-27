@@ -31,7 +31,7 @@ async def get_swagger():
 
 
 @app.exception_handler(CasError)
-async def videonet_exception_handler(request: Request, exc: CasError):
+async def cas_exception_handler(request: Request, exc: CasError):
     return JSONResponse(
         status_code=int(exc.http_status_code),
         content=CasErrorResponse(

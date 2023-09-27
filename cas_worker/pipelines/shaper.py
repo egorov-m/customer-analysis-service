@@ -1,6 +1,7 @@
 from celery import Task, chain, group
 from celery.result import GroupResult
 
+from cas_shared.schemas.analysis import AnalysisType
 from cas_shared.schemas.task import CasPipelineComponent
 from cas_shared.schemas.visualizer import VisualizationType, AnalysisVisualizationType
 from cas_worker.tasks.analysis_provider.base import Provider
@@ -233,13 +234,24 @@ class ComprehensiveVisualizedAnalysis(Task):
                                                                sim_rep_r_title_fig,
                                                                sim_rep_c_title_fig,
                                                                sim_cat_r_title_fig,
-                                                               sim_cat_c_title_fig])
+                                                               sim_cat_c_title_fig],
+                                     pipeline_components_analysis_type=[AnalysisType.interest_reviewers,
+                                                                        AnalysisType.interest_commentators,
+                                                                        AnalysisType.sentiment_category_reviewers,
+                                                                        AnalysisType.sentiment_category_commentators,
+                                                                        AnalysisType.sentiment_region_reviewers,
+                                                                        AnalysisType.sentiment_region_commentators,
+                                                                        AnalysisType.similarity_reputation_reviewers,
+                                                                        AnalysisType.similarity_reputation_commentators,
+                                                                        AnalysisType.similarity_category_reviewers,
+                                                                        AnalysisType.similarity_category_commentators])
 
     @staticmethod
     def result_formation(group_result: GroupResult,
                          visualization_image_title: str,
                          visualization_html_title: str,
-                         pipeline_components_info: list[str]):
+                         pipeline_components_info: list[str],
+                         pipeline_components_analysis_type: list[str]):
         result: list[CasPipelineComponent] = []
         for index, res in enumerate(group_result.children):
             c = res.children
