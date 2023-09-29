@@ -30,6 +30,9 @@ class CasErrorCode(IntEnum):
     # 4001-5000: analysis shaper errors
     ANALYSIS_SHAPER_ERROR = 4001
 
+    # 5001-6000: data error
+    PRODUCT_NOT_FOUND = 5001
+
 
 class CasError(Exception):
     """Base class for Customer Analysis Service exceptions."""

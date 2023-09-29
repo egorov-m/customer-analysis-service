@@ -2,8 +2,8 @@ from typing import Optional
 
 from sqlmodel import select, Session
 
-from cas_worker.db.models.customer import Customer, CustomerSimilarityAnalysis
-from cas_worker.db.utils import menage_db_method, CommitMode
+from cas_shared.db.models.customer import Customer, CustomerSimilarityAnalysis
+from cas_shared.db.utils import menage_db_method, CommitMode
 
 
 class CustomerRepository:

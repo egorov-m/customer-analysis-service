@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from cas_worker.db.models import Review, RegionalLocation, Product
+from cas_shared.db.models import Review, RegionalLocation, Product
 from cas_worker.tasks.base import TaskWithDbSession
 
 

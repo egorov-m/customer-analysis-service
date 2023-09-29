@@ -1,12 +1,12 @@
 from scrapy import Spider, Item
 from sqlmodel import Session, SQLModel
 
-from cas_worker.db.database import get_session
-from cas_worker.db.models.comment import Comment
-from cas_worker.db.models.customer import Customer
-from cas_worker.db.models.product import Product
-from cas_worker.db.models.review import Review
-from cas_worker.db.repository import CommentRepository, CustomerRepository, ProductRepository, ReviewRepository
+from cas_shared.db.database import get_session
+from cas_shared.db.models.comment import Comment
+from cas_shared.db.models.customer import Customer
+from cas_shared.db.models.product import Product
+from cas_shared.db.models.review import Review
+from cas_shared.db.repository import CommentRepository, CustomerRepository, ProductRepository, ReviewRepository
 from cas_worker.tasks.scraper_preparer.items import ReviewItem, CommentItem, CustomerItem, ProductItem
 
 

@@ -11,7 +11,7 @@ from spacy.lang.ru.stop_words import STOP_WORDS
 from spacy.tokens.span import Span
 from transformers import AutoTokenizer, AutoModel, RobertaTokenizerFast, RobertaModel
 
-from cas_worker.db.models import (
+from cas_shared.db.models import (
     Product,
     ProductSimilarityAnalysis,
     Customer,
@@ -19,7 +19,7 @@ from cas_worker.db.models import (
     Review,
     Comment
 )
-from cas_worker.db.repository import (
+from cas_shared.db.repository import (
     ProductRepository,
     CustomerRepository,
     ReviewRepository,

@@ -3,7 +3,7 @@ from sqlmodel import select
 
 from cas_shared.schemas.analysis import CustomerReputationAnalysisValue, CustomersForAllCategoriesAnalysis
 from cas_shared.schemas.base import data_to_schema_dict
-from cas_worker.db.models import Comment, Review, Customer, CustomerSimilarityAnalysis, Product
+from cas_shared.db.models import Comment, Review, Customer, CustomerSimilarityAnalysis, Product
 from cas_worker.tasks.analysis_provider.base import Provider
 from cas_worker.tasks.analysis_provider.utils import manage_result_size
 from config import WorkerTasks

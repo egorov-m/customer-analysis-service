@@ -19,9 +19,6 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Model / Schema imports
-from cas_worker.db.models.customer import Customer, CustomerSimilarityAnalysis, RegionalLocation
-from cas_worker.db.models.review import Review, ReviewSentimentAnalysis
-from cas_worker.db.models.product import Product, ProductSimilarityAnalysis
 from cas_worker.db.models.comment import Comment, CommentSentimentAnalysis
 
 target_metadata = SQLModel.metadata

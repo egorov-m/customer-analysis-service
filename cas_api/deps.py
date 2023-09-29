@@ -1,7 +1,9 @@
 from fastapi import Security
 from fastapi.security.api_key import APIKeyHeader
+from sqlmodel import Session
 from starlette import status
 
+from cas_shared.db.database import get_session
 from cas_shared.exceptions.cas_api_error import CasError, CasErrorCode
 from config import settings
 
@@ -16,3 +18,9 @@ async def get_api_key(header: str = Security(api_key_header)) -> str:
         error_code=CasErrorCode.UNAUTHORIZED_REQUEST,
         http_status_code=status.HTTP_401_UNAUTHORIZED
     )
+
+
+async def get_db():
+    session: Session = get_session()
+    with session.begin() as transaction:
+        yield session

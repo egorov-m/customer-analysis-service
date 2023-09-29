@@ -2,9 +2,9 @@ from datetime import datetime
 
 from sqlmodel import select, Session
 
-from cas_worker.db.models import Review
-from cas_worker.db.models.comment import Comment, CommentSentimentAnalysis
-from cas_worker.db.utils import menage_db_method, CommitMode
+from cas_shared.db.models import Review
+from cas_shared.db.models.comment import Comment, CommentSentimentAnalysis
+from cas_shared.db.utils import menage_db_method, CommitMode
 
 
 class CommentRepository:

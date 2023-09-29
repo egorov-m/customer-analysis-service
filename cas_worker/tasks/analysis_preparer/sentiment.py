@@ -5,8 +5,8 @@ import numpy as np
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-from cas_worker.db.models import Review, ReviewSentimentAnalysis, Comment, CommentSentimentAnalysis
-from cas_worker.db.repository import ReviewRepository, CommentRepository
+from cas_shared.db.models import Review, ReviewSentimentAnalysis, Comment, CommentSentimentAnalysis
+from cas_shared.db.repository import ReviewRepository, CommentRepository
 from cas_worker.tasks.analysis_preparer.base import AnalysisPreparer
 from config import WorkerTasks
 

@@ -8,7 +8,7 @@ from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 from sqlalchemy import or_, not_
 from sqlmodel import Session, select
 
-from cas_worker.db.models import Customer, RegionalLocation
+from cas_shared.db.models import Customer, RegionalLocation
 from cas_worker.tasks.base import TaskWithDbSession
 
 

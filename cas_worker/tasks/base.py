@@ -1,7 +1,7 @@
 from celery import Task
 from sqlmodel import Session
 
-from cas_worker.db.database import get_session
+from cas_shared.db.database import get_session
 
 
 class TaskWithDbSession(Task):

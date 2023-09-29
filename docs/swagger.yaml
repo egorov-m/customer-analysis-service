@@ -184,6 +184,26 @@ components:
       - customers_count
       title: Analysis customers across all categories
       type: object
+    FoundProduct:
+      properties:
+        fullname:
+          title: Fullname
+          type: string
+        image_url:
+          format: uri
+          maxLength: 2083
+          minLength: 1
+          title: Image Url
+          type: string
+        name_id:
+          title: Name Id
+          type: string
+      required:
+      - name_id
+      - fullname
+      - image_url
+      title: FoundProduct
+      type: object
     GroupRegionallyAllCustomerAnalysis:
       properties:
         analysis_value_avg:
@@ -787,6 +807,34 @@ paths:
       summary: Comprehensive Analysis
       tags:
       - pipeline_shaper
+  /api/v1/product/info:
+    get:
+      operationId: get_product_info_api_v1_product_info_get
+      parameters:
+      - in: query
+        name: product_name_id
+        required: true
+        schema:
+          title: Product Name Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoundProduct'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - Cas API Key: []
+      summary: Get Product Info
+      tags:
+      - data
   /api/v1/result:
     get:
       description: "\u041F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u0440\u0435\u0437\
@@ -839,6 +887,7 @@ paths:
                   reputation: int
               - - analysis_task_id: UUID4
                   analysis_title: str
+                  analysis_type: AnalysisType
                   visualization_html_task_id: UUID4
                   visualization_html_title: str
                   visualization_image_task_id: UUID4

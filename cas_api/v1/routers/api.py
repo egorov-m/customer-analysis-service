@@ -7,7 +7,8 @@ from cas_api.v1.routers import (
     result,
     visualizer_analysis_value,
     visualizer_quantity,
-    visualizer_histogram
+    visualizer_histogram,
+    product
 )
 from cas_api.v1.routers.provider import router as provider_router
 from cas_api.v1.routers.preparer import router as preparer_router
@@ -39,3 +40,4 @@ api_router.include_router(products_search_router)
 api_router.include_router(analysis_router, prefix="/analysis")
 api_router.include_router(visualizer_router, prefix="/visualizer")
 api_router.include_router(pipeline_router, prefix="/pipeline")
+api_router.include_router(product.router, prefix="/product", tags=["data"])

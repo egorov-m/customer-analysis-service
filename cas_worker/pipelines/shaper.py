@@ -262,6 +262,7 @@ class ComprehensiveVisualizedAnalysis(Task):
             result.append(
                 CasPipelineComponent(
                     analysis_task_id=res.parent.id,
+                    analysis_type=pipeline_components_analysis_type[index],
                     analysis_title=pipeline_components_info[index],
                     visualization_image_task_id=visualization_image_task_id,
                     visualization_image_title=visualization_image_title,
