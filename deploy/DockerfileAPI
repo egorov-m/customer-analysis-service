@@ -1,0 +1,19 @@
+FROM python:3.11
+LABEL authors="egorov-m"
+
+WORKDIR /app
+
+COPY ./deploy/requirements_api.txt .
+
+RUN pip install --no-cache-dir -r requirements_api.txt
+
+COPY ./cas_api ./cas_api
+COPY ./cas_shared ./cas_shared
+COPY ./.env .
+COPY ./config.py .
+COPY ./main.py .
+
+ENV PORT 8000
+EXPOSE 8000
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

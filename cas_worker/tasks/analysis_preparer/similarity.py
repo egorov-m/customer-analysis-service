@@ -36,7 +36,7 @@ class BaseSimilarityAnalysisPreparer(AnalysisPreparer):
         super().__init__()
         self.tokenizer: RobertaTokenizerFast = AutoTokenizer.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
         self.model: RobertaModel = AutoModel.from_pretrained('sentence-transformers/nli-distilroberta-base-v2')
-        self.spacy_nlp: Language = load("ru_core_news_lg")
+        self.spacy_nlp: Language = load("ru_core_news_sm")
         self.logger.info('SimilarityAnalysisPreparer initialized.')
 
     @staticmethod

@@ -1,0 +1,19 @@
+FROM python:3.11
+LABEL authors="egorov-m"
+
+WORKDIR /app
+ENV PYTHONPATH = /app
+
+COPY ./deploy/requirements_worker.txt .
+
+RUN pip install --no-cache-dir -r requirements_worker.txt
+RUN python -m spacy download ru_core_news_sm
+
+COPY ./cas_worker ./cas_worker
+COPY ./cas_shared ./cas_shared
+COPY ./.env .
+COPY ./config.py .
+COPY ./main.py .
+COPY ./.scrapy ./.scrapy
+
+CMD ["python", "-m", "calery", "-A", "cas_worker.worker.cas_worker", "worker"]
